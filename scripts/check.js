@@ -157,9 +157,52 @@ for (const page of ['index.html', 'settings.html']) {
 const attributePattern = /\bdata-([a-z0-9]+(?:-[a-z0-9]+)*)/gi;
 const seenAttributes = new Set();
 
+const isPlainObject = (value) =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
+
+/**
+ * Validate the keys of a `data-ajc='{…}'` payload. Unknown keys survive
+ * `normalizeOptions()` as inert extra properties, so they have to be caught
+ * here. Nested effect objects are checked against their own defaults.
+ */
+function validatePayload(payload, label, line, scope = DEFAULT_OPTIONS, prefix = '') {
+  let checked = 0;
+  for (const [key, value] of Object.entries(payload)) {
+    // Aliases are a top-level concern; nested effect keys must match exactly.
+    const canonical = scope === DEFAULT_OPTIONS ? ALIASES[key] || key : key;
+    if (!(canonical in scope)) {
+      problems.push(`${label}:${line} data-ajc key "${prefix}${key}" is not an option in src/defaults.js`);
+      continue;
+    }
+    checked++;
+    const fallback = scope[canonical];
+    if (isPlainObject(fallback) && isPlainObject(value)) {
+      checked += validatePayload(value, label, line, fallback, `${prefix}${key}.`);
+    }
+  }
+  return checked;
+}
+
+const ajcPattern = /data-ajc\s*=\s*(['"])([\s\S]*?)\1/gi;
+let ajcKeysChecked = 0;
+
 for (const file of demoFiles) {
   const source = readFileSync(file, 'utf8');
   const label = relative(root, file);
+
+  for (const payload of source.matchAll(ajcPattern)) {
+    const line = source.slice(0, payload.index).split('\n').length;
+    // Template-built payloads are resolved at runtime; nothing static to check.
+    if (payload[2].includes('${')) continue;
+    let parsed;
+    try {
+      parsed = JSON.parse(payload[2]);
+    } catch {
+      problems.push(`${label}:${line} data-ajc payload is not valid JSON`);
+      continue;
+    }
+    if (isPlainObject(parsed)) ajcKeysChecked += validatePayload(parsed, label, line);
+  }
 
   for (const [index, line] of source.split('\n').entries()) {
     for (const match of line.matchAll(attributePattern)) {
@@ -181,4 +224,4 @@ if (problems.length) {
 }
 
 console.log(`✔ ${files.length} modules checked — imports resolve, no legacy Anime.js v3 API.`);
-console.log(`✔ ${seenAttributes.size} demo data-* attributes — every one still maps to an option.`);
+console.log(`✔ ${seenAttributes.size} demo data-* attributes and ${ajcKeysChecked} data-ajc keys — every one still maps to an option.`);
