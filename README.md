@@ -293,7 +293,7 @@ coverflowEffect:  { rotate: 42, depth: 180, scale: 0.86, stretch: 0, modifier: 1
 cardsEffect:      { offsetX: 26, offsetY: 10, rotate: 3.5, scale: 0.92, maxStack: 3, opacity: 0.45 },
 flipEffect:       { rotate: 90, depth: 120, opacity: 0.25 },
 cubeEffect:       { rotate: 90, depth: 0, shadow: true },
-kenBurns:         { targets: 'img', from: 1, to: 1.14, duration: 9000, alternate: true, panX: 0, panY: 0 },
+kenBurns:         { targets: 'img, [data-ajc-kenburns]', from: 1, to: 1.14, duration: 9000, alternate: true, panX: 0, panY: 0 },
 staggerEffect:    { targets: null, each: 65, duration: 720, distance: 26, outDuration: 220, ease: 'out(3)', from: 'start' },
 marquee:          { speed: 60, direction: 'normal', pauseOnHover: true, duplicated: true },
 ```

@@ -246,6 +246,32 @@ for (const file of demoFiles) {
 const formatValue = (value) =>
   typeof value === 'string' ? `'${value}'` : JSON.stringify(value);
 
+/** Compare a documented object default against the source, key by key. */
+function compareObjectDefault(name, pairs, actual, lineNumber) {
+  if (!isPlainObject(actual)) {
+    problems.push(
+      `README.md:${lineNumber} "${name}" is documented as an object but the source default is ${formatValue(actual)}`,
+    );
+    return;
+  }
+  const actualKeys = Object.keys(actual);
+  const documentedKeys = pairs.map(([key]) => key);
+  for (const missing of actualKeys.filter((key) => !documentedKeys.includes(key))) {
+    problems.push(
+      `README.md:${lineNumber} "${name}" omits "${missing}" (source default ${formatValue(actual[missing])})`,
+    );
+  }
+  for (const [key, value] of pairs) {
+    if (!(key in actual)) {
+      problems.push(`README.md:${lineNumber} "${name}.${key}" is not in the source default`);
+    } else if (actual[key] !== value) {
+      problems.push(
+        `README.md:${lineNumber} "${name}.${key}" is documented as ${formatValue(value)} but src/defaults.js has ${formatValue(actual[key])}`,
+      );
+    }
+  }
+}
+
 /** Parse a Default cell such as `600`, `'slide'`, `null` or `{ a: 1 }`. */
 function parseDocumentedDefault(text) {
   const raw = text.trim();
@@ -338,24 +364,7 @@ if (readmeText) {
         }
 
         if (documented.kind === 'object') {
-          if (!isPlainObject(actual)) {
-            problems.push(`README.md:${lineNumber} "${name}" is documented as an object but the source default is ${formatValue(actual)}`);
-            continue;
-          }
-          const actualKeys = Object.keys(actual);
-          const documentedKeys = documented.pairs.map(([key]) => key);
-          for (const missing of actualKeys.filter((key) => !documentedKeys.includes(key))) {
-            problems.push(`README.md:${lineNumber} "${name}" omits "${missing}" (source default ${formatValue(actual[missing])})`);
-          }
-          for (const [key, value] of documented.pairs) {
-            if (!(key in actual)) {
-              problems.push(`README.md:${lineNumber} "${name}.${key}" is not in the source default`);
-            } else if (actual[key] !== value) {
-              problems.push(
-                `README.md:${lineNumber} "${name}.${key}" is documented as ${formatValue(value)} but src/defaults.js has ${formatValue(actual[key])}`,
-              );
-            }
-          }
+          compareObjectDefault(name, documented.pairs, actual, lineNumber);
           continue;
         }
 
@@ -396,14 +405,14 @@ const DOCUMENTED_ELSEWHERE = {
   onReachStart: { section: '### Callbacks' },
   onReachEnd: { section: '### Callbacks' },
   // Rendered as one JS block under `### Per-mode effects` instead of table rows.
-  fadeEffect: { section: '### Per-mode effects' },
-  coverflowEffect: { section: '### Per-mode effects' },
-  cardsEffect: { section: '### Per-mode effects' },
-  flipEffect: { section: '### Per-mode effects' },
-  cubeEffect: { section: '### Per-mode effects' },
-  kenBurns: { section: '### Per-mode effects' },
-  staggerEffect: { section: '### Per-mode effects' },
-  marquee: { section: '### Per-mode effects' },
+  fadeEffect: { section: '### Per-mode effects', fence: true },
+  coverflowEffect: { section: '### Per-mode effects', fence: true },
+  cardsEffect: { section: '### Per-mode effects', fence: true },
+  flipEffect: { section: '### Per-mode effects', fence: true },
+  cubeEffect: { section: '### Per-mode effects', fence: true },
+  kenBurns: { section: '### Per-mode effects', fence: true },
+  staggerEffect: { section: '### Per-mode effects', fence: true },
+  marquee: { section: '### Per-mode effects', fence: true },
   // Reserved: surfaced by settings.html, not read by src yet. Allowlisted so
   // its absence from the README stays a recorded decision, not an oversight.
   classPrefix: { reserved: true },
@@ -436,6 +445,58 @@ if (readmeText) {
   }
 }
 
+/*
+ * 7. Per-mode effect defaults are a JS block, so their values need the same
+ * treatment the table rows get: key sets and values in both directions.
+ */
+const PER_MODE_SECTION = '### Per-mode effects';
+const perModeValidated = new Set();
+
+if (readmeText) {
+  const lines = readmeText.split('\n');
+  const heading = lines.findIndex((line) => line.trim() === PER_MODE_SECTION);
+  let fenceStart = -1;
+  let fenceEnd = -1;
+
+  for (let index = heading + 1; heading !== -1 && index < lines.length; index += 1) {
+    if (fenceStart === -1 && /^#{1,3}\s/.test(lines[index])) break;
+    if (!/^\s*```/.test(lines[index])) continue;
+    if (fenceStart === -1) fenceStart = index;
+    else {
+      fenceEnd = index;
+      break;
+    }
+  }
+
+  if (heading === -1 || fenceStart === -1 || fenceEnd === -1) {
+    problems.push(`README.md is missing the \`${PER_MODE_SECTION}\` code block — per-mode defaults cannot be verified`);
+  } else {
+    for (let index = fenceStart + 1; index < fenceEnd; index += 1) {
+      const match = /^\s*([A-Za-z0-9_$]+)\s*:\s*(\{.*\}),?\s*$/.exec(lines[index]);
+      if (!match) continue;
+      const [, name, literal] = match;
+      const lineNumber = index + 1;
+      if (!(name in DEFAULT_OPTIONS)) {
+        problems.push(`README.md:${lineNumber} per-mode block documents "${name}", which is not an option in src/defaults.js`);
+        continue;
+      }
+      const documented = parseDocumentedDefault(literal);
+      if (!documented || documented.kind !== 'object') {
+        problems.push(`README.md:${lineNumber} unreadable per-mode default for "${name}" — cannot verify it`);
+        continue;
+      }
+      compareObjectDefault(name, documented.pairs, DEFAULT_OPTIONS[name], lineNumber);
+      perModeValidated.add(name);
+    }
+
+    for (const [name, entry] of Object.entries(DOCUMENTED_ELSEWHERE)) {
+      if (entry.fence && !perModeValidated.has(name)) {
+        problems.push(`README.md per-mode block does not document "${name}" — allowlist expects it there`);
+      }
+    }
+  }
+}
+
 if (problems.length) {
   console.error(`✖ ${problems.length} problem(s):`);
   problems.forEach((problem) => console.error(`  - ${problem}`));
@@ -450,3 +511,4 @@ const elsewhereCount = Object.keys(DEFAULT_OPTIONS).filter((key) => !documentedN
 console.log(
   `✔ ${documentedOptionCount} documented options in tables, ${elsewhereCount} documented elsewhere — no option is undocumented.`,
 );
+console.log(`✔ ${perModeValidated.size} per-mode effect defaults — every documented value matches src/defaults.js.`);
