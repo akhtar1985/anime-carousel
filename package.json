@@ -1,0 +1,58 @@
+{
+  "name": "anime-carousel",
+  "version": "1.0.0",
+  "description": "A Slick-easy, Swiper-capable slider and carousel plugin powered by Anime.js v4 — 10 modes, sync/thumbnails, virtual loop, drag, autoplay, lazy load, responsive and full a11y.",
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./styles": "./styles/slider.css",
+    "./scss": "./styles/slider.scss",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "styles",
+    "types",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
+  "scripts": {
+    "dev": "npx --yes serve . -l 4173",
+    "start": "npx --yes serve . -l 4173",
+    "check": "node ./scripts/check.js"
+  },
+  "keywords": [
+    "carousel",
+    "slider",
+    "animejs",
+    "anime.js",
+    "swiper",
+    "slick",
+    "coverflow",
+    "marquee",
+    "gallery",
+    "touch",
+    "vanilla-js"
+  ],
+  "peerDependencies": {
+    "animejs": "^4.0.0"
+  },
+  "devDependencies": {
+    "animejs": "^4.0.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,350 @@
+/*!
+ * AnimeCarousel — core stylesheet
+ * MIT · https://github.com/your-org/anime-carousel
+ *
+ * Every rule is namespaced `ajc` and driven by custom properties, so a host
+ * theme can restyle the slider without touching selectors.
+ */
+
+.ajc {
+  --ajc-gap: 0px;
+  --ajc-speed: 600ms;
+  --ajc-perspective: 1200px;
+  --ajc-arrow-size: 44px;
+  --ajc-arrow-offset: 12px;
+  --ajc-arrow-bg: rgba(255, 255, 255, 0.94);
+  --ajc-arrow-color: #14161a;
+  --ajc-arrow-border: rgba(15, 18, 24, 0.12);
+  --ajc-dot-size: 9px;
+  --ajc-dot-color: currentColor;
+  --ajc-dot-active: currentColor;
+  --ajc-accent: #4d7cfe;
+  --ajc-radius: 14px;
+  --ajc-focus-ring: 0 0 0 3px rgba(77, 124, 254, 0.55);
+
+  position: relative;
+  display: block;
+  min-width: 0;
+  isolation: isolate;
+}
+
+.ajc *,
+.ajc *::before,
+.ajc *::after {
+  box-sizing: border-box;
+}
+
+/* ── viewport & track ─────────────────────────────────────────────── */
+
+/* Nested one level deeper than a single class so author styles like
+   `.my-slide { position: relative }` cannot break the layout engine. */
+.ajc .ajc__viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  touch-action: pan-y;
+  outline: none;
+}
+
+.ajc--vertical .ajc__viewport {
+  touch-action: pan-x;
+}
+
+.ajc .ajc__track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ajc .ajc__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.ajc .ajc__slide img {
+  max-width: 100%;
+}
+
+.ajc .ajc__slide[aria-hidden='true'] {
+  pointer-events: none;
+}
+
+/* 3D modes get a perspective context on the viewport. */
+.ajc--3d .ajc__viewport {
+  perspective: var(--ajc-perspective);
+  perspective-origin: 50% 50%;
+}
+
+.ajc--3d .ajc__track {
+  transform-style: preserve-3d;
+}
+
+/* ── arrows ───────────────────────────────────────────────────────── */
+
+.ajc__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 20;
+  display: inline-grid;
+  place-items: center;
+  width: var(--ajc-arrow-size);
+  height: var(--ajc-arrow-size);
+  padding: 0;
+  border: 1px solid var(--ajc-arrow-border);
+  border-radius: 50%;
+  background: var(--ajc-arrow-bg);
+  color: var(--ajc-arrow-color);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ajc__arrow svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.ajc__arrow:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.ajc__arrow--prev {
+  left: var(--ajc-arrow-offset);
+}
+
+.ajc__arrow--next {
+  right: var(--ajc-arrow-offset);
+}
+
+.ajc__arrow:focus-visible {
+  outline: 2px solid var(--ajc-accent);
+  outline-offset: 2px;
+}
+
+.ajc__arrow.is-disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ajc__arrow.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ajc--fits .ajc__arrow {
+  display: none;
+}
+
+.ajc--vertical .ajc__arrow {
+  top: var(--ajc-arrow-offset);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ajc--vertical .ajc__arrow svg {
+  transform: rotate(90deg);
+}
+
+.ajc--vertical .ajc__arrow--prev {
+  top: var(--ajc-arrow-offset);
+}
+
+.ajc--vertical .ajc__arrow--next {
+  top: auto;
+  bottom: var(--ajc-arrow-offset);
+}
+
+.ajc--vertical .ajc__arrow:hover:not(:disabled) {
+  transform: translateX(-50%) scale(1.06);
+}
+
+/* ── pagination ───────────────────────────────────────────────────── */
+
+.ajc__dots {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 0;
+  color: var(--ajc-dot-color);
+}
+
+.ajc__dot {
+  width: var(--ajc-dot-size);
+  height: var(--ajc-dot-size);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ajc-dot-active);
+  opacity: 0.28;
+  cursor: pointer;
+  transition: opacity 0.25s ease, width 0.25s ease, background-color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ajc__dot-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ajc__dot:hover {
+  opacity: 0.6;
+}
+
+.ajc__dot.is-active {
+  width: calc(var(--ajc-dot-size) * 2.6);
+  opacity: 1;
+}
+
+.ajc__dot.is-near {
+  opacity: 0.5;
+}
+
+.ajc__dot.is-far {
+  opacity: 0.12;
+}
+
+.ajc__dot:focus-visible {
+  outline: 2px solid var(--ajc-accent);
+  outline-offset: 3px;
+}
+
+.ajc__dots--fraction {
+  gap: 0;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.ajc__fraction {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35em;
+  opacity: 0.85;
+}
+
+.ajc__fraction-current {
+  font-weight: 700;
+  opacity: 1;
+}
+
+.ajc__dots--progress {
+  padding: 18px 0;
+  width: 100%;
+}
+
+.ajc__progress {
+  position: relative;
+  width: min(240px, 100%);
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--ajc-dot-active);
+  opacity: 0.18;
+}
+
+.ajc__progress-bar {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: var(--ajc-accent);
+  opacity: 1;
+  transition: width var(--ajc-speed, 600ms) cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* ── marquee / ticker ─────────────────────────────────────────────── */
+
+.ajc--marquee .ajc__track {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  max-width: none;
+}
+
+.ajc--marquee .ajc__slide {
+  position: relative;
+  top: auto;
+  left: auto;
+  flex: 0 0 auto;
+  width: auto;
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.ajc--marquee .ajc__viewport {
+  overflow: hidden;
+}
+
+/* ── lazy loading ─────────────────────────────────────────────────── */
+
+.ajc__slide.is-lazy-loading img {
+  opacity: 0;
+}
+
+.ajc__slide.is-lazy-loaded img {
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+/* ── cursor states ────────────────────────────────────────────────── */
+
+.ajc--draggable .ajc__viewport {
+  cursor: grab;
+}
+
+.ajc--draggable.is-dragging .ajc__viewport {
+  cursor: grabbing;
+}
+
+.ajc.is-dragging .ajc__slide {
+  user-select: none;
+}
+
+.ajc.is-dragging .ajc__slide img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* ── screen-reader only live region ───────────────────────────────── */
+
+.ajc__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+/* ── motion preferences ───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .ajc__arrow,
+  .ajc__dot,
+  .ajc__progress-bar {
+    transition-duration: 0.001ms !important;
+  }
+
+  .ajc--marquee .ajc__track {
+    transform: none !important;
+  }
+}

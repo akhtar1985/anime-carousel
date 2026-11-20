@@ -1,0 +1,351 @@
+// AnimeCarousel — SCSS source
+// Compiles 1:1 to styles/slider.css. Override the variables below or the CSS
+// custom properties at runtime.
+
+$prefix: 'ajc' !default;
+$accent: #4d7cfe !default;
+$arrow-size: 44px !default;
+$arrow-offset: 12px !default;
+$arrow-bg: rgba(255, 255, 255, 0.94) !default;
+$arrow-color: #14161a !default;
+$arrow-border: rgba(15, 18, 24, 0.12) !default;
+$dot-size: 9px !default;
+$breakpoint-motion: '(prefers-reduced-motion: reduce)' !default;
+
+.#{$prefix} {
+  --#{$prefix}-gap: 0px;
+  --#{$prefix}-speed: 600ms;
+  --#{$prefix}-perspective: 1200px;
+  --#{$prefix}-arrow-size: #{$arrow-size};
+  --#{$prefix}-arrow-offset: #{$arrow-offset};
+  --#{$prefix}-arrow-bg: #{$arrow-bg};
+  --#{$prefix}-arrow-color: #{$arrow-color};
+  --#{$prefix}-arrow-border: #{$arrow-border};
+  --#{$prefix}-dot-size: #{$dot-size};
+  --#{$prefix}-dot-color: currentColor;
+  --#{$prefix}-dot-active: currentColor;
+  --#{$prefix}-accent: #{$accent};
+  --#{$prefix}-radius: 14px;
+  --#{$prefix}-focus-ring: 0 0 0 3px rgba(77, 124, 254, 0.55);
+
+  position: relative;
+  display: block;
+  min-width: 0;
+  isolation: isolate;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Nested one level deeper than a single class so author styles like
+  // `.my-slide { position: relative }` cannot break the layout engine.
+  .#{$prefix}__viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+    outline: none;
+  }
+
+  .#{$prefix}__track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .#{$prefix}__slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+
+    img {
+      max-width: 100%;
+    }
+
+    &[aria-hidden='true'] {
+      pointer-events: none;
+    }
+  }
+
+  // ── 3D context ───────────────────────────────────────────────────
+  &--3d {
+    .#{$prefix}__viewport {
+      perspective: var(--#{$prefix}-perspective);
+      perspective-origin: 50% 50%;
+    }
+
+    .#{$prefix}__track {
+      transform-style: preserve-3d;
+    }
+  }
+
+  // ── arrows ───────────────────────────────────────────────────────
+  &__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 20;
+    display: inline-grid;
+    place-items: center;
+    width: var(--#{$prefix}-arrow-size);
+    height: var(--#{$prefix}-arrow-size);
+    padding: 0;
+    border: 1px solid var(--#{$prefix}-arrow-border);
+    border-radius: 50%;
+    background: var(--#{$prefix}-arrow-bg);
+    color: var(--#{$prefix}-arrow-color);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    &:hover:not(:disabled) {
+      transform: translateY(-50%) scale(1.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--#{$prefix}-accent);
+      outline-offset: 2px;
+    }
+
+    &--prev {
+      left: var(--#{$prefix}-arrow-offset);
+    }
+
+    &--next {
+      right: var(--#{$prefix}-arrow-offset);
+    }
+
+    &.is-disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    &.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  &--fits .#{$prefix}__arrow {
+    display: none;
+  }
+
+  &--vertical {
+    .#{$prefix}__viewport {
+      touch-action: pan-x;
+    }
+
+    .#{$prefix}__arrow {
+      top: var(--#{$prefix}-arrow-offset);
+      left: 50%;
+      transform: translateX(-50%);
+
+      svg {
+        transform: rotate(90deg);
+      }
+
+      &--next {
+        top: auto;
+        bottom: var(--#{$prefix}-arrow-offset);
+      }
+
+      &:hover:not(:disabled) {
+        transform: translateX(-50%) scale(1.06);
+      }
+    }
+  }
+
+  // ── pagination ───────────────────────────────────────────────────
+  &__dots {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 0;
+    color: var(--#{$prefix}-dot-color);
+
+    &--fraction {
+      gap: 0;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+    }
+
+    &--progress {
+      padding: 18px 0;
+      width: 100%;
+    }
+  }
+
+  &__dot {
+    width: var(--#{$prefix}-dot-size);
+    height: var(--#{$prefix}-dot-size);
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--#{$prefix}-dot-active);
+    opacity: 0.28;
+    cursor: pointer;
+    transition: opacity 0.25s ease, width 0.25s ease, background-color 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover {
+      opacity: 0.6;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--#{$prefix}-accent);
+      outline-offset: 3px;
+    }
+
+    &.is-active {
+      width: calc(var(--#{$prefix}-dot-size) * 2.6);
+      opacity: 1;
+    }
+
+    &.is-near {
+      opacity: 0.5;
+    }
+
+    &.is-far {
+      opacity: 0.12;
+    }
+  }
+
+  &__dot-inner {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__fraction {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+    opacity: 0.85;
+  }
+
+  &__fraction-current {
+    font-weight: 700;
+    opacity: 1;
+  }
+
+  &__progress {
+    position: relative;
+    width: min(240px, 100%);
+    height: 3px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--#{$prefix}-dot-active);
+    opacity: 0.18;
+  }
+
+  &__progress-bar {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: var(--#{$prefix}-accent);
+    opacity: 1;
+    transition: width 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  // ── marquee ──────────────────────────────────────────────────────
+  // Same specificity as the rules above, later in the file: wins.
+  &--marquee {
+    .#{$prefix}__viewport {
+      overflow: hidden;
+    }
+
+    .#{$prefix}__track {
+      display: flex;
+      align-items: stretch;
+      width: max-content;
+      max-width: none;
+    }
+
+    .#{$prefix}__slide {
+      position: relative;
+      top: auto;
+      left: auto;
+      flex: 0 0 auto;
+      width: auto;
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  // ── lazy loading ─────────────────────────────────────────────────
+  &__slide.is-lazy-loading img {
+    opacity: 0;
+  }
+
+  &__slide.is-lazy-loaded img {
+    opacity: 1;
+    transition: opacity 0.45s ease;
+  }
+
+  // ── drag cursors ─────────────────────────────────────────────────
+  &--draggable &__viewport {
+    cursor: grab;
+  }
+
+  &--draggable.is-dragging &__viewport {
+    cursor: grabbing;
+  }
+
+  &.is-dragging {
+    .#{$prefix}__slide {
+      user-select: none;
+    }
+
+    .#{$prefix}__slide img {
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+  }
+
+  // ── a11y live region ─────────────────────────────────────────────
+  &__status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+  }
+}
+
+@media #{$breakpoint-motion} {
+  .#{$prefix}__arrow,
+  .#{$prefix}__dot,
+  .#{$prefix}__progress-bar {
+    transition-duration: 0.001ms !important;
+  }
+
+  .#{$prefix}--marquee .#{$prefix}__track {
+    transform: none !important;
+  }
+}

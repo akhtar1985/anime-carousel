@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>anime-carousel — Slider &amp; Carousel plugin on Anime.js v4</title>
+    <meta
+      name="description"
+      content="A production-ready slider and carousel built on Anime.js v4: slide, fade, coverflow, cards, marquee, ken burns, staggered, flip and cube modes with Slick-ease and Swiper power."
+    />
+
+    <link rel="stylesheet" href="./styles/slider.css" />
+    <link rel="stylesheet" href="./demo/demo.css" />
+
+    <!-- The plugin imports the bare specifier "animejs"; the import map resolves it to the CDN. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <a class="skip" href="#playground">Skip to playground</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top">
+        <span class="brand__mark" aria-hidden="true"></span>
+        anime-carousel
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <a href="#playground">Playground</a>
+        <a href="#sync">Sync</a>
+        <a href="#modes">Modes</a>
+        <a href="#marquee">Marquee</a>
+        <a href="#api">API</a>
+        <a href="#responsive">Responsive</a>
+      </nav>
+      <span class="pill">v1.0 · Anime.js v4</span>
+    </header>
+
+    <main id="top">
+      <!-- ─────────────────────────── hero ─────────────────────────── -->
+      <section class="hero">
+        <p class="eyebrow">Slider plugin · Anime.js v4</p>
+        <h1>
+          Ten carousel modes.<br />
+          <em>One</em> tiny API.
+        </h1>
+        <p class="lede">
+          Slick's ergonomics, Swiper's muscle. Virtual infinite loop with no clones, spring physics,
+          controller sync, drag, lazy loading and a fully accessible DOM.
+        </p>
+        <ul class="chips">
+          <li>animate()</li>
+          <li>createTimeline()</li>
+          <li>createScope()</li>
+          <li>stagger()</li>
+          <li>createSpring()</li>
+          <li>utils</li>
+        </ul>
+      </section>
+
+      <!-- ────────────────────────── playground ─────────────────────── -->
+      <section class="block" id="playground">
+        <header class="block__head">
+          <span class="block__num">01</span>
+          <div>
+            <h2>Playground</h2>
+            <p>Every option is live. Switch modes, drag, or press <kbd>←</kbd> <kbd>→</kbd> while the carousel is focused.</p>
+          </div>
+        </header>
+
+        <div class="playground">
+          <aside class="panel" aria-label="Carousel options">
+            <fieldset class="panel__group">
+              <legend>Mode</legend>
+              <div class="modes" id="modes">
+                <button type="button" class="chip is-active" data-mode="slide">slide</button>
+                <button type="button" class="chip" data-mode="fade">fade</button>
+                <button type="button" class="chip" data-mode="coverflow">coverflow</button>
+                <button type="button" class="chip" data-mode="cards">cards</button>
+                <button type="button" class="chip" data-mode="cube">cube</button>
+                <button type="button" class="chip" data-mode="flip">flip</button>
+                <button type="button" class="chip" data-mode="kenburns">kenburns</button>
+                <button type="button" class="chip" data-mode="staggered">staggered</button>
+                <button type="button" class="chip" data-mode="marquee">marquee</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="panel__group">
+              <legend>Layout</legend>
+              <label class="range">
+                <span>slidesToShow <output id="out-s2s">1</output></span>
+                <input id="opt-s2s" type="range" min="1" max="3" step="0.25" value="1" />
+              </label>
+              <label class="range">
+                <span>spaceBetween <output id="out-gap">16</output></span>
+                <input id="opt-gap" type="range" min="0" max="40" step="2" value="16" />
+              </label>
+              <label class="range">
+                <span>speed <output id="out-speed">600</output>ms</span>
+                <input id="opt-speed" type="range" min="150" max="1600" step="50" value="600" />
+              </label>
+              <label class="select">
+                <span>dotsType</span>
+                <select id="opt-dots">
+                  <option value="bullets">bullets</option>
+                  <option value="fraction">fraction</option>
+                  <option value="progress">progress</option>
+                </select>
+              </label>
+            </fieldset>
+
+            <fieldset class="panel__group">
+              <legend>Behaviour</legend>
+              <label class="switch"><input type="checkbox" id="opt-loop" checked /><span>infinite / loop</span></label>
+              <label class="switch"><input type="checkbox" id="opt-center" /><span>centerMode</span></label>
+              <label class="switch"><input type="checkbox" id="opt-spring" /><span>spring physics</span></label>
+              <label class="switch"><input type="checkbox" id="opt-autoplay" /><span>autoplay</span></label>
+              <label class="switch"><input type="checkbox" id="opt-arrows" checked /><span>arrows</span></label>
+              <label class="switch"><input type="checkbox" id="opt-dots" checked /><span>dots</span></label>
+              <label class="switch"><input type="checkbox" id="opt-vertical" /><span>vertical</span></label>
+              <label class="switch"><input type="checkbox" id="opt-rtl" /><span>rtl</span></label>
+            </fieldset>
+
+            <p class="panel__hint">
+              Modes that own the axis (<code>marquee</code>) ignore drag and autoplay — that is by design.
+            </p>
+          </aside>
+
+          <div class="stage">
+            <div class="ajc demo-pg" id="pg" aria-label="Playground carousel" data-ajc>
+              <div class="ajc__viewport" data-ajc-viewport>
+                <div class="ajc__track" data-ajc-track>
+                  <div class="ajc__slide dslide">
+                    <img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake at dawn" />
+                    <div class="dslide__caption" data-ajc-reveal>
+                      <span class="dslide__tag">01 — Dawn</span>
+                      <h3>Alpine Lake</h3>
+                      <p>Still water, first light, and a very cold camera.</p>
+                      <button class="dslide__cta" type="button">Read the story</button>
+                    </div>
+                  </div>
+                  <div class="ajc__slide dslide">
+                    <img class="dslide__img" src="demo/img/neon.jpg" alt="Neon-lit street at night" />
+                    <div class="dslide__caption" data-ajc-reveal>
+                      <span class="dslide__tag">02 — Night</span>
+                      <h3>Neon District</h3>
+                      <p>Rain, reflections and too much magenta.</p>
+                      <button class="dslide__cta" type="button">Read the story</button>
+                    </div>
+                  </div>
+                  <div class="ajc__slide dslide">
+                    <img class="dslide__img" src="demo/img/liquid.jpg" alt="Abstract liquid gradient" />
+                    <div class="dslide__caption" data-ajc-reveal>
+                      <span class="dslide__tag">03 — Render</span>
+                      <h3>Liquid Fold</h3>
+                      <p>Indigo and coral, folded until they forgive each other.</p>
+                      <button class="dslide__cta" type="button">Read the story</button>
+                    </div>
+                  </div>
+                  <div class="ajc__slide dslide">
+                    <img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes at golden hour" />
+                    <div class="dslide__caption" data-ajc-reveal>
+                      <span class="dslide__tag">04 — Dusk</span>
+                      <h3>Sand Ridges</h3>
+                      <p>Wind drawing long shadows across the erg.</p>
+                      <button class="dslide__cta" type="button">Read the story</button>
+                    </div>
+                  </div>
+                  <div class="ajc__slide dslide">
+                    <img class="dslide__img" src="demo/img/forest.jpg" alt="Foggy pine forest" />
+                    <div class="dslide__caption" data-ajc-reveal>
+                      <span class="dslide__tag">05 — Mist</span>
+                      <h3>Pine Fog</h3>
+                      <p>Visibility: eleven metres and falling.</p>
+                      <button class="dslide__cta" type="button">Read the story</button>
+                    </div>
+                  </div>
+                  <div class="ajc__slide dslide">
+                    <img class="dslide__img" src="demo/img/concrete.jpg" alt="Brutalist concrete balconies" />
+                    <div class="dslide__caption" data-ajc-reveal>
+                      <span class="dslide__tag">06 — Form</span>
+                      <h3>Concrete Grid</h3>
+                      <p>Stacked balconies catching the last warm light.</p>
+                      <button class="dslide__cta" type="button">Read the story</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="api-row" aria-label="Public API actions">
+              <button type="button" class="btn" data-api="prev">prev()</button>
+              <button type="button" class="btn" data-api="next">next()</button>
+              <button type="button" class="btn" data-api="goto">goTo(3)</button>
+              <button type="button" class="btn" data-api="play">play()</button>
+              <button type="button" class="btn" data-api="pause">pause()</button>
+              <button type="button" class="btn" data-api="add">addSlide()</button>
+              <button type="button" class="btn" data-api="remove">removeSlide()</button>
+              <button type="button" class="btn" data-api="refresh">refresh()</button>
+              <button type="button" class="btn" data-api="destroy">destroy() + init</button>
+            </div>
+
+            <pre class="console" id="console" aria-live="polite"><span class="console__idle">Event log — interact with the carousel.</span></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── sync ─────────────────────────── -->
+      <section class="block" id="sync">
+        <header class="block__head">
+          <span class="block__num">02</span>
+          <div>
+            <h2>Sync &amp; thumbnails</h2>
+            <p>
+              <code>asNavFor</code> links two instances; the active thumbnail follows the main stage and clicking a
+              thumbnail drives the stage. Works with any slide count.
+            </p>
+          </div>
+        </header>
+
+        <div class="gallery">
+          <div class="ajc gallery__main" id="g-main" aria-label="Gallery" data-ajc>
+            <div class="ajc__viewport" data-ajc-viewport>
+              <div class="ajc__track" data-ajc-track>
+                <div class="ajc__slide dslide">
+                  <img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake at dawn" />
+                  <div class="dslide__caption"><h3>Alpine Lake</h3><p>First light over still water.</p></div>
+                </div>
+                <div class="ajc__slide dslide">
+                  <img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street at night" />
+                  <div class="dslide__caption"><h3>Neon District</h3><p>Rain on the lens, magenta in the puddles.</p></div>
+                </div>
+                <div class="ajc__slide dslide">
+                  <img class="dslide__img" src="demo/img/liquid.jpg" alt="Abstract liquid gradient" />
+                  <div class="dslide__caption"><h3>Liquid Fold</h3><p>Indigo, violet, coral.</p></div>
+                </div>
+                <div class="ajc__slide dslide">
+                  <img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" />
+                  <div class="dslide__caption"><h3>Sand Ridges</h3><p>Wind, shadow, scale.</p></div>
+                </div>
+                <div class="ajc__slide dslide">
+                  <img class="dslide__img" src="demo/img/forest.jpg" alt="Foggy pine forest" />
+                  <div class="dslide__caption"><h3>Pine Fog</h3><p>Volumetric light, zero visibility.</p></div>
+                </div>
+                <div class="ajc__slide dslide">
+                  <img class="dslide__img" src="demo/img/concrete.jpg" alt="Brutalist concrete" />
+                  <div class="dslide__caption"><h3>Concrete Grid</h3><p>Diagonal warmth on grey.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ajc gallery__thumbs" id="g-thumbs" aria-label="Gallery thumbnails" data-ajc>
+            <div class="ajc__viewport" data-ajc-viewport>
+              <div class="ajc__track" data-ajc-track>
+                <div class="ajc__slide thumb"><img src="demo/img/alpine.jpg" alt="Alpine Lake" /></div>
+                <div class="ajc__slide thumb"><img src="demo/img/neon.jpg" alt="Neon District" /></div>
+                <div class="ajc__slide thumb"><img src="demo/img/liquid.jpg" alt="Liquid Fold" /></div>
+                <div class="ajc__slide thumb"><img src="demo/img/dunes.jpg" alt="Sand Ridges" /></div>
+                <div class="ajc__slide thumb"><img src="demo/img/forest.jpg" alt="Pine Fog" /></div>
+                <div class="ajc__slide thumb"><img src="demo/img/concrete.jpg" alt="Concrete Grid" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="sync-status" id="sync-status">Slide 1 of 6</p>
+      </section>
+
+      <!-- ──────────────────────────── modes ────────────────────────── -->
+      <section class="block" id="modes">
+        <header class="block__head">
+          <span class="block__num">03</span>
+          <div>
+            <h2>Every mode</h2>
+            <p>Each card is an independent instance with its own effect object. All of them inherit the same drag, a11y and API surface.</p>
+          </div>
+        </header>
+
+        <div class="cards-grid">
+          <article class="demo-card">
+            <h3>coverflow <code>coverflowEffect</code></h3>
+            <div class="ajc" id="d-coverflow" aria-label="Coverflow carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>cards <code>cardsEffect</code></h3>
+            <div class="ajc" id="d-cards" aria-label="Card deck carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card demo-card--dark">
+            <h3>cube <code>cubeEffect</code></h3>
+            <div class="ajc" id="d-cube" aria-label="Cube carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card demo-card--dark">
+            <h3>flip <code>flipEffect</code></h3>
+            <div class="ajc" id="d-flip" aria-label="Flip carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>fade <code>fadeEffect</code></h3>
+            <div class="ajc" id="d-fade" aria-label="Fade carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>kenburns <code>kenBurns</code></h3>
+            <div class="ajc" id="d-kenburns" aria-label="Ken Burns carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ────────────────────── reveal / orientation ───────────────── -->
+      <section class="block">
+        <header class="block__head">
+          <span class="block__num">04</span>
+          <div>
+            <h2>Staggered reveal, vertical, RTL, centred</h2>
+            <p>
+              <code>staggered</code> builds a <code>createTimeline()</code> with <code>stagger()</code> for every
+              element marked <code>data-ajc-reveal</code>.
+            </p>
+          </div>
+        </header>
+
+        <div class="cards-grid">
+          <article class="demo-card">
+            <h3>staggered <code>staggerEffect</code></h3>
+            <div class="ajc" id="d-stagger" aria-label="Staggered carousel" data-ajc>
+              <div class="ajc__slide dslide dslide--text">
+                <div class="dslide__caption" data-ajc-reveal>
+                  <span class="dslide__tag">Layer 1</span>
+                  <h3>Image first</h3>
+                  <p>The media scales up, then the heading, copy and CTA cascade in.</p>
+                  <button type="button" class="dslide__cta">Explore</button>
+                </div>
+              </div>
+              <div class="ajc__slide dslide dslide--text">
+                <div class="dslide__caption" data-ajc-reveal>
+                  <span class="dslide__tag">Layer 2</span>
+                  <h3>Then the type</h3>
+                  <p>One <code>createTimeline()</code>, one <code>stagger()</code> call.</p>
+                  <button type="button" class="dslide__cta">Explore</button>
+                </div>
+              </div>
+              <div class="ajc__slide dslide dslide--text">
+                <div class="dslide__caption" data-ajc-reveal>
+                  <span class="dslide__tag">Layer 3</span>
+                  <h3>Then the CTA</h3>
+                  <p>Ordering comes from the DOM, spacing from <code>stagger(65)</code>.</p>
+                  <button type="button" class="dslide__cta">Explore</button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>vertical <code>vertical: true</code></h3>
+            <div class="ajc demo-vertical" id="d-vertical" aria-label="Vertical carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>rtl <code>rtl: true</code></h3>
+            <div class="ajc demo-rtl" id="d-rtl" aria-label="Right to left carousel" data-ajc dir="rtl">
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>centerMode <code>centerPadding</code></h3>
+            <div class="ajc demo-center" id="d-center" aria-label="Centered carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────── marquee ───────────────────────── -->
+      <section class="block" id="marquee">
+        <header class="block__head">
+          <span class="block__num">05</span>
+          <div>
+            <h2>Marquee / ticker</h2>
+            <p>Continuous, seamless, pause-on-hover. One looping <code>createTimeline()</code> translates a cloned strip.</p>
+          </div>
+        </header>
+
+        <div class="ticker">
+          <div class="ajc" id="m-one" aria-label="Technology ticker 1" data-ajc>
+            <div class="ajc__slide ticker__item">animate()</div>
+            <div class="ajc__slide ticker__item">createTimeline()</div>
+            <div class="ajc__slide ticker__item">createScope()</div>
+            <div class="ajc__slide ticker__item">stagger()</div>
+            <div class="ajc__slide ticker__item">createSpring()</div>
+            <div class="ajc__slide ticker__item">utils</div>
+          </div>
+          <div class="ajc" id="m-two" aria-label="Technology ticker 2" data-ajc>
+            <div class="ajc__slide ticker__item ticker__item--alt">slide</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">fade</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">coverflow</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">cards</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">cube</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">flip</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">kenburns</div>
+            <div class="ajc__slide ticker__item ticker__item--alt">staggered</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ────────────────────────── lazy load ──────────────────────── -->
+      <section class="block" id="lazy-demo">
+        <header class="block__head">
+          <span class="block__num">06</span>
+          <div>
+            <h2>Lazy load</h2>
+            <p>
+              <code>lazyLoad: 'ondemand'</code> swaps <code>data-src</code> → <code>src</code> for the visible window
+              and one slide past it. Images below start empty.
+            </p>
+          </div>
+        </header>
+
+        <div class="ajc demo-lazy" id="lazy" aria-label="Lazy loaded carousel" data-ajc>
+          <div class="ajc__slide dslide"><img class="dslide__img" data-src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" data-src="demo/img/neon.jpg" alt="Neon street" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" data-src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" data-src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" data-src="demo/img/forest.jpg" alt="Pine forest" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" data-src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+        </div>
+        <p class="sync-status" id="lazy-status">lazyLoad: 'ondemand' · slidesToShow 3</p>
+      </section>
+
+      <!-- ───────────────────────── responsive ──────────────────────── -->
+      <section class="block" id="responsive">
+        <header class="block__head">
+          <span class="block__num">07</span>
+          <div>
+            <h2>Responsive breakpoints</h2>
+            <p>Slick-style array (max-width) in this demo; Swiper-style maps are also supported. Resize the window.</p>
+          </div>
+        </header>
+
+        <div class="ajc" id="resp" aria-label="Responsive carousel" data-ajc>
+          <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+          <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+        </div>
+        <p class="sync-status" id="resp-status">slidesToShow: 3</p>
+      </section>
+
+      <!-- ──────────────────────────── API ──────────────────────────── -->
+      <section class="block" id="api">
+        <header class="block__head">
+          <span class="block__num">08</span>
+          <div>
+            <h2>Methods &amp; events</h2>
+            <p>The playground above is wired to <code>onBeforeChange</code>, <code>onAfterChange</code> and DOM custom events.</p>
+          </div>
+        </header>
+
+        <div class="split">
+          <div class="code-card">
+            <h3>Methods</h3>
+            <pre><code>next()            prev()
+goTo(index, instant)
+play()            pause()   toggleAutoplay()
+setMode(mode, opts)         setOption(key, value)
+addSlide(html, i)  removeSlide(i)
+refresh() / update()
+sync(target)      destroy()</code></pre>
+          </div>
+          <div class="code-card">
+            <h3>Events</h3>
+            <pre><code>onInit            onBeforeChange
+onSlideChange     onAfterChange
+onTransitionEnd   onBreakpoint
+onDragStart/Move/End
+onAutoplayStart/Stop
+onReachStart/End   onDestroy
+
+// DOM: ajc:change, ajc:after-change, …</code></pre>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="code-card">
+            <h3>Markup → options</h3>
+            <pre><code>&lt;div data-ajc
+     data-mode="coverflow"
+     data-slides-to-show="3"
+     data-loop="true"
+     data-autoplay="true"
+     data-dots="true"
+     data-as-nav-for="#thumbs"&gt;
+  …
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="code-card">
+            <h3>Constructor</h3>
+            <pre><code>const slider = new AnimeCarousel('#hero', {
+  mode: 'slide',
+  slidesToShow: 1.25,
+  infinite: true,
+  spring: true,
+  autoplay: true,
+  asNavFor: '#thumbs',
+});</code></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <strong>anime-carousel</strong> · MIT · built on
+        <a href="https://animejs.com/documentation">Anime.js v4</a>
+      </p>
+      <p class="muted">The demo runs from a static folder — no build step, no bundler.</p>
+    </footer>
+
+    <script type="module" src="./demo/demo.js"></script>
+  </body>
+</html>
