@@ -497,6 +497,140 @@ if (readmeText) {
   }
 }
 
+/*
+ * 8. The two prose statements under `### Per-mode effects` are contracts too.
+ *
+ * `staggerEffect.targets: null` only means "fall back", and `marquee.speed`
+ * only means something once it has a unit. Neither is visible in the fence
+ * values above, so pin the fallback order and the px/second formula to code.
+ */
+const readSource = (name) => {
+  try {
+    return readFileSync(join(root, 'src', name), 'utf8');
+  } catch {
+    problems.push(`src/${name} is missing — its per-mode prose claim cannot be verified`);
+    return '';
+  }
+};
+
+const lineAt = (text, index) => text.slice(0, index).split('\n').length;
+
+/** Body of a `name(args) { … }` method, located by matching braces. */
+function methodBody(text, name) {
+  const opener = new RegExp(`\\b${name}\\s*\\([^)]*\\)\\s*\\{`).exec(text);
+  if (!opener) return null;
+  const bodyStart = opener.index + opener[0].length;
+  let depth = 0;
+  for (let index = bodyStart - 1; index < text.length; index += 1) {
+    if (text[index] === '{') depth += 1;
+    else if (text[index] === '}' && --depth === 0) {
+      return { start: opener.index, end: index, body: text.slice(bodyStart, index) };
+    }
+  }
+  return null;
+}
+
+let proseClaims = 0;
+
+if (readmeText) {
+  const section = sliceSection(readmeText, PER_MODE_SECTION);
+  /** Line number of the first prose line matching `pattern`, 0 when absent. */
+  const proseLine = (pattern) => {
+    const index = section.split('\n').findIndex((line) => pattern.test(line));
+    return index === -1 ? 0 : index + 1;
+  };
+
+  /*
+   * 8a. `staggerEffect.targets` falls back to marked children, then the
+   * common media/heading/copy ones — in that order, and only when unset.
+   */
+  const revealLine = proseLine(/\[data-ajc-reveal\]/);
+  if (!revealLine) {
+    problems.push(
+      `README.md "${PER_MODE_SECTION}" no longer states the staggerEffect.targets fallback — restore it or delete this check`,
+    );
+  }
+  const sliderSource = readSource('slider.js');
+  if (sliderSource) {
+    const before = problems.length;
+    const reveal = methodBody(sliderSource, '_revealTargets');
+    if (!reveal) {
+      problems.push(
+        `src/slider.js has no _revealTargets() method — README.md:${revealLine} claims staggerEffect.targets falls back to [data-ajc-reveal]`,
+      );
+    } else {
+      const at = `src/slider.js:${lineAt(sliderSource, reveal.start)}`;
+      const selectors = [...reveal.body.matchAll(/querySelectorAll\(\s*'([^']*)'\s*\)/g)].map(
+        (match) => match[1],
+      );
+      if (!/this\.options\.staggerEffect\.targets/.test(reveal.body)) {
+        problems.push(
+          `${at} _revealTargets no longer reads staggerEffect.targets, so the documented fallback is unreachable`,
+        );
+      }
+      if (!selectors.length || !selectors[0].includes('[data-ajc-reveal]')) {
+        problems.push(
+          `${at} _revealTargets no longer tries [data-ajc-reveal] first, but README.md:${revealLine} says it does`,
+        );
+      } else {
+        const tokens = (selectors[1] || '')
+          .split(',')
+          .map((token) => token.trim())
+          .filter(Boolean);
+        const missing = [
+          tokens.some((token) => ['img', 'picture', 'video'].includes(token)) ? null : 'media',
+          tokens.some((token) => /^h[1-6]$/.test(token)) ? null : 'heading',
+          tokens.some((token) => token === 'p' || token.startsWith('.')) ? null : 'copy',
+        ].filter(Boolean);
+        if (!tokens.length || missing.length) {
+          problems.push(
+            `${at} _revealTargets' second fallback no longer covers ${missing.join('/') || 'anything'}, but README.md:${revealLine} says "common media/heading/copy children"`,
+          );
+        }
+      }
+    }
+    if (problems.length === before) proseClaims += 1;
+  }
+
+  /* 8b. `marquee.speed` is px per second: duration = distance / speed * 1000. */
+  const speedLine = proseLine(/px per second/i);
+  if (!speedLine) {
+    problems.push(
+      `README.md "${PER_MODE_SECTION}" no longer states that marquee.speed is px per second — restore it or delete this check`,
+    );
+  }
+  const marqueeSource = readSource('marquee.js');
+  if (marqueeSource) {
+    const before = problems.length;
+    const duration = /const duration\s*=\s*([^;]+);/.exec(marqueeSource);
+    if (!duration) {
+      problems.push(
+        `src/marquee.js has no "const duration =" formula — marquee.speed is documented as px per second at README.md:${speedLine}`,
+      );
+    } else {
+      const at = `src/marquee.js:${lineAt(marqueeSource, duration.index)}`;
+      if (!/contentWidth\s*\/[^;]*\bspeed\b/.test(duration[1]) || !/\*\s*1000\b/.test(duration[1])) {
+        problems.push(
+          `${at} marquee duration is \`${duration[1].trim()}\` — README.md:${speedLine} documents marquee.speed as px per second, which needs distance / speed * 1000`,
+        );
+      }
+      // The distance travelled has to stay the strip width in px for that unit to hold.
+      const timeline = /\.add\(\s*slider\.track\s*,\s*\{([^}]*)\}/.exec(marqueeSource);
+      if (!timeline || !/\bx\s*:/.test(timeline[1]) || !timeline[1].includes('contentWidth')) {
+        problems.push(
+          `${at} the marquee timeline no longer translates the track by contentWidth (px) — README.md:${speedLine} px per second cannot hold`,
+        );
+      }
+      if (!isPlainObject(DEFAULT_OPTIONS.marquee) || !(DEFAULT_OPTIONS.marquee.speed > 0)) {
+        problems.push(
+          `src/defaults.js marquee.speed must stay a positive number of px per second (README.md:${speedLine})`,
+        );
+      }
+    }
+    if (problems.length === before) proseClaims += 1;
+  }
+}
+
 if (problems.length) {
   console.error(`✖ ${problems.length} problem(s):`);
   problems.forEach((problem) => console.error(`  - ${problem}`));
@@ -512,3 +646,6 @@ console.log(
   `✔ ${documentedOptionCount} documented options in tables, ${elsewhereCount} documented elsewhere — no option is undocumented.`,
 );
 console.log(`✔ ${perModeValidated.size} per-mode effect defaults — every documented value matches src/defaults.js.`);
+console.log(
+  `✔ ${proseClaims} per-mode prose claims — stagger fallbacks and marquee px per second still match src/.`,
+);
