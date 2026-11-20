@@ -4,6 +4,16 @@
  */
 import { clamp, isInteractive } from './utils.js';
 
+/**
+ * Read a numeric option, falling back only when it is absent or not a number.
+ * Deliberately no hard floor: an arbitrary floor silently made the low end of a
+ * documented range (touchThreshold, dragThreshold, dragResistance) a no-op.
+ */
+const numeric = (value, fallback) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+};
+
 export class Drag {
   constructor(slider) {
     this.slider = slider;
@@ -95,7 +105,7 @@ export class Drag {
     state.delta = delta;
 
     if (!state.dragging) {
-      if (Math.abs(delta) < Math.max(2, Number(options.touchThreshold) || 5)) return;
+      if (Math.abs(delta) < numeric(options.touchThreshold, 5)) return;
       state.dragging = true;
       slider.root.classList.add('is-dragging');
       if (options.pauseOnInteraction) slider.autoplay && slider.autoplay.pause('interaction');
@@ -112,8 +122,9 @@ export class Drag {
 
     if (!slider.looping) {
       const max = geo.maxIndex;
-      if (raw < 0) raw = raw * Number(options.dragResistance || 0.35);
-      else if (raw > max) raw = max + (raw - max) * Number(options.dragResistance || 0.35);
+      const resistance = numeric(options.dragResistance, 0.35);
+      if (raw < 0) raw = raw * resistance;
+      else if (raw > max) raw = max + (raw - max) * resistance;
     }
 
     slider.progress = raw;
@@ -143,7 +154,7 @@ export class Drag {
     const travelled = (state.delta / step) * dir;
 
     const fast = Math.abs(velocity) > 0.35;
-    const far = Math.abs(travelled) > Math.max(0.18, Number(options.dragThreshold) || 0.18);
+    const far = Math.abs(travelled) > numeric(options.dragThreshold, 0.18);
 
     let target;
     if (options.swipeToSlide) {
