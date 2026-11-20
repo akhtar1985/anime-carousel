@@ -9,6 +9,7 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 ![ESM](https://img.shields.io/badge/modules-ESM-7d9bff?style=flat-square)
 ![License MIT](https://img.shields.io/badge/license-MIT-98a1b2?style=flat-square)
 ![Accessible](https://img.shields.io/badge/a11y-roles%20%2B%20live%20region-9b7dff?style=flat-square)
+[![check](https://github.com/akhtar1985/anime-carousel/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/akhtar1985/anime-carousel/actions/workflows/check.yml)
 
 **[Live demo](https://akhtar1985.github.io/anime-carousel/)** ·
 **[Options reference](https://akhtar1985.github.io/anime-carousel/settings.html)** — every option, live.
