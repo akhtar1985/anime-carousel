@@ -1,5 +1,5 @@
 // Type definitions for anime-carousel
-// Project: https://github.com/your-org/anime-carousel
+// Project: https://github.com/akhtar1985/anime-carousel
 
 export type Mode =
   | 'slide'

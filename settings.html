@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Options reference — anime-carousel</title>
+    <meta
+      name="description"
+      content="Every anime-carousel option with its type, default, aliases, data attribute and a copy-ready snippet — rendered live from src/defaults.js."
+    />
+
+    <meta name="keywords" content="carousel options, slider settings, animejs carousel, anime-carousel reference, javascript slider options" />
+    <meta property="og:title" content="Options reference — anime-carousel" />
+    <meta property="og:description" content="Every anime-carousel option with type, default, aliases, data attribute and a live control. Rendered from src/defaults.js." />
+    <meta property="og:url" content="https://akhtar1985.github.io/anime-carousel/settings.html" />
+    <link rel="canonical" href="https://akhtar1985.github.io/anime-carousel/settings.html" />
+    <link rel="stylesheet" href="./styles/slider.css" />
+    <link rel="stylesheet" href="./demo/demo.css" />
+    <link rel="stylesheet" href="./demo/settings.css" />
+    <link rel="stylesheet" href="./demo/enhancements.css" />
+
+    <!-- The plugin imports the bare specifier "animejs"; the import map resolves it to the CDN. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <a class="skip" href="#groups">Skip to options</a>
+
+    <header class="site-header">
+      <a class="brand" href="./index.html">
+        <span class="brand__mark" aria-hidden="true"></span>
+        anime-carousel
+      </a>
+      <nav class="site-nav" aria-label="Sections">
+        <a href="./index.html">Demo</a>
+        <a href="./settings.html" aria-current="page">Options</a>
+        <a href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a>
+      </nav>
+      <span class="pill">v1.0 · Anime.js v4</span>
+    </header>
+
+    <main class="settings-page">
+      <p class="drift-banner" id="drift-banner" role="alert" hidden></p>
+
+      <header class="page-head">
+        <p class="eyebrow">Options reference</p>
+        <h1>Every option, <em>live</em>.</h1>
+        <p class="lede">
+          Rendered from <code>src/defaults.js</code>, so this page cannot drift from the plugin. Flip a control and the
+          slider below reacts; every row and every group has a copy-ready snippet.
+        </p>
+      </header>
+
+      <!-- ───────────────────────── live playground ───────────────────── -->
+      <section class="mini" aria-labelledby="mini-title">
+        <div class="mini__head">
+          <h2 id="mini-title">Live playground</h2>
+          <p class="mini__hint" id="mini-hint">
+            Seeded with <code>infinite</code> and <code>dots</code>, so the configuration panel below starts with
+            something to show.
+          </p>
+        </div>
+
+        <div class="ajc" id="mini-slider" aria-label="Live option playground">
+          <div class="ajc__slide mini-slide">
+            <img src="demo/img/alpine.jpg" alt="Alpine lake at dawn" />
+            <span class="mini-slide__tag">01 — alpine</span>
+          </div>
+          <div class="ajc__slide mini-slide">
+            <img src="demo/img/neon.jpg" alt="Neon-lit street at night" />
+            <span class="mini-slide__tag">02 — neon</span>
+          </div>
+          <div class="ajc__slide mini-slide">
+            <img src="demo/img/liquid.jpg" alt="Abstract liquid gradient" />
+            <span class="mini-slide__tag">03 — liquid</span>
+          </div>
+          <div class="ajc__slide mini-slide">
+            <img src="demo/img/dunes.jpg" alt="Desert dunes at golden hour" />
+            <span class="mini-slide__tag">04 — dunes</span>
+          </div>
+          <div class="ajc__slide mini-slide">
+            <img src="demo/img/forest.jpg" alt="Foggy pine forest" />
+            <span class="mini-slide__tag">05 — forest</span>
+          </div>
+        </div>
+
+        <div class="mini__bar">
+          <button class="btn btn--ghost" type="button" data-mini="prev">prev()</button>
+          <button class="btn btn--ghost" type="button" data-mini="next">next()</button>
+          <button class="btn btn--ghost" type="button" data-mini="play">play()</button>
+          <button class="btn btn--ghost" type="button" data-mini="pause">pause()</button>
+          <button class="btn btn--ghost" type="button" data-mini="reset">destroy() + init</button>
+          <output class="mini__readout" id="mini-readout" aria-live="polite">—</output>
+        </div>
+
+        <pre class="mini__log" id="mini-log" aria-live="polite"><span class="muted">Events appear here.</span></pre>
+      </section>
+
+      <!-- ────────────────────────── config drawer ────────────────────── -->
+      <section class="config" aria-labelledby="config-title">
+        <div class="config__head">
+          <h2 id="config-title">Your configuration</h2>
+          <button class="btn btn--ghost" type="button" data-copy-config>Copy</button>
+        </div>
+        <pre><code id="config-code">// all defaults — flip a switch above</code></pre>
+        <p class="config__note">
+          Only values that differ from the defaults are shown. <strong>Reset</strong> in the playground bar restores
+          every one of them.
+        </p>
+      </section>
+
+      <!-- ──────────────────────────── toolbar ────────────────────────── -->
+      <div class="toolbar">
+        <label class="search">
+          <span class="sr-only">Search options</span>
+          <input
+            id="search"
+            type="search"
+            placeholder="Search name, alias, data attribute or description…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </label>
+        <div class="chips" id="chips" aria-label="Filter by group"></div>
+        <p class="toolbar__count" id="match-count">—</p>
+      </div>
+
+      <div class="settings-layout">
+        <nav class="toc" id="toc" aria-label="On this page"></nav>
+        <div class="opt-groups" id="groups"></div>
+      </div>
+
+      <!-- ──────────────────────────── modes ─────────────────────────── -->
+      <section class="page-section" id="modes" aria-labelledby="modes-title">
+        <h2 id="modes-title">Mode ↔ effect object</h2>
+        <p>
+          Each mode reads its own effect object. <strong>Try</strong> switches the playground above so you can see the
+          difference without writing any code.
+        </p>
+        <div class="table-scroll">
+          <table class="opt-table">
+            <caption class="sr-only">Mode and effect object pairing</caption>
+            <thead>
+              <tr>
+                <th scope="col">mode</th>
+                <th scope="col">Effect object</th>
+                <th scope="col">What moves</th>
+                <th scope="col">Try</th>
+              </tr>
+            </thead>
+            <tbody id="modes-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ────────────────────── data attributes ─────────────────────── -->
+      <section class="page-section" id="attributes" aria-labelledby="attributes-title">
+        <h2 id="attributes-title">Data attributes</h2>
+        <p>
+          Every option is available as <code>data-</code> plus the kebab-case option name. Values are coerced against the
+          default's type, so booleans accept <code>"false"</code>, numbers are parsed, and objects take JSON.
+        </p>
+        <pre><code>&lt;div data-ajc
+     data-mode="coverflow"
+     data-slides-to-show="3"
+     data-space-between="16"
+     data-loop="true"
+     data-center-mode="true"
+     data-autoplay="true"
+     data-autoplay-speed="4000"
+     data-dots="true"
+     data-dots-type="fraction"
+     data-draggable="true"
+     data-mousewheel="true"
+     data-lazy-load="ondemand"
+     data-as-nav-for="#thumbs"
+     data-responsive='[{"breakpoint":768,"settings":{"slidesToShow":1}}]'&gt;
+  …
+&lt;/div&gt;</code></pre>
+        <p>Aliases work here too:</p>
+        <pre><code>data-effect  data-slides-per-view  data-loop  data-centered-slides
+data-navigation  data-pagination  data-delay  data-swipe
+data-touch-move  data-start-index  data-breakpoints  data-controller</code></pre>
+        <p>JSON shorthand for anything awkward in HTML:</p>
+        <pre><code>data-ajc='{"mode":"cards","infinite":true,"slidesToShow":2.5}'</code></pre>
+        <p>
+          Then either construct manually, or let the plugin collect every marked element:
+          <code>AnimeCarousel.autoInit()</code>.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <strong>anime-carousel</strong> v1.0 · MIT · built on
+        <a href="https://animejs.com/documentation">Anime.js v4</a> ·
+        <a href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a> ·
+        <a href="./index.html">Live demo</a>
+      </p>
+      <p class="muted">
+        Options are read from <code>src/defaults.js</code> at runtime — no build step, no generated docs to sync.
+      </p>
+    </footer>
+
+    <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+
+    <script type="module" src="./demo/settings.js"></script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+/* Hero enhancements */
+.hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+.btn-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:10px; background:var(--accent); color:#06070a; font-weight:650; font-size:14px; text-decoration:none; border:none; cursor:pointer; transition:opacity .15s,transform .15s; }
+.btn-primary:hover { opacity:.88; text-decoration:none; transform:translateY(-1px); }
+.btn-outline { display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:10px; border:1px solid var(--line-strong); background:transparent; color:var(--text); font-weight:600; font-size:14px; text-decoration:none; cursor:pointer; transition:border-color .15s,transform .15s; }
+.btn-outline:hover { border-color:var(--accent); text-decoration:none; transform:translateY(-1px); }
+.hero-badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
+.hero-badges img { height:20px; }
+
+/* Features grid */
+.features { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:8px; }
+.feature { padding:18px 20px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(160deg,var(--surface),var(--bg-soft)); transition:border-color .2s,transform .2s; }
+.feature:hover { border-color:rgba(125,155,255,.35); transform:translateY(-2px); }
+.feature__icon { font-size:22px; margin-bottom:10px; }
+.feature__title { margin:0 0 6px; font-size:14px; font-weight:650; color:var(--text); }
+.feature__desc { margin:0; font-size:13px; color:var(--muted); line-height:1.55; }
+
+/* Install block */
+.install { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+.install-card { padding:18px; border:1px solid var(--line); border-radius:14px; background:var(--bg-soft); }
+.install-card h3 { margin:0 0 10px; font-size:12px; font-weight:650; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.install-card pre { margin:0; padding:12px 14px; border-radius:10px; background:#06070a; border:1px solid var(--line); overflow-x:auto; font-size:12.5px; line-height:1.7; color:#cfd8ff; }
+.copy-btn { display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:5px 11px; border:1px solid var(--line-strong); border-radius:8px; background:transparent; color:var(--muted); font:inherit; font-size:12px; cursor:pointer; transition:color .15s,border-color .15s; }
+.copy-btn:hover { color:var(--text); border-color:var(--accent); }
+.copy-btn.copied { color:#93e0b4; border-color:#3fb950; }
+
+/* Nav links */
+.site-nav a[href*="settings"] { color:var(--accent); }
+.site-nav a[href*="github"] { color:var(--muted); }
+.site-nav a[aria-current="page"] { color:var(--accent); }
+
+/* Section number for new sections */
+#features .block__num, #install .block__num { opacity:.4; }
+
+/* Smooth scroll anchor offset already handled by scroll-padding-top in demo.css */

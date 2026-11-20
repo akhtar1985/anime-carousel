@@ -73,7 +73,6 @@ export const DEFAULT_OPTIONS = {
   touchThreshold: 5,
   dragResistance: 0.35,
   mousewheel: false,
-  mousewheelRelease: true,
   keyboard: true,
   focusable: true,
   focusOnSelect: false,

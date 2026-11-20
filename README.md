@@ -10,6 +10,9 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 ![License MIT](https://img.shields.io/badge/license-MIT-98a1b2?style=flat-square)
 ![Accessible](https://img.shields.io/badge/a11y-roles%20%2B%20live%20region-9b7dff?style=flat-square)
 
+**[Live demo](https://akhtar1985.github.io/anime-carousel/)** ·
+**[Options reference](https://akhtar1985.github.io/anime-carousel/settings.html)** — every option, live.
+
 ---
 
 ## Why this plugin
@@ -51,8 +54,7 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 
 ### ESM from a CDN (no build step, no bundler)
 
-> Replace the package URLs below with your own tag/commit once this repository is published.
-> Until then, use the local-files setup further down (the demo does exactly that).
+> These URLs track the `main` branch. Pin a tag or commit instead if you need reproducible builds.
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" />

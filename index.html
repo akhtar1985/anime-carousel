@@ -9,8 +9,16 @@
       content="A production-ready slider and carousel built on Anime.js v4: slide, fade, coverflow, cards, marquee, ken burns, staggered, flip and cube modes with Slick-ease and Swiper power."
     />
 
+    <meta property="og:title" content="anime-carousel — Slider &amp; Carousel plugin on Anime.js v4" />
+    <meta property="og:description" content="9 modes, virtual infinite loop, spring physics, drag, lazy load, a11y. No build step. ESM." />
+    <meta property="og:url" content="https://akhtar1985.github.io/anime-carousel/" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="keywords" content="carousel, slider, animejs, anime.js, javascript, coverflow, marquee, swiper, slick, vanilla js, no build, ESM" />
+    <link rel="canonical" href="https://akhtar1985.github.io/anime-carousel/" />
     <link rel="stylesheet" href="./styles/slider.css" />
     <link rel="stylesheet" href="./demo/demo.css" />
+    <link rel="stylesheet" href="./demo/enhancements.css" />
 
     <!-- The plugin imports the bare specifier "animejs"; the import map resolves it to the CDN. -->
     <script type="importmap">
@@ -37,6 +45,8 @@
         <a href="#marquee">Marquee</a>
         <a href="#api">API</a>
         <a href="#responsive">Responsive</a>
+        <a href="./settings.html">Options ↗</a>
+        <a href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a>
       </nav>
       <span class="pill">v1.0 · Anime.js v4</span>
     </header>
@@ -44,16 +54,31 @@
     <main id="top">
       <!-- ─────────────────────────── hero ─────────────────────────── -->
       <section class="hero">
-        <p class="eyebrow">Slider plugin · Anime.js v4</p>
+        <p class="eyebrow">Slider &amp; Carousel plugin · Anime.js v4 · No build step</p>
         <h1>
-          Ten carousel modes.<br />
+          Nine carousel modes.<br />
           <em>One</em> tiny API.
         </h1>
         <p class="lede">
-          Slick's ergonomics, Swiper's muscle. Virtual infinite loop with no clones, spring physics,
-          controller sync, drag, lazy loading and a fully accessible DOM.
+          Slick’s ergonomics, Swiper’s muscle. Virtual infinite loop with no clones, spring physics,
+          controller sync, drag, lazy loading and a fully accessible DOM — in ~2,900 lines of readable ESM.
         </p>
-        <ul class="chips">
+
+        <div class="hero-actions">
+          <a class="btn-primary" href="#playground">&#9654; Live playground</a>
+          <a class="btn-outline" href="./settings.html">Options reference</a>
+          <a class="btn-outline" href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a>
+        </div>
+
+        <div class="hero-badges">
+          <img src="https://img.shields.io/badge/Anime.js-v4-ff3b7f?style=flat-square" alt="Anime.js v4" />
+          <img src="https://img.shields.io/badge/build-none-3fb950?style=flat-square" alt="No build step" />
+          <img src="https://img.shields.io/badge/modules-ESM-7d9bff?style=flat-square" alt="ESM" />
+          <img src="https://img.shields.io/badge/license-MIT-98a1b2?style=flat-square" alt="MIT" />
+          <img src="https://img.shields.io/badge/a11y-roles%20%2B%20live%20region-9b7dff?style=flat-square" alt="Accessible" />
+        </div>
+
+        <ul class="chips" aria-label="Anime.js v4 APIs used">
           <li>animate()</li>
           <li>createTimeline()</li>
           <li>createScope()</li>
@@ -61,6 +86,120 @@
           <li>createSpring()</li>
           <li>utils</li>
         </ul>
+      </section>
+
+      <!-- ─────────────────────────── features ─────────────────────── -->
+      <section class="block" id="features" aria-labelledby="features-title">
+        <header class="block__head">
+          <span class="block__num">00</span>
+          <div>
+            <h2 id="features-title">Why anime-carousel?</h2>
+            <p>Everything you need, nothing you don’t. One fractional <code>progress</code> value drives all nine modes.</p>
+          </div>
+        </header>
+        <div class="features">
+          <div class="feature">
+            <div class="feature__icon">&#9654;</div>
+            <p class="feature__title">9 animation modes</p>
+            <p class="feature__desc">slide, fade, coverflow, cards, cube, flip, kenburns, staggered, marquee — switch at runtime with <code>setMode()</code>.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#8734;</div>
+            <p class="feature__title">Virtual infinite loop</p>
+            <p class="feature__desc">Seamless wrap using modular index math. Zero clone nodes, zero broken indices, works with fractional <code>slidesToShow</code>.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#127774;</div>
+            <p class="feature__title">Spring physics</p>
+            <p class="feature__desc">One option: <code>spring: true</code>. Uses Anime.js v4 <code>createSpring()</code> with configurable stiffness, damping and mass.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#128279;</div>
+            <p class="feature__title">Controller sync</p>
+            <p class="feature__desc">Slick’s <code>asNavFor</code> and Swiper’s <code>controller</code> are the same option. Bidirectional, multi-target, proportional mapping.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#9855;</div>
+            <p class="feature__title">Fully accessible</p>
+            <p class="feature__desc">ARIA roles, live region announcements, <code>inert</code> on off-screen slides, keyboard nav, focus rings, reduced-motion support.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#128247;</div>
+            <p class="feature__title">Lazy loading</p>
+            <p class="feature__desc"><code>ondemand</code> or <code>progressive</code>. Swaps <code>data-src</code>→<code>src</code>, supports <code>&lt;picture&gt;</code>, <code>data-background</code> and <code>srcset</code>.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#128241;</div>
+            <p class="feature__title">Responsive breakpoints</p>
+            <p class="feature__desc">Slick-style array (max-width) or Swiper-style map (min-width). Measure window or container with <code>breakpointsBase</code>.</p>
+          </div>
+          <div class="feature">
+            <div class="feature__icon">&#128736;</div>
+            <p class="feature__title">No build step</p>
+            <p class="feature__desc">Pure ESM. Drop an import map in your HTML and you’re done. Works from a CDN, local files, or npm — your choice.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────── install ──────────────────────── -->
+      <section class="block" id="install" aria-labelledby="install-title">
+        <header class="block__head">
+          <span class="block__num">00</span>
+          <div>
+            <h2 id="install-title">Get started in 30 seconds</h2>
+            <p>Three ways to install — pick the one that fits your workflow.</p>
+          </div>
+        </header>
+        <div class="install">
+          <div class="install-card">
+            <h3>CDN — no install</h3>
+            <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" /&gt;
+
+&lt;script type="importmap"&gt;
+  { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
+&lt;/script&gt;
+
+&lt;script type="module"&gt;
+  import { AnimeCarousel } from
+    'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
+&lt;/script&gt;</code></pre>
+            <button class="copy-btn" data-copy-install="cdn">&#10064; Copy</button>
+          </div>
+          <div class="install-card">
+            <h3>npm</h3>
+            <pre><code>npm install anime-carousel animejs</code></pre>
+            <pre style="margin-top:8px"><code>import { AnimeCarousel } from 'anime-carousel';
+import 'anime-carousel/styles';
+
+new AnimeCarousel('#hero', {
+  mode: 'slide',
+  infinite: true,
+  dots: true,
+  autoplay: true,
+});</code></pre>
+            <button class="copy-btn" data-copy-install="npm">&#10064; Copy</button>
+          </div>
+          <div class="install-card">
+            <h3>data-* attributes — zero JS</h3>
+            <pre><code>&lt;div data-ajc
+     data-mode="coverflow"
+     data-slides-to-show="3"
+     data-loop="true"
+     data-autoplay="true"
+     data-dots="true"
+     data-as-nav-for="#thumbs"&gt;
+  &lt;div&gt;&lt;img src="1.jpg" alt="" /&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;img src="2.jpg" alt="" /&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="module"&gt;
+  import { AnimeCarousel } from '...';
+  AnimeCarousel.autoInit();
+&lt;/script&gt;</code></pre>
+            <button class="copy-btn" data-copy-install="data">&#10064; Copy</button>
+          </div>
+        </div>
       </section>
 
       <!-- ────────────────────────── playground ─────────────────────── -->
@@ -564,12 +703,43 @@ onReachStart/End   onDestroy
 
     <footer class="site-footer">
       <p>
-        <strong>anime-carousel</strong> · MIT · built on
-        <a href="https://animejs.com/documentation">Anime.js v4</a>
+        <strong>anime-carousel</strong> v1.0 · MIT · built on
+        <a href="https://animejs.com/documentation">Anime.js v4</a> ·
+        <a href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a> ·
+        <a href="./settings.html">Options reference ↗</a>
       </p>
-      <p class="muted">The demo runs from a static folder — no build step, no bundler.</p>
+      <p class="muted">Pure static files — no build step, no bundler, no runtime dependencies beyond Anime.js.</p>
     </footer>
 
     <script type="module" src="./demo/demo.js"></script>
+    <script type="module">
+      /* Copy-install buttons */
+      const CDN = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" />
+
+<script type="importmap">
+  { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
+<\/script>
+
+<script type="module">
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
+<\/script>`;
+      const NPM = `npm install anime-carousel animejs`;
+      const DATA = `<div data-ajc data-mode="coverflow" data-loop="true" data-dots="true">
+  <div><img src="1.jpg" alt="" /></div>
+</div>
+
+AnimeCarousel.autoInit();`;
+      const map = { cdn: CDN, npm: NPM, data: DATA };
+      document.querySelectorAll('[data-copy-install]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const text = map[btn.dataset.copyInstall] || '';
+          try { await navigator.clipboard.writeText(text); } catch {}
+          btn.textContent = '\u2713 Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = '\u29c8 Copy'; btn.classList.remove('copied'); }, 1800);
+        });
+      });
+    </script>
   </body>
 </html>
