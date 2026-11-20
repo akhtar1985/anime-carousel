@@ -23,7 +23,6 @@ export const DEFAULT_OPTIONS = {
   /* ── mode & structure ─────────────────────────────────────────────── */
   mode: 'slide',
   initialSlide: 0,
-  classPrefix: 'ajc',
 
   /* ── layout ───────────────────────────────────────────────────────── */
   slidesToShow: 1,
@@ -175,7 +174,6 @@ export const ALIASES = {
   next: 'nextArrow',
   speedMs: 'speed',
   animationSpeed: 'speed',
-  sliderClass: 'classPrefix',
 };
 
 export const DATA_ALIASES = {

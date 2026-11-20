@@ -63,7 +63,6 @@ function group(id, entries) {
 group('layout', {
   mode: SEL('Transition mode used by the engine.', MODES),
   initialSlide: R('Slide shown after init. Clamped to the slide count.', 0, 4, 1),
-  classPrefix: RO('Class-name namespace for generated elements. Set before init.', 'string'),
   slidesToShow: SEL('Slides per view. "auto" measures each slide, fractions are allowed.', [1, 1.5, 2, 2.5, 3, 'auto']),
   slidesToScroll: R('Step used by next() / prev() and by pagination pages.', 1, 3, 1),
   spaceBetween: R('Gap between slides in px.', 0, 40, 2),

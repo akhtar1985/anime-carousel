@@ -413,9 +413,6 @@ const DOCUMENTED_ELSEWHERE = {
   kenBurns: { section: '### Per-mode effects', fence: true },
   staggerEffect: { section: '### Per-mode effects', fence: true },
   marquee: { section: '### Per-mode effects', fence: true },
-  // Reserved: surfaced by settings.html, not read by src yet. Allowlisted so
-  // its absence from the README stays a recorded decision, not an oversight.
-  classPrefix: { reserved: true },
 };
 
 if (readmeText) {
