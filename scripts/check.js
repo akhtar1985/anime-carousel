@@ -235,6 +235,133 @@ for (const file of demoFiles) {
   }
 }
 
+/*
+ * 5. The README options table must match DEFAULT_OPTIONS.
+ *
+ * The tables are hand-written prose while settings.html renders the same data
+ * from source, so a renamed option or retuned default left the README lying
+ * with no signal. Only rows under an `Option | Type | Default | Description`
+ * header are checked; the Type column is documentation, not a contract.
+ */
+const formatValue = (value) =>
+  typeof value === 'string' ? `'${value}'` : JSON.stringify(value);
+
+/** Parse a Default cell such as `600`, `'slide'`, `null` or `{ a: 1 }`. */
+function parseDocumentedDefault(text) {
+  const raw = text.trim();
+  if (raw === 'null') return { kind: 'scalar', value: null };
+  if (raw === 'true' || raw === 'false') return { kind: 'scalar', value: raw === 'true' };
+  if (/^-?\d+(?:\.\d+)?$/.test(raw)) return { kind: 'scalar', value: Number(raw) };
+  if (/^'.*'$/.test(raw) || /^".*"$/.test(raw)) return { kind: 'scalar', value: raw.slice(1, -1) };
+  if (raw.startsWith('{') && raw.endsWith('}')) {
+    const pairs = [];
+    const pairPattern = /([A-Za-z0-9_$]+)\s*:\s*(-?\d+(?:\.\d+)?|'(?:[^']*)'|"(?:[^"]*)"|true|false|null)/g;
+    for (const pair of raw.slice(1, -1).matchAll(pairPattern)) {
+      const inner = parseDocumentedDefault(pair[2]);
+      if (inner) pairs.push([pair[1], inner.value]);
+    }
+    if (pairs.length) return { kind: 'object', pairs };
+    // Shorthand key list, e.g. `{ region, prev, next, dots, slide }`.
+    const keys = raw
+      .slice(1, -1)
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean);
+    if (keys.length && keys.every((key) => /^[A-Za-z0-9_$]+$/.test(key))) return { kind: 'keys', keys };
+    return null;
+  }
+  return null;
+}
+
+const readmeFile = join(root, 'README.md');
+let documentedOptionCount = 0;
+
+try {
+  const readmeLines = readFileSync(readmeFile, 'utf8').split('\n');
+  const cellsOf = (line) =>
+    line
+      .trim()
+      .replace(/^\|/, '')
+      .replace(/\|$/, '')
+      .split('|')
+      .map((cell) => cell.trim());
+
+  for (let index = 0; index < readmeLines.length; index += 1) {
+    if (!/^\s*\|/.test(readmeLines[index])) continue;
+    const header = cellsOf(readmeLines[index]);
+    if (header.length !== 4 || header[0] !== 'Option' || header[2] !== 'Default') continue;
+
+    let row = index + 2; // skip the | --- | separator
+    for (; row < readmeLines.length && /^\s*\|/.test(readmeLines[row]); row += 1) {
+      const cells = cellsOf(readmeLines[row]);
+      if (cells.length !== 4) continue;
+      const lineNumber = row + 1;
+      const names = [...cells[0].matchAll(/`([^`]+)`/g)].map((match) => match[1]);
+      const documented = parseDocumentedDefault(cells[2].replace(/^`|`$/g, '').trim());
+      if (!documented) {
+        problems.push(`README.md:${lineNumber} unreadable default for "${cells[0]}" — cannot verify it`);
+        continue;
+      }
+
+      for (const name of names) {
+        const canonical = ALIASES[name] || name;
+        if (!(canonical in DEFAULT_OPTIONS)) {
+          problems.push(`README.md:${lineNumber} documents "${name}", which is not an option in src/defaults.js`);
+          continue;
+        }
+        documentedOptionCount += 1;
+        const actual = DEFAULT_OPTIONS[canonical];
+
+        if (documented.kind === 'keys') {
+          if (!isPlainObject(actual)) {
+            problems.push(`README.md:${lineNumber} "${name}" is documented as an object but the source default is ${formatValue(actual)}`);
+            continue;
+          }
+          const actualKeys = Object.keys(actual);
+          for (const missing of actualKeys.filter((key) => !documented.keys.includes(key))) {
+            problems.push(`README.md:${lineNumber} "${name}" does not document "${missing}"`);
+          }
+          for (const extra of documented.keys.filter((key) => !actualKeys.includes(key))) {
+            problems.push(`README.md:${lineNumber} "${name}.${extra}" is not in the source default`);
+          }
+          continue;
+        }
+
+        if (documented.kind === 'object') {
+          if (!isPlainObject(actual)) {
+            problems.push(`README.md:${lineNumber} "${name}" is documented as an object but the source default is ${formatValue(actual)}`);
+            continue;
+          }
+          const actualKeys = Object.keys(actual);
+          const documentedKeys = documented.pairs.map(([key]) => key);
+          for (const missing of actualKeys.filter((key) => !documentedKeys.includes(key))) {
+            problems.push(`README.md:${lineNumber} "${name}" omits "${missing}" (source default ${formatValue(actual[missing])})`);
+          }
+          for (const [key, value] of documented.pairs) {
+            if (!(key in actual)) {
+              problems.push(`README.md:${lineNumber} "${name}.${key}" is not in the source default`);
+            } else if (actual[key] !== value) {
+              problems.push(
+                `README.md:${lineNumber} "${name}.${key}" is documented as ${formatValue(value)} but src/defaults.js has ${formatValue(actual[key])}`,
+              );
+            }
+          }
+          continue;
+        }
+
+        if (documented.kind === 'scalar' && !(documented.value === actual && typeof documented.value === typeof actual)) {
+          problems.push(
+            `README.md:${lineNumber} "${name}" default is documented as ${formatValue(documented.value)} but src/defaults.js has ${formatValue(actual)}`,
+          );
+        }
+      }
+    }
+    index = row;
+  }
+} catch {
+  problems.push('README.md is missing — cannot verify the options table');
+}
+
 if (problems.length) {
   console.error(`✖ ${problems.length} problem(s):`);
   problems.forEach((problem) => console.error(`  - ${problem}`));
@@ -245,3 +372,4 @@ console.log(`✔ ${files.length} modules checked — imports resolve, no legacy 
 console.log(
   `✔ ${seenAttributes.size} documented data-* attributes and ${ajcKeysChecked} data-ajc keys — every one still maps to an option.`,
 );
+console.log(`✔ ${documentedOptionCount} documented options — names and defaults match src/defaults.js.`);

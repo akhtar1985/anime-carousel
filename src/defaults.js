@@ -71,6 +71,7 @@ export const DEFAULT_OPTIONS = {
   draggable: true,
   swipeToSlide: false,
   touchThreshold: 5,
+  dragThreshold: 0.18, // fraction of a slide that must be travelled to change slide
   dragResistance: 0.35,
   mousewheel: false,
   keyboard: true,

@@ -116,6 +116,7 @@ group('interaction', {
   draggable: S('Pointer and touch dragging.'),
   swipeToSlide: S('Snap to the nearest slide instead of stepping by slidesToScroll.'),
   touchThreshold: R('px the pointer must travel before the gesture counts as a drag.', 0, 20, 1),
+  dragThreshold: R('Fraction of a slide that must be dragged before the slide changes.', 0.05, 1, 0.01),
   dragResistance: R('Resistance when dragging past the first or last slide.', 0, 1, 0.05),
   mousewheel: S('Navigate with the wheel (380 ms cooldown).'),
   keyboard: S('Arrow keys, Home and End while the slider is focused.'),
