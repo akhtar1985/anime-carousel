@@ -144,8 +144,10 @@ const collectDemoScripts = (directory) => {
 };
 collectDemoScripts(join(root, 'demo'));
 
-// The option attributes themselves live in the demo pages, not in demo/*.js.
-for (const page of ['index.html', 'settings.html']) {
+// The option attributes themselves live in the pages and the README, not in
+// demo/*.js. Only the README's Data attributes section is scanned, so prose
+// elsewhere (e.g. "data-attribute parsing") is never mistaken for markup.
+for (const page of ['index.html', 'settings.html', 'README.md']) {
   const full = join(root, page);
   try {
     if (statSync(full).isFile()) demoFiles.push(full);
@@ -153,6 +155,21 @@ for (const page of ['index.html', 'settings.html']) {
     /* page is optional */
   }
 }
+
+/** Blank out everything outside `## heading`, keeping line numbers exact. */
+const sliceSection = (text, heading) => {
+  const lines = text.split('\n');
+  const start = lines.findIndex((line) => line.trim() === heading);
+  if (start === -1) return '';
+  let end = lines.length;
+  for (let index = start + 1; index < lines.length; index += 1) {
+    if (/^#{1,2}\s/.test(lines[index])) {
+      end = index;
+      break;
+    }
+  }
+  return lines.map((line, index) => (index >= start && index < end ? line : '')).join('\n');
+};
 
 const attributePattern = /\bdata-([a-z0-9]+(?:-[a-z0-9]+)*)/gi;
 const seenAttributes = new Set();
@@ -187,7 +204,8 @@ const ajcPattern = /data-ajc\s*=\s*(['"])([\s\S]*?)\1/gi;
 let ajcKeysChecked = 0;
 
 for (const file of demoFiles) {
-  const source = readFileSync(file, 'utf8');
+  const raw = readFileSync(file, 'utf8');
+  const source = file.endsWith('.md') ? sliceSection(raw, '## Data attributes') : raw;
   const label = relative(root, file);
 
   for (const payload of source.matchAll(ajcPattern)) {
@@ -224,4 +242,6 @@ if (problems.length) {
 }
 
 console.log(`✔ ${files.length} modules checked — imports resolve, no legacy Anime.js v3 API.`);
-console.log(`✔ ${seenAttributes.size} demo data-* attributes and ${ajcKeysChecked} data-ajc keys — every one still maps to an option.`);
+console.log(
+  `✔ ${seenAttributes.size} documented data-* attributes and ${ajcKeysChecked} data-ajc keys — every one still maps to an option.`,
+);
