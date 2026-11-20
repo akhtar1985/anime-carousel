@@ -55,14 +55,14 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 > Until then, use the local-files setup further down (the demo does exactly that).
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/your-org/anime-carousel@main/styles/slider.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" />
 
 <script type="importmap">
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
 </script>
 
 <script type="module">
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/your-org/anime-carousel@main/src/index.js';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
 
   const slider = new AnimeCarousel('#hero', {
     mode: 'coverflow',
