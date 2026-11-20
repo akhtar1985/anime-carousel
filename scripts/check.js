@@ -274,17 +274,26 @@ function parseDocumentedDefault(text) {
 }
 
 const readmeFile = join(root, 'README.md');
+const documentedNames = new Set();
 let documentedOptionCount = 0;
+let readmeText = '';
 
 try {
-  const readmeLines = readFileSync(readmeFile, 'utf8').split('\n');
+  readmeText = readFileSync(readmeFile, 'utf8');
+} catch {
+  problems.push('README.md is missing — cannot verify the options table');
+}
+
+if (readmeText) {
+  const readmeLines = readmeText.split('\n');
   const cellsOf = (line) =>
     line
       .trim()
       .replace(/^\|/, '')
       .replace(/\|$/, '')
-      .split('|')
-      .map((cell) => cell.trim());
+      // A Type cell such as `number \| 'auto'` is table-escaped, not a delimiter.
+      .split(/(?<!\\)\|/)
+      .map((cell) => cell.trim().replace(/\\\|/g, '|'));
 
   for (let index = 0; index < readmeLines.length; index += 1) {
     if (!/^\s*\|/.test(readmeLines[index])) continue;
@@ -310,6 +319,7 @@ try {
           continue;
         }
         documentedOptionCount += 1;
+        documentedNames.add(canonical);
         const actual = DEFAULT_OPTIONS[canonical];
 
         if (documented.kind === 'keys') {
@@ -358,8 +368,72 @@ try {
     }
     index = row;
   }
-} catch {
-  problems.push('README.md is missing — cannot verify the options table');
+}
+
+/*
+ * 6. Every option must be documented somewhere.
+ *
+ * The table scan above only proves that what the README says is true; this
+ * proves the reverse, so a new option cannot ship with no docs at all. Options
+ * documented in another form are allowlisted by name, and each entry is still
+ * checked: the name has to appear in the section it claims, and a stale entry
+ * (option deleted from the source) is an error rather than dead config.
+ */
+const DOCUMENTED_ELSEWHERE = {
+  // `### Callbacks` lists these in prose, with a runnable example below it.
+  onInit: { section: '### Callbacks' },
+  onBeforeChange: { section: '### Callbacks' },
+  onSlideChange: { section: '### Callbacks' },
+  onAfterChange: { section: '### Callbacks' },
+  onTransitionEnd: { section: '### Callbacks' },
+  onBreakpoint: { section: '### Callbacks' },
+  onDestroy: { section: '### Callbacks' },
+  onDragStart: { section: '### Callbacks' },
+  onDragMove: { section: '### Callbacks' },
+  onDragEnd: { section: '### Callbacks' },
+  onAutoplayStart: { section: '### Callbacks' },
+  onAutoplayStop: { section: '### Callbacks' },
+  onReachStart: { section: '### Callbacks' },
+  onReachEnd: { section: '### Callbacks' },
+  // Rendered as one JS block under `### Per-mode effects` instead of table rows.
+  fadeEffect: { section: '### Per-mode effects' },
+  coverflowEffect: { section: '### Per-mode effects' },
+  cardsEffect: { section: '### Per-mode effects' },
+  flipEffect: { section: '### Per-mode effects' },
+  cubeEffect: { section: '### Per-mode effects' },
+  kenBurns: { section: '### Per-mode effects' },
+  staggerEffect: { section: '### Per-mode effects' },
+  marquee: { section: '### Per-mode effects' },
+  // Reserved: surfaced by settings.html, not read by src yet. Allowlisted so
+  // its absence from the README stays a recorded decision, not an oversight.
+  classPrefix: { reserved: true },
+};
+
+if (readmeText) {
+  for (const key of Object.keys(DEFAULT_OPTIONS)) {
+    if (documentedNames.has(key)) continue;
+    const entry = DOCUMENTED_ELSEWHERE[key];
+    if (!entry) {
+      problems.push(`src/defaults.js declares "${key}" but no README options table documents it`);
+      continue;
+    }
+    const mentioned = new RegExp(`(^|[^\\w$])${key}([^\\w$]|$)`).test(
+      entry.section ? sliceSection(readmeText, entry.section) : '',
+    );
+    if (entry.section && !mentioned) {
+      problems.push(
+        `README.md "${key}" is allowlisted as documented under "${entry.section}", but it is not mentioned there`,
+      );
+    }
+  }
+
+  for (const [key, entry] of Object.entries(DOCUMENTED_ELSEWHERE)) {
+    if (!(key in DEFAULT_OPTIONS)) {
+      problems.push(
+        `allowlist entry "${key}"${entry.section ? ` (${entry.section})` : ''} is not an option in src/defaults.js — remove it`,
+      );
+    }
+  }
 }
 
 if (problems.length) {
@@ -372,4 +446,7 @@ console.log(`✔ ${files.length} modules checked — imports resolve, no legacy 
 console.log(
   `✔ ${seenAttributes.size} documented data-* attributes and ${ajcKeysChecked} data-ajc keys — every one still maps to an option.`,
 );
-console.log(`✔ ${documentedOptionCount} documented options — names and defaults match src/defaults.js.`);
+const elsewhereCount = Object.keys(DEFAULT_OPTIONS).filter((key) => !documentedNames.has(key)).length;
+console.log(
+  `✔ ${documentedOptionCount} documented options in tables, ${elsewhereCount} documented elsewhere — no option is undocumented.`,
+);
