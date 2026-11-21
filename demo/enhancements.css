@@ -1,35 +1,168 @@
-/* Hero enhancements */
-.hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
-.btn-primary { display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:10px; background:var(--accent); color:#06070a; font-weight:650; font-size:14px; text-decoration:none; border:none; cursor:pointer; transition:opacity .15s,transform .15s; }
-.btn-primary:hover { opacity:.88; text-decoration:none; transform:translateY(-1px); }
-.btn-outline { display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:10px; border:1px solid var(--line-strong); background:transparent; color:var(--text); font-weight:600; font-size:14px; text-decoration:none; cursor:pointer; transition:border-color .15s,transform .15s; }
-.btn-outline:hover { border-color:var(--accent); text-decoration:none; transform:translateY(-1px); }
-.hero-badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:18px; }
-.hero-badges img { height:20px; }
+/*
+ * Extra components for the demo home page. Loaded after demo/demo.css, and
+ * also by settings.html, so every value falls back to a neutral default.
+ */
 
-/* Features grid */
-.features { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:8px; }
-.feature { padding:18px 20px; border:1px solid var(--line); border-radius:14px; background:linear-gradient(160deg,var(--surface),var(--bg-soft)); transition:border-color .2s,transform .2s; }
-.feature:hover { border-color:rgba(125,155,255,.35); transform:translateY(-2px); }
-.feature__icon { font-size:22px; margin-bottom:10px; }
-.feature__title { margin:0 0 6px; font-size:14px; font-weight:650; color:var(--text); }
-.feature__desc { margin:0; font-size:13px; color:var(--muted); line-height:1.55; }
+/* ── hero actions ───────────────────────────────────────────────── */
 
-/* Install block */
-.install { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
-.install-card { padding:18px; border:1px solid var(--line); border-radius:14px; background:var(--bg-soft); }
-.install-card h3 { margin:0 0 10px; font-size:12px; font-weight:650; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
-.install-card pre { margin:0; padding:12px 14px; border-radius:10px; background:#06070a; border:1px solid var(--line); overflow-x:auto; font-size:12.5px; line-height:1.7; color:#cfd8ff; }
-.copy-btn { display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:5px 11px; border:1px solid var(--line-strong); border-radius:8px; background:transparent; color:var(--muted); font:inherit; font-size:12px; cursor:pointer; transition:color .15s,border-color .15s; }
-.copy-btn:hover { color:var(--text); border-color:var(--accent); }
-.copy-btn.copied { color:#93e0b4; border-color:#3fb950; }
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
 
-/* Nav links */
-.site-nav a[href*="settings"] { color:var(--accent); }
-.site-nav a[href*="github"] { color:var(--muted); }
-.site-nav a[aria-current="page"] { color:var(--accent); }
+.btn-primary,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: 4px;
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 12.5px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
 
-/* Section number for new sections */
-#features .block__num, #install .block__num { opacity:.4; }
+.btn-primary {
+  border: 1px solid var(--safelight, #ff6b4a);
+  background: var(--safelight, #ff6b4a);
+  color: var(--film, #0a0908);
+  font-weight: 500;
+}
 
-/* Smooth scroll anchor offset already handled by scroll-padding-top in demo.css */
+.btn-primary:hover {
+  border-color: var(--amber, #f3c07c);
+  background: var(--amber, #f3c07c);
+  color: var(--film, #0a0908);
+  text-decoration: none;
+}
+
+.btn-outline {
+  border: 1px solid var(--line-strong, rgba(255, 255, 255, 0.22));
+  background: transparent;
+  color: var(--paper, #f4efe4);
+}
+
+.btn-outline:hover {
+  border-color: var(--safelight, #ff6b4a);
+  background: transparent;
+  color: var(--paper, #f4efe4);
+  text-decoration: none;
+}
+
+/* ── features ───────────────────────────────────────────────────── */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  background: var(--line, rgba(255, 255, 255, 0.1));
+  overflow: hidden;
+}
+
+.feature {
+  padding: 22px 22px 24px;
+  background: var(--ink, #100e0c);
+}
+
+.feature__icon {
+  margin-bottom: 14px;
+  color: var(--safelight, #ff6b4a);
+  font-size: 18px;
+  line-height: 1;
+  /* Emoji arrive in full colour; print them in the page's ink instead. */
+  filter: grayscale(1) brightness(1.9);
+  opacity: 0.9;
+}
+
+.feature__title {
+  margin: 0 0 6px;
+  color: var(--paper, #f4efe4);
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+
+.feature__desc {
+  margin: 0;
+  color: var(--dim, #a99f92);
+  font-size: 13.5px;
+  line-height: 1.62;
+}
+
+/* ── install ────────────────────────────────────────────────────── */
+
+.install {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.install-card {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  background: var(--ink-soft, #17140f);
+}
+
+.install-card h3 {
+  margin: 0 0 12px;
+  color: var(--paper, #f4efe4);
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+}
+
+.install-card pre {
+  margin: 0;
+  padding: 13px 14px;
+  border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
+  border-radius: 6px;
+  background: var(--film, #0a0908);
+  color: var(--paper-2, #d7cdbf);
+  font-size: 11.5px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.copy-btn {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 5px 10px;
+  border: 1px solid var(--line-strong, rgba(255, 255, 255, 0.22));
+  border-radius: 3px;
+  background: transparent;
+  color: var(--dim, #a99f92);
+  font-family: var(--font-mono, ui-monospace, Menlo, monospace);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.copy-btn:hover {
+  border-color: var(--amber, #f3c07c);
+  color: var(--paper, #f4efe4);
+}
+
+.copy-btn.copied {
+  border-color: #6f9e63;
+  color: #a9c9a0;
+}
+
+/* ── nav accents ────────────────────────────────────────────────── */
+
+.site-nav a[href*='settings'],
+.site-nav a[aria-current='page'] {
+  color: var(--amber, #f3c07c);
+}

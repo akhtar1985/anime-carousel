@@ -16,6 +16,12 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="keywords" content="carousel, slider, animejs, anime.js, javascript, coverflow, marquee, swiper, slick, vanilla js, no build, ESM" />
     <link rel="canonical" href="https://akhtar1985.github.io/anime-carousel/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
     <link rel="stylesheet" href="./styles/slider.css" />
     <link rel="stylesheet" href="./demo/demo.css" />
     <link rel="stylesheet" href="./demo/enhancements.css" />
@@ -54,38 +60,55 @@
     <main id="top">
       <!-- ─────────────────────────── hero ─────────────────────────── -->
       <section class="hero">
-        <p class="eyebrow">Slider &amp; Carousel plugin · Anime.js v4 · No build step</p>
-        <h1>
-          Nine carousel modes.<br />
-          <em>One</em> tiny API.
-        </h1>
-        <p class="lede">
-          Slick’s ergonomics, Swiper’s muscle. Virtual infinite loop with no clones, spring physics,
-          controller sync, drag, lazy loading and a fully accessible DOM — in ~2,900 lines of readable ESM.
-        </p>
+        <div class="hero__copy">
+          <p class="eyebrow">Slider &amp; carousel plugin · Anime.js v4 · no build step</p>
+          <h1>
+            Nine carousel modes.<br />
+            <em>One</em> tiny API.
+          </h1>
+          <p class="lede">
+            Slick’s ergonomics, Swiper’s muscle. Virtual infinite loop with no clones, spring physics,
+            controller sync, drag, lazy loading and a fully accessible DOM — in ~2,900 lines of readable ESM.
+          </p>
 
-        <div class="hero-actions">
-          <a class="btn-primary" href="#playground">&#9654; Live playground</a>
-          <a class="btn-outline" href="./settings.html">Options reference</a>
-          <a class="btn-outline" href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#playground">&#9654; Live playground</a>
+            <a class="btn-outline" href="./settings.html">Options reference</a>
+            <a class="btn-outline" href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a>
+          </div>
+
+          <dl class="hero-meta">
+            <div><dt>modes</dt><dd>9</dd></div>
+            <div><dt>clone nodes</dt><dd>0</dd></div>
+            <div><dt>ESM</dt><dd>2.9k</dd></div>
+            <div><dt>a11y</dt><dd>built in</dd></div>
+            <div><dt>license</dt><dd>MIT</dd></div>
+          </dl>
+
+          <ul class="chips" aria-label="Anime.js v4 APIs used">
+            <li>animate()</li>
+            <li>createTimeline()</li>
+            <li>createScope()</li>
+            <li>stagger()</li>
+            <li>createSpring()</li>
+            <li>utils</li>
+          </ul>
         </div>
 
-        <div class="hero-badges">
-          <img src="https://img.shields.io/badge/Anime.js-v4-ff3b7f?style=flat-square" alt="Anime.js v4" />
-          <img src="https://img.shields.io/badge/build-none-3fb950?style=flat-square" alt="No build step" />
-          <img src="https://img.shields.io/badge/modules-ESM-7d9bff?style=flat-square" alt="ESM" />
-          <img src="https://img.shields.io/badge/license-MIT-98a1b2?style=flat-square" alt="MIT" />
-          <img src="https://img.shields.io/badge/a11y-roles%20%2B%20live%20region-9b7dff?style=flat-square" alt="Accessible" />
+        <div class="hero__reel" aria-hidden="true">
+          <figure class="reel reel--lead">
+            <img src="demo/img/alpine.jpg" alt="" />
+            <figcaption><span>01</span> alpine lake — slide</figcaption>
+          </figure>
+          <figure class="reel">
+            <img src="demo/img/neon.jpg" alt="" />
+            <figcaption><span>02</span> neon district — coverflow</figcaption>
+          </figure>
+          <figure class="reel">
+            <img src="demo/img/dunes.jpg" alt="" />
+            <figcaption><span>03</span> sand ridges — cards</figcaption>
+          </figure>
         </div>
-
-        <ul class="chips" aria-label="Anime.js v4 APIs used">
-          <li>animate()</li>
-          <li>createTimeline()</li>
-          <li>createScope()</li>
-          <li>stagger()</li>
-          <li>createSpring()</li>
-          <li>utils</li>
-        </ul>
       </section>
 
       <!-- ─────────────────────────── features ─────────────────────── -->
@@ -144,7 +167,7 @@
       <!-- ─────────────────────────── install ──────────────────────── -->
       <section class="block" id="install" aria-labelledby="install-title">
         <header class="block__head">
-          <span class="block__num">00</span>
+          <span class="block__num">01</span>
           <div>
             <h2 id="install-title">Get started in 30 seconds</h2>
             <p>Three ways to install — pick the one that fits your workflow.</p>
@@ -164,7 +187,7 @@
     'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
   new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
 &lt;/script&gt;</code></pre>
-            <button class="copy-btn" data-copy-install="cdn">&#10064; Copy</button>
+            <button class="copy-btn" data-copy-install="cdn">Copy</button>
           </div>
           <div class="install-card">
             <h3>npm</h3>
@@ -178,7 +201,7 @@ new AnimeCarousel('#hero', {
   dots: true,
   autoplay: true,
 });</code></pre>
-            <button class="copy-btn" data-copy-install="npm">&#10064; Copy</button>
+            <button class="copy-btn" data-copy-install="npm">Copy</button>
           </div>
           <div class="install-card">
             <h3>data-* attributes — zero JS</h3>
@@ -197,7 +220,7 @@ new AnimeCarousel('#hero', {
   import { AnimeCarousel } from '...';
   AnimeCarousel.autoInit();
 &lt;/script&gt;</code></pre>
-            <button class="copy-btn" data-copy-install="data">&#10064; Copy</button>
+            <button class="copy-btn" data-copy-install="data">Copy</button>
           </div>
         </div>
       </section>
@@ -205,7 +228,7 @@ new AnimeCarousel('#hero', {
       <!-- ────────────────────────── playground ─────────────────────── -->
       <section class="block" id="playground">
         <header class="block__head">
-          <span class="block__num">01</span>
+          <span class="block__num">02</span>
           <div>
             <h2>Playground</h2>
             <p>Every option is live. Switch modes, drag, or press <kbd>←</kbd> <kbd>→</kbd> while the carousel is focused.</p>
@@ -216,7 +239,7 @@ new AnimeCarousel('#hero', {
           <aside class="panel" aria-label="Carousel options">
             <fieldset class="panel__group">
               <legend>Mode</legend>
-              <div class="modes" id="modes">
+              <div class="modes" id="mode-list">
                 <button type="button" class="chip is-active" data-mode="slide">slide</button>
                 <button type="button" class="chip" data-mode="fade">fade</button>
                 <button type="button" class="chip" data-mode="coverflow">coverflow</button>
@@ -352,7 +375,7 @@ new AnimeCarousel('#hero', {
       <!-- ──────────────────────────── sync ─────────────────────────── -->
       <section class="block" id="sync">
         <header class="block__head">
-          <span class="block__num">02</span>
+          <span class="block__num">03</span>
           <div>
             <h2>Sync &amp; thumbnails</h2>
             <p>
@@ -414,7 +437,7 @@ new AnimeCarousel('#hero', {
       <!-- ──────────────────────────── modes ────────────────────────── -->
       <section class="block" id="modes">
         <header class="block__head">
-          <span class="block__num">03</span>
+          <span class="block__num">04</span>
           <div>
             <h2>Every mode</h2>
             <p>Each card is an independent instance with its own effect object. All of them inherit the same drag, a11y and API surface.</p>
@@ -488,7 +511,7 @@ new AnimeCarousel('#hero', {
       <!-- ────────────────────── reveal / orientation ───────────────── -->
       <section class="block">
         <header class="block__head">
-          <span class="block__num">04</span>
+          <span class="block__num">05</span>
           <div>
             <h2>Staggered reveal, vertical, RTL, centred</h2>
             <p>
@@ -565,7 +588,7 @@ new AnimeCarousel('#hero', {
       <!-- ─────────────────────────── marquee ───────────────────────── -->
       <section class="block" id="marquee">
         <header class="block__head">
-          <span class="block__num">05</span>
+          <span class="block__num">06</span>
           <div>
             <h2>Marquee / ticker</h2>
             <p>Continuous, seamless, pause-on-hover. One looping <code>createTimeline()</code> translates a cloned strip.</p>
@@ -597,7 +620,7 @@ new AnimeCarousel('#hero', {
       <!-- ────────────────────────── lazy load ──────────────────────── -->
       <section class="block" id="lazy-demo">
         <header class="block__head">
-          <span class="block__num">06</span>
+          <span class="block__num">07</span>
           <div>
             <h2>Lazy load</h2>
             <p>
@@ -621,7 +644,7 @@ new AnimeCarousel('#hero', {
       <!-- ───────────────────────── responsive ──────────────────────── -->
       <section class="block" id="responsive">
         <header class="block__head">
-          <span class="block__num">07</span>
+          <span class="block__num">08</span>
           <div>
             <h2>Responsive breakpoints</h2>
             <p>Slick-style array (max-width) in this demo; Swiper-style maps are also supported. Resize the window.</p>
@@ -642,7 +665,7 @@ new AnimeCarousel('#hero', {
       <!-- ──────────────────────────── API ──────────────────────────── -->
       <section class="block" id="api">
         <header class="block__head">
-          <span class="block__num">08</span>
+          <span class="block__num">09</span>
           <div>
             <h2>Methods &amp; events</h2>
             <p>The playground above is wired to <code>onBeforeChange</code>, <code>onAfterChange</code> and DOM custom events.</p>
@@ -737,7 +760,7 @@ AnimeCarousel.autoInit();`;
           try { await navigator.clipboard.writeText(text); } catch {}
           btn.textContent = '\u2713 Copied!';
           btn.classList.add('copied');
-          setTimeout(() => { btn.textContent = '\u29c8 Copy'; btn.classList.remove('copied'); }, 1800);
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
         });
       });
     </script>

@@ -21,10 +21,10 @@
 .drift-banner {
   margin: 0 0 20px;
   padding: 12px 16px;
-  border: 1px solid rgba(249, 127, 163, 0.5);
-  border-radius: 12px;
-  background: rgba(249, 127, 163, 0.12);
-  color: #ffd7e2;
+  border: 1px solid rgba(255, 107, 74, 0.45);
+  border-radius: var(--radius);
+  background: rgba(255, 107, 74, 0.1);
+  color: #ffd9ce;
   font-size: 14px;
 }
 
@@ -33,14 +33,19 @@
 }
 
 .page-head h1 {
-  margin: 6px 0 12px;
-  font-size: clamp(30px, 5vw, 48px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  margin: 8px 0 12px;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4.6vw, 3.4rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
 }
 
 .page-head h1 em {
-  font-style: normal;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   color: var(--accent);
 }
 
@@ -70,7 +75,10 @@
 
 .mini__head h2 {
   margin: 0;
-  font-size: 18px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
 }
 
 .mini__hint {
@@ -81,9 +89,9 @@
 
 #mini-slider {
   --mini-h: clamp(210px, 38vw, 330px);
-  border-radius: 12px;
+  border-radius: var(--radius);
   overflow: hidden;
-  background: #0a0c11;
+  background: var(--film);
   position: relative;
 }
 
@@ -91,7 +99,7 @@
    box styling is ours, so the viewport height can be measured by the plugin. */
 #mini-slider .mini-slide {
   height: var(--mini-h);
-  border-radius: 12px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: var(--surface-2);
 }
@@ -109,9 +117,9 @@
   bottom: 10px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(6, 7, 10, 0.72);
-  color: #dfe6ff;
-  font: 500 11px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: rgba(10, 9, 8, 0.72);
+  color: var(--paper);
+  font: 500 11px/1.6 var(--font-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   backdrop-filter: blur(6px);
@@ -128,7 +136,7 @@
 .mini__readout {
   margin-left: auto;
   color: var(--muted);
-  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font: 12px/1.6 var(--font-mono);
   white-space: nowrap;
 }
 
@@ -137,8 +145,8 @@
   padding: 10px 12px;
   min-height: 62px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #06070a;
+  border-radius: var(--radius);
+  background: var(--film);
   color: var(--muted);
   font-size: 12px;
   line-height: 1.8;
@@ -175,15 +183,18 @@
 
 .config__head h2 {
   margin: 0;
-  font-size: 16px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
 }
 
 .config pre {
   margin: 0;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #06070a;
+  border-radius: var(--radius);
+  background: var(--film);
   overflow-x: auto;
 }
 
@@ -197,7 +208,8 @@
 
 .toolbar {
   position: sticky;
-  top: 62px;
+  /* Sits flush under the 52px site header. */
+  top: 52px;
   z-index: 20;
   display: flex;
   flex-wrap: wrap;
@@ -206,7 +218,7 @@
   padding: 12px 0;
   margin-bottom: 22px;
   border-bottom: 1px solid var(--line);
-  background: rgba(8, 9, 12, 0.92);
+  background: rgba(16, 14, 12, 0.92);
   backdrop-filter: blur(10px);
 }
 
@@ -219,7 +231,7 @@
   width: 100%;
   padding: 10px 14px;
   border: 1px solid var(--line-strong);
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
   font: inherit;
@@ -243,13 +255,13 @@
 }
 
 .chips .chip {
-  padding: 6px 11px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
   background: transparent;
   color: var(--muted);
-  font: inherit;
-  font-size: 12.5px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
   cursor: pointer;
 }
 
@@ -259,10 +271,10 @@
 }
 
 .chips .chip.is-active {
-  border-color: transparent;
+  border-color: var(--accent);
   background: var(--accent);
-  color: #06070a;
-  font-weight: 600;
+  color: var(--film);
+  font-weight: 500;
 }
 
 .toolbar__count {
@@ -283,15 +295,17 @@
 
 .toc {
   position: sticky;
-  top: 130px;
+  /* Clear of the sticky toolbar (52px header + ~134px toolbar + gap). */
+  top: 210px;
   font-size: 13px;
 }
 
 .toc__title {
   margin: 0 0 8px;
   color: var(--muted);
-  font-size: 11px;
-  letter-spacing: 0.12em;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -344,8 +358,10 @@
 
 .opt-group__head h2 {
   margin: 0;
-  font-size: 20px;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .opt-group__count {
@@ -367,7 +383,7 @@
 .table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius);
 }
 
 .opt-table {
@@ -381,8 +397,9 @@
   border-bottom: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
   letter-spacing: 0.08em;
   text-align: left;
   text-transform: uppercase;
@@ -403,7 +420,7 @@
 }
 
 .opt-row:hover {
-  background: rgba(125, 155, 255, 0.05);
+  background: rgba(243, 192, 124, 0.05);
 }
 
 .opt-row td {
@@ -418,10 +435,11 @@
 }
 
 .opt-row__name code {
-  background: rgba(125, 155, 255, 0.14);
-  color: #cdd8ff;
+  border-color: rgba(243, 192, 124, 0.2);
+  background: rgba(243, 192, 124, 0.09);
+  color: var(--amber);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .opt-row__attr,
@@ -437,8 +455,9 @@
 
 .opt-row__attr code {
   background: none;
+  border: 0;
   padding: 0;
-  color: #7f8aa3;
+  color: var(--dim);
   font-size: 11px;
 }
 
@@ -447,7 +466,7 @@
 }
 
 .opt-row.is-target {
-  background: rgba(125, 155, 255, 0.16);
+  background: rgba(255, 107, 74, 0.14);
   transition: background 0.4s ease;
 }
 
@@ -458,7 +477,7 @@
 .icon-btn {
   padding: 1px 5px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 3px;
   background: transparent;
   color: var(--muted);
   font-size: 12px;
@@ -472,15 +491,15 @@
 }
 
 .icon-btn.is-copied {
-  border-color: #3fb950;
-  color: #93e0b4;
+  border-color: #6f9e63;
+  color: #a9c9a0;
 }
 
 .ro-tag {
   padding: 2px 7px;
   border: 1px dashed var(--line-strong);
   border-radius: 999px;
-  color: #7f8aa3;
+  color: var(--dim);
   font-size: 11px;
 }
 
@@ -505,7 +524,7 @@
 .mini-switch span {
   flex: 1;
   border-radius: 999px;
-  background: #2a2f3b;
+  background: rgba(244, 239, 228, 0.2);
   transition: background 0.18s ease;
 }
 
@@ -516,12 +535,12 @@
   height: 16px;
   margin: 3px;
   border-radius: 50%;
-  background: #98a1b2;
+  background: var(--paper-2);
   transition: transform 0.18s ease, background 0.18s ease;
 }
 
 .mini-switch input:checked + span {
-  background: rgba(125, 155, 255, 0.32);
+  background: rgba(255, 107, 74, 0.32);
 }
 
 .mini-switch input:checked + span::after {
@@ -548,14 +567,15 @@
 .mini-range output {
   min-width: 42px;
   color: var(--text);
-  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font: 12px/1.6 var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .mini-select,
 .mini-text {
   padding: 4px 8px;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: 3px;
   background: var(--surface);
   color: var(--text);
   font: inherit;
@@ -571,7 +591,7 @@
 .snippet {
   margin-top: 10px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -602,8 +622,9 @@
 
 .snippet summary span {
   margin-left: auto;
-  color: #7f8aa3;
-  font-size: 11px;
+  color: var(--dim);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
 }
 
 .snippet pre {
@@ -627,7 +648,10 @@
 
 .page-section h2 {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .page-section p {
@@ -638,8 +662,8 @@
 .page-section pre {
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #06070a;
+  border-radius: var(--radius);
+  background: var(--film);
   overflow-x: auto;
   font-size: 12.5px;
   line-height: 1.7;
@@ -655,7 +679,7 @@
 .btn--ghost {
   padding: 6px 12px;
   border: 1px solid var(--line-strong);
-  border-radius: 9px;
+  border-radius: 4px;
   background: transparent;
   color: var(--text);
   font: inherit;
@@ -665,7 +689,7 @@
 
 .btn--ghost:hover {
   border-color: var(--accent);
-  color: #dfe6ff;
+  color: var(--paper);
 }
 
 .btn--sm {

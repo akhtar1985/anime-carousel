@@ -81,10 +81,10 @@ function applyPlayground() {
 }
 
 /* mode chips */
-$('#modes').addEventListener('click', (event) => {
+$('#mode-list').addEventListener('click', (event) => {
   const button = event.target.closest('[data-mode]');
   if (!button) return;
-  $$('#modes .chip').forEach((chip) => chip.classList.toggle('is-active', chip === button));
+  $$('#mode-list .chip').forEach((chip) => chip.classList.toggle('is-active', chip === button));
   state.mode = button.dataset.mode;
   applyPlayground();
   log(`setMode('${state.mode}')`);
@@ -315,13 +315,17 @@ new AnimeCarousel('#d-center', {
 
 new AnimeCarousel('#m-one', {
   mode: 'marquee',
-  spaceBetween: 14,
+  // Ticker items size themselves; a fixed slidesToShow would stretch each one
+  // to the full viewport and the strip would look like a single frame.
+  slidesToShow: 'auto',
+  spaceBetween: 0,
   marquee: { speed: 70, direction: 'normal', pauseOnHover: true },
 });
 
 new AnimeCarousel('#m-two', {
   mode: 'marquee',
-  spaceBetween: 14,
+  slidesToShow: 'auto',
+  spaceBetween: 0,
   marquee: { speed: 42, direction: 'reverse', pauseOnHover: true },
 });
 
