@@ -392,6 +392,37 @@
   font-size: 13.5px;
 }
 
+/* Every group is its own <table>, so automatic layout sized the columns from
+   that group's content and the columns jumped as you scrolled. Pin one set of
+   widths for all group tables. The min-width keeps the narrow-screen behaviour
+   unchanged: the table keeps its columns and scrolls inside the card. */
+.opt-group .opt-table {
+  table-layout: fixed;
+  /* Narrow enough to stay readable, wide enough that the Live controls keep
+     their room once the table hits this floor. */
+  min-width: 880px;
+}
+
+.opt-group .opt-table > thead > tr > th:nth-child(1) {
+  width: 23%;
+}
+
+.opt-group .opt-table > thead > tr > th:nth-child(2) {
+  width: 21%;
+}
+
+.opt-group .opt-table > thead > tr > th:nth-child(3) {
+  width: 18%;
+}
+
+.opt-group .opt-table > thead > tr > th:nth-child(4) {
+  width: 14%;
+}
+
+.opt-group .opt-table > thead > tr > th:nth-child(5) {
+  width: 24%;
+}
+
 .opt-table thead th {
   padding: 9px 12px;
   border-bottom: 1px solid var(--line);
@@ -439,6 +470,12 @@
 /* Object defaults are one long unbroken string; break them so the table can
    shrink instead of scrolling. */
 .opt-row td:nth-child(3) {
+  overflow-wrap: anywhere;
+}
+
+/* Aliases are single identifiers (centeredSlides). At the table's min-width the
+   column is narrower than the longest one, so let it break rather than clip. */
+.opt-row td:nth-child(4) {
   overflow-wrap: anywhere;
 }
 
@@ -736,9 +773,18 @@
     font-size: 12.5px;
   }
 
+  /* Narrow screens drop the Type and Aliases columns; drop their headings with
+     them, otherwise the remaining cells sit under the wrong labels. */
   .opt-row td:nth-child(2),
-  .opt-row td:nth-child(4) {
+  .opt-row td:nth-child(4),
+  .opt-group .opt-table thead th:nth-child(2),
+  .opt-group .opt-table thead th:nth-child(4) {
     display: none;
+  }
+
+  /* Three columns left, so the table needs less room than the full five. */
+  .opt-group .opt-table {
+    min-width: 600px;
   }
 
   .mini__readout {
