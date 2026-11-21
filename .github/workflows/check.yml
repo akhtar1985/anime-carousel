@@ -33,3 +33,8 @@ jobs:
       # Adding dependencies later? Add a lockfile and an `npm ci` step above.
       - name: Run checks
         run: npm run check
+
+      # Guard the guard: every check is re-run against a deliberately broken
+      # copy of the tree.
+      - name: Test the checks
+        run: npm test

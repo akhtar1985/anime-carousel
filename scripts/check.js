@@ -628,6 +628,71 @@ if (readmeText) {
   }
 }
 
+/*
+ * 9. The settings page must describe every option, and nothing else.
+ *
+ * settings.html renders from META in demo/settings.js, and drift only surfaced
+ * as a banner nobody reads. A removed option left behind there is dead config,
+ * so CI fails instead: both key sets have to be identical.
+ */
+const settingsPath = join(root, 'demo', 'settings.js');
+const settingsKeys = new Set();
+const settingsLines = new Map();
+let settingsSource = '';
+
+try {
+  settingsSource = readFileSync(settingsPath, 'utf8');
+} catch {
+  problems.push('demo/settings.js is missing — META drift cannot be verified');
+}
+
+if (settingsSource) {
+  const regionStart = settingsSource.indexOf('const META = {};');
+  const regionEnd = settingsSource.indexOf('const OPTION_KEYS', regionStart);
+
+  if (regionStart === -1 || regionEnd === -1) {
+    problems.push(
+      'demo/settings.js no longer defines META between `const META = {};` and `const OPTION_KEYS` — this check needs updating',
+    );
+  } else {
+    const region = settingsSource.slice(regionStart, regionEnd);
+    // `key: S(…)` descriptors plus the `['onInit', '…']` callback pairs.
+    const descriptorPattern = /^\s{2}([A-Za-z0-9_$]+)\s*:\s*(?:S|R|SEL|T|RO)\(/gm;
+    // Whole `['onInit', 'After the first render.']` pairs only — a select's
+    // multi-line value list looks similar but is not a key.
+    const callbacksPattern = /^\s*\[\s*'([A-Za-z0-9_$]+)'\s*,\s*'[^']*'\s*\]/gm;
+
+    for (const pattern of [descriptorPattern, callbacksPattern]) {
+      for (const match of region.matchAll(pattern)) {
+        if (!settingsLines.has(match[1])) {
+          settingsLines.set(match[1], lineAt(settingsSource, regionStart + match.index));
+        }
+        settingsKeys.add(match[1]);
+      }
+    }
+
+    if (!settingsKeys.size) {
+      problems.push('demo/settings.js defines no META descriptors — this check needs updating');
+    }
+
+    const label = relative(root, settingsPath);
+    for (const [key, line] of settingsLines) {
+      if (!(key in DEFAULT_OPTIONS)) {
+        problems.push(
+          `${label}:${line} META describes "${key}", which is not an option in src/defaults.js — remove the dead descriptor`,
+        );
+      }
+    }
+    for (const key of Object.keys(DEFAULT_OPTIONS)) {
+      if (!settingsKeys.has(key)) {
+        problems.push(
+          `src/defaults.js declares "${key}" but demo/settings.js META has no descriptor for it — the settings page would omit it`,
+        );
+      }
+    }
+  }
+}
+
 if (problems.length) {
   console.error(`✖ ${problems.length} problem(s):`);
   problems.forEach((problem) => console.error(`  - ${problem}`));
@@ -645,4 +710,7 @@ console.log(
 console.log(`✔ ${perModeValidated.size} per-mode effect defaults — every documented value matches src/defaults.js.`);
 console.log(
   `✔ ${proseClaims} per-mode prose claims — stagger fallbacks and marquee px per second still match src/.`,
+);
+console.log(
+  `✔ ${settingsKeys.size} settings descriptors — META in demo/settings.js and DEFAULT_OPTIONS stay in sync.`,
 );
