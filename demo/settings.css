@@ -425,7 +425,21 @@
 
 .opt-row td {
   color: var(--muted);
-  white-space: nowrap;
+}
+
+/* Long union types ('slide' | 'fade' | …) are the widest thing in the table.
+   Letting them wrap keeps Default, Aliases and Live on screen instead of
+   behind a 300px horizontal scrollbar at desktop widths. */
+.opt-row td:nth-child(2) {
+  min-width: 18ch;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Object defaults are one long unbroken string; break them so the table can
+   shrink instead of scrolling. */
+.opt-row td:nth-child(3) {
+  overflow-wrap: anywhere;
 }
 
 .opt-row__name {
