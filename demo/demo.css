@@ -118,6 +118,11 @@ code {
   color: var(--amber);
 }
 
+/* A <code> inside a <pre> should keep the block's size, not shrink again. */
+pre code {
+  font-size: inherit;
+}
+
 kbd {
   padding: 0.08em 0.4em;
   border: 1px solid var(--line-strong);
@@ -857,6 +862,14 @@ input[type='range']::-moz-range-thumb {
   font-variant-numeric: tabular-nums;
 }
 
+/* The gallery's fraction counter is a label; give it the same mono voice as
+   the status lines instead of the body sans. */
+.ajc__dots--fraction {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
 /* ── demo grid ──────────────────────────────────────────────────── */
 
 .cards-grid {
@@ -897,14 +910,23 @@ input[type='range']::-moz-range-thumb {
   background: var(--film);
 }
 
-.demo-card .ajc__slide.dslide {
+/* Every mode card keeps one 4:3 frame, and the slides fill its height.
+   Modes that size their slides by slidesToShow (coverflow, centreMode,
+   vertical) would otherwise give the card a different height to its
+   neighbours, or letterbox themselves inside it. */
+.demo-card .ajc .ajc__viewport {
   aspect-ratio: 4 / 3;
+}
+
+.demo-card .ajc__slide.dslide {
+  height: 100%;
+  aspect-ratio: auto;
   border-radius: 3px;
 }
 
 .demo-card .ajc__slide.dslide--text {
   aspect-ratio: auto;
-  min-height: 220px;
+  min-height: 100%;
 }
 
 .demo-card .dslide__caption {
@@ -927,10 +949,6 @@ input[type='range']::-moz-range-thumb {
 
 .demo-card .ajc__dots {
   padding-bottom: 2px;
-}
-
-.demo-vertical .ajc__viewport {
-  height: 380px;
 }
 
 .demo-vertical .ajc__slide.dslide,
@@ -1146,10 +1164,6 @@ input[type='range']::-moz-range-thumb {
 
   .console {
     height: 128px;
-  }
-
-  .demo-vertical .ajc__viewport {
-    height: 300px;
   }
 
   .reel--lead {

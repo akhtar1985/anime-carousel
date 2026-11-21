@@ -338,6 +338,8 @@ const lazy = new AnimeCarousel('#lazy', {
   infinite: true,
   dots: true,
   arrows: true,
+  // Three square slides on a phone leaves each one barely 100px wide.
+  responsive: [{ breakpoint: 640, settings: { slidesToShow: 1.4 } }],
   onAfterChange: () => {
     const loaded = lazy.slides.filter((slide) => slide.classList.contains('is-lazy-loaded')).length;
     const status = $('#lazy-status');
