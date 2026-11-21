@@ -340,20 +340,17 @@ const lazy = new AnimeCarousel('#lazy', {
   arrows: true,
   // Three square slides on a phone leaves each one barely 100px wide.
   responsive: [{ breakpoint: 640, settings: { slidesToShow: 1.4 } }],
-  onAfterChange: () => {
-    const loaded = lazy.slides.filter((slide) => slide.classList.contains('is-lazy-loaded')).length;
-    const status = $('#lazy-status');
-    if (status) status.textContent = `lazyLoad: 'ondemand' · ${loaded}/${lazy.count} images decoded`;
-  },
+  onAfterChange: setLazyStatus,
 });
 
-lazy.slides.forEach((slide) => {
-  slide.addEventListener('ajc:lazy-loaded', () => {
-    const loaded = lazy.slides.filter((item) => item.classList.contains('is-lazy-loaded')).length;
-    const status = $('#lazy-status');
-    if (status) status.textContent = `lazyLoad: 'ondemand' · ${loaded}/${lazy.count} images decoded`;
-  });
-});
+function setLazyStatus() {
+  const loaded = lazy.slides.filter((slide) => slide.classList.contains('is-lazy-loaded')).length;
+  const status = $('#lazy-status');
+  if (status) status.textContent = `lazyLoad: 'ondemand' · ${loaded}/${lazy.count} images decoded`;
+}
+
+lazy.slides.forEach((slide) => slide.addEventListener('ajc:lazy-loaded', setLazyStatus));
+setLazyStatus();
 
 /* ── responsive ─────────────────────────────────────────────────────── */
 

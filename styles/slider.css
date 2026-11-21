@@ -44,6 +44,9 @@
   overflow: hidden;
   touch-action: pan-y;
   outline: none;
+  /* Slides carry their own z-index for stacking order; keep that inside the
+     viewport so the arrows and dots are not painted underneath them. */
+  isolation: isolate;
 }
 
 .ajc--vertical .ajc__viewport {
