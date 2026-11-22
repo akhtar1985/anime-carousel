@@ -105,7 +105,7 @@
       <h2 id="start">Quick start</h2>
       <div class="snippet snippet--lg">
         <div class="snippet__bar"><span>index.html</span><span>CDN · no bundler</span></div>
-        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" /&gt;
+        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css" /&gt;
 &lt;script type="importmap"&gt;
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
 &lt;/script&gt;
@@ -117,13 +117,16 @@
 &lt;/div&gt;
 
 &lt;script type="module"&gt;
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js';
   new AnimeCarousel('#hero', { mode: 'slide', infinite: true, dots: true, autoplay: true });
 &lt;/script&gt;</code></pre>
       </div>
       <p>
-        Pin a tag instead of <code>@main</code> for reproducible builds, or install from npm:
-        <code>npm i anime-carousel animejs</code>. Full instructions in the
+        The same URLs come from the published npm package —
+        <a href="https://www.npmjs.com/package/anime-carousel">anime-carousel@1.0.0</a> — so files, types
+        and styles never drift from the release. Prefer no import map? Use the bundled
+        <code>https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/+esm</code>.
+        Or install: <code>npm i anime-carousel animejs</code>. Full instructions in the
         <a href="../README.md#quick-start">README quick start</a>.
       </p>
 
@@ -171,6 +174,7 @@
         <a href="./comparison.html">Compare</a>
         <a href="./modes.html">Modes</a>
         <a href="./recipes.html">Recipes</a>
+        <a href="https://www.npmjs.com/package/anime-carousel" rel="noopener">npm</a>
         <a href="../README.md">README</a>
       </nav>
     </div>

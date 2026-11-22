@@ -9,13 +9,15 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 ![ESM](https://img.shields.io/badge/modules-ESM-7d9bff?style=flat-square)
 ![License MIT](https://img.shields.io/badge/license-MIT-98a1b2?style=flat-square)
 ![Accessible](https://img.shields.io/badge/a11y-roles%20%2B%20live%20region-9b7dff?style=flat-square)
+[![npm](https://img.shields.io/npm/v/anime-carousel?style=flat-square)](https://www.npmjs.com/package/anime-carousel)
 [![check](https://github.com/akhtar1985/anime-carousel/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/akhtar1985/anime-carousel/actions/workflows/check.yml)
 
 **[Live demo](https://akhtar1985.github.io/anime-carousel/)** ·
 **[Options reference](https://akhtar1985.github.io/anime-carousel/settings.html)** — every option, live ·
 **[How it compares](https://akhtar1985.github.io/anime-carousel/docs/comparison.html)** ·
 **[Modes guide](https://akhtar1985.github.io/anime-carousel/docs/modes.html)** ·
-**[Recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)**
+**[Recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)** ·
+**[npm](https://www.npmjs.com/package/anime-carousel)**
 
 ---
 
@@ -91,17 +93,18 @@ and the [recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)
 
 ### ESM from a CDN (no build step, no bundler)
 
-> These URLs track the `main` branch. Pin a tag or commit instead if you need reproducible builds.
+> Published on npm as [`anime-carousel@1.0.0`](https://www.npmjs.com/package/anime-carousel). The URLs
+> below pin that version; use `@1` to float across 1.x releases.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css" />
 
 <script type="importmap">
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
 </script>
 
 <script type="module">
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js';
 
   const slider = new AnimeCarousel('#hero', {
     mode: 'coverflow',
@@ -117,6 +120,15 @@ and the [recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)
 > The import map is required because the plugin imports the bare specifier `animejs`.
 > `https://cdn.jsdelivr.net/npm/animejs@4/+esm` or `https://esm.sh/animejs` both work.
 
+If you would rather not manage an import map, the `+esm` build bundles Anime.js 4.5.0 for you:
+
+```html
+<script type="module">
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/+esm';
+  new AnimeCarousel('#hero', { mode: 'fade', infinite: true });
+</script>
+```
+
 ### NPM
 
 ```bash
@@ -129,6 +141,19 @@ import 'anime-carousel/styles';
 ```
 
 `animejs@^4` is a peer dependency — install it alongside, so your app controls the version.
+
+### Direct file links
+
+Every distributed file has its own copyable jsDelivr URL:
+
+| File | URL |
+| --- | --- |
+| ESM entry | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js` |
+| Bundled ESM (animejs included) | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/+esm` |
+| Stylesheet | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css` |
+| SCSS source | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.scss` |
+| TypeScript types | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/types/index.d.ts` |
+| Package manifest | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/package.json` |
 
 ### Script tag without a bundler (local files)
 

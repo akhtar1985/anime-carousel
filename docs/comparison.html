@@ -502,18 +502,19 @@ slider.setMode('coverflow', { coverflowEffect: { tilt: 10, blur: 1.5 } });</code
       <h3>CDN and import map</h3>
       <div class="snippet snippet--lg">
         <div class="snippet__bar"><span>index.html</span><span>no build step</span></div>
-        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" /&gt;
+        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css" /&gt;
 &lt;script type="importmap"&gt;
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
 &lt;/script&gt;
 &lt;script type="module"&gt;
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js';
   new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
 &lt;/script&gt;</code></pre>
       </div>
       <p>
-        Pin a tag instead of <code>@main</code> for reproducible builds. See the
-        <a href="../README.md#quick-start">README quick start</a> for npm and local-file setups.
+        These are the published npm files (<a href="https://www.npmjs.com/package/anime-carousel">anime-carousel@1.0.0</a>),
+        pinned so they cannot drift. Swap the version for <code>@1</code> if you prefer automatic 1.x updates.
+        See the <a href="../README.md#quick-start">README quick start</a> for npm and local-file setups.
       </p>
 
       <h2 id="decide">Still deciding?</h2>
@@ -552,6 +553,7 @@ slider.setMode('coverflow', { coverflowEffect: { tilt: 10, blur: 1.5 } });</code
         <a href="./comparison.html">Compare</a>
         <a href="./modes.html">Modes</a>
         <a href="./recipes.html">Recipes</a>
+        <a href="https://www.npmjs.com/package/anime-carousel" rel="noopener">npm</a>
         <a href="../README.md">README</a>
       </nav>
     </div>
