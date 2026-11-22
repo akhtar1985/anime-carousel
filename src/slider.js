@@ -38,7 +38,7 @@ import { Responsive } from './responsive.js';
 import { A11y } from './a11y.js';
 import { attachSync, detachSync, getLinks, registerInstance, resolveInstances, syncClicks } from './sync.js';
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.0.1';
 
 // Anime.js v4 `utils` — same semantics as the local helpers, shared with the engine.
 const clamp = utils.clamp;

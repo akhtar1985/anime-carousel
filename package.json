@@ -1,6 +1,6 @@
 {
   "name": "anime-carousel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Slick-easy, Swiper-capable slider and carousel plugin powered by Anime.js v4 — 13 modes, sync/thumbnails, virtual loop, drag, autoplay, lazy load, responsive and full a11y.",
   "homepage": "https://akhtar1985.github.io/anime-carousel/",
   "repository": {
