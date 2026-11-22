@@ -86,6 +86,7 @@ and the [recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)
 - [Performance](#performance)
 - [Folder structure](#folder-structure)
 - [Browser support](#browser-support)
+- [FAQ](#faq)
 
 ---
 
@@ -746,6 +747,36 @@ const slider = new AnimeCarousel('#hero', options);
 Chromium 111+, Firefox 113+, Safari 16.4+ — anything with ES modules, `ResizeObserver`,
 `inert` (with a graceful no-op fallback) and CSS 3D transforms. The plugin itself needs only
 `animejs@^4`; there are no other runtime dependencies.
+
+---
+
+## FAQ
+
+**Is anime-carousel free?**
+Yes — MIT-licensed, published on npm as [`anime-carousel`](https://www.npmjs.com/package/anime-carousel),
+no paid tier and no account requirement.
+
+**Does it need a build step or bundler?**
+No. The `src/` files are the distributable: load them from jsDelivr with an import map, use the
+`+esm` bundle that includes Anime.js, or install from npm and let your own bundler handle it.
+
+**How is it different from Swiper or Slick?**
+Thirteen built-in animated modes with per-mode effect objects, a clone-free infinite loop, runtime
+`setMode()`, and both Slick and Swiper option aliases. The
+[comparison page](https://akhtar1985.github.io/anime-carousel/docs/comparison.html) is explicit about
+where Swiper, Splide, Embla and Flickity are ahead.
+
+**Does the infinite loop duplicate slides?**
+No clones. Loop is modular index maths over the real slides, so `activeIndex`, events and ARIA
+labels stay logical at the wrap point.
+
+**Can I use it with React, Vue or Svelte?**
+Yes — construct it in `useEffect` / `onMounted` against a ref and call `destroy()` on unmount; see the
+[framework recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html#frameworks).
+
+**Is it accessible?**
+Roles, `aria-hidden` and `inert` on off-screen slides, a live region, keyboard navigation, RTL and
+vertical support, and `prefers-reduced-motion` all come built in.
 
 ---
 

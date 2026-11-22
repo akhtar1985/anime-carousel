@@ -470,6 +470,55 @@ kbd {
   line-height: 1.65;
 }
 
+/* ── faq ────────────────────────────────────────────────────────── */
+
+.faq {
+  display: grid;
+  gap: 10px;
+  max-width: 900px;
+}
+
+.faq details {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  padding: 0 18px;
+}
+
+.faq summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 15px 0;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq summary::after {
+  content: '+';
+  flex: none;
+  color: var(--safelight);
+  font-family: var(--font-mono);
+}
+
+.faq details[open] summary::after {
+  content: '\2212';
+}
+
+.faq details > p {
+  max-width: 68ch;
+  margin: 0 0 16px;
+  color: var(--dim);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
 /* ── playground ─────────────────────────────────────────────────── */
 
 .playground {

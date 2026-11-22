@@ -16,6 +16,86 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="keywords" content="carousel, slider, animejs, anime.js, javascript, coverflow, marquee, swiper, slick, vanilla js, no build, ESM" />
     <link rel="canonical" href="https://akhtar1985.github.io/anime-carousel/" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            "@id": "https://akhtar1985.github.io/anime-carousel/#software",
+            "name": "anime-carousel",
+            "alternateName": "AnimeCarousel",
+            "description": "An open-source JavaScript slider and carousel plugin built on Anime.js v4 with thirteen animated modes, a clone-free infinite loop, effect knobs, controller sync, drag, autoplay, lazy loading, responsive breakpoints and accessibility.",
+            "applicationCategory": "DeveloperApplication",
+            "applicationSubCategory": "JavaScript carousel and slider library",
+            "operatingSystem": "Any",
+            "softwareVersion": "1.0.1",
+            "programmingLanguage": { "@type": "ComputerLanguage", "name": "JavaScript" },
+            "url": "https://akhtar1985.github.io/anime-carousel/",
+            "codeRepository": "https://github.com/akhtar1985/anime-carousel",
+            "license": "https://opensource.org/licenses/MIT",
+            "sameAs": ["https://www.npmjs.com/package/anime-carousel"],
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://akhtar1985.github.io/anime-carousel/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is anime-carousel free to use?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. anime-carousel is MIT-licensed, published on npm as anime-carousel, and has no paid tier or account requirement."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does anime-carousel need a build step or bundler?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. The src/ files are the distributable. Load them from jsDelivr with an import map, use the +esm bundle that includes Anime.js, or install from npm and let your own bundler handle it."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How is anime-carousel different from Swiper or Slick?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "It ships thirteen built-in animated modes with per-mode effect objects, a clone-free infinite loop, runtime setMode(), and accepts both Slick and Swiper option aliases, while staying a single ESM peer dependency on Anime.js v4."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does the infinite loop duplicate slides?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Loop is modular index maths over the real slides, so there are no clone nodes; activeIndex, events and aria labels stay logical at the wrap point."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I use anime-carousel with React, Vue or Svelte?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Construct it in a useEffect or onMounted hook against a ref element and call destroy() on unmount; the recipes page has complete mounting examples."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is anime-carousel accessible?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "It generates roles, aria-hidden and inert on off-screen slides, a live region for announcements, keyboard navigation, RTL and vertical support, and respects prefers-reduced-motion."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -772,6 +852,70 @@ onReachStart/End   onDestroy
   asNavFor: '#thumbs',
 });</code></pre>
           </div>
+        </div>
+      </section>
+
+      <!-- ──────────────────────────── FAQ ──────────────────────────── -->
+      <section class="block" id="faq" aria-labelledby="faq-title">
+        <header class="block__head">
+          <span class="block__num">10</span>
+          <div>
+            <h2 id="faq-title">Common questions</h2>
+            <p>
+              Short answers about licence, setup and how this carousel differs from Swiper and Slick — with links
+              to the deeper guides.
+            </p>
+          </div>
+        </header>
+
+        <div class="faq">
+          <details>
+            <summary>Is anime-carousel free to use?</summary>
+            <p>
+              Yes. It is MIT-licensed, published on npm as
+              <a href="https://www.npmjs.com/package/anime-carousel">anime-carousel</a>, and has no paid tier or
+              account requirement.
+            </p>
+          </details>
+          <details>
+            <summary>Does it need a build step or bundler?</summary>
+            <p>
+              No. The <code>src/</code> files are the distributable: load them from jsDelivr with an import map,
+              use the <code>+esm</code> bundle that includes Anime.js, or install from npm and let your own
+              bundler handle it.
+            </p>
+          </details>
+          <details>
+            <summary>How is it different from Swiper or Slick?</summary>
+            <p>
+              Thirteen built-in animated modes with per-mode effect objects, a clone-free infinite loop, runtime
+              <code>setMode()</code>, and both Slick and Swiper option aliases — see the
+              <a href="./docs/comparison.html">full comparison and migration tables</a>.
+            </p>
+          </details>
+          <details>
+            <summary>Does the infinite loop duplicate slides?</summary>
+            <p>
+              No. Loop is modular index maths over the real slides, so there are no clone nodes;
+              <code>activeIndex</code>, events and ARIA labels stay logical at the wrap point.
+            </p>
+          </details>
+          <details>
+            <summary>Can I use it with React, Vue or Svelte?</summary>
+            <p>
+              Yes. Construct it in a <code>useEffect</code> or <code>onMounted</code> hook against a ref element
+              and call <code>destroy()</code> on unmount — see the
+              <a href="./docs/recipes.html#frameworks">framework recipes</a>.
+            </p>
+          </details>
+          <details>
+            <summary>Is it accessible?</summary>
+            <p>
+              It generates roles, <code>aria-hidden</code> and <code>inert</code> on off-screen slides, a live
+              region for announcements, keyboard navigation, RTL and vertical support, and respects
+              <code>prefers-reduced-motion</code>.
+            </p>
+          </details>
         </div>
       </section>
     </main>
