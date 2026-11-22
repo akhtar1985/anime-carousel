@@ -177,7 +177,7 @@
         <div class="install">
           <div class="install-card">
             <h3>CDN — no install</h3>
-            <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css" /&gt;
+            <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1/styles/slider.css" /&gt;
 
 &lt;script type="importmap"&gt;
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
@@ -185,7 +185,7 @@
 
 &lt;script type="module"&gt;
   import { AnimeCarousel } from
-    'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js';
+    'https://cdn.jsdelivr.net/npm/anime-carousel@1/src/index.js';
   new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
 &lt;/script&gt;</code></pre>
             <button class="copy-btn" data-copy-install="cdn">Copy</button>
@@ -793,14 +793,14 @@ onReachStart/End   onDestroy
     <script type="module" src="./demo/demo.js"></script>
     <script type="module">
       /* Copy-install buttons */
-      const CDN = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css" />
+      const CDN = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1/styles/slider.css" />
 
 <script type="importmap">
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
 <\/script>
 
 <script type="module">
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1/src/index.js';
   new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
 <\/script>`;
       const NPM = `npm install anime-carousel animejs`;

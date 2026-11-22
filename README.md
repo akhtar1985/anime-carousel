@@ -93,18 +93,18 @@ and the [recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)
 
 ### ESM from a CDN (no build step, no bundler)
 
-> Published on npm as [`anime-carousel@1.0.0`](https://www.npmjs.com/package/anime-carousel). The URLs
-> below pin that version; use `@1` to float across 1.x releases.
+> Published on npm as [`anime-carousel`](https://www.npmjs.com/package/anime-carousel). The URLs below
+> follow the latest 1.x release; pin an exact version (e.g. `@1.0.1`) for reproducible builds.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/anime-carousel@1/styles/slider.css" />
 
 <script type="importmap">
   { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
 </script>
 
 <script type="module">
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1/src/index.js';
 
   const slider = new AnimeCarousel('#hero', {
     mode: 'coverflow',
@@ -124,7 +124,7 @@ If you would rather not manage an import map, the `+esm` build bundles Anime.js 
 
 ```html
 <script type="module">
-  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/+esm';
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/npm/anime-carousel@1/+esm';
   new AnimeCarousel('#hero', { mode: 'fade', infinite: true });
 </script>
 ```
@@ -148,12 +148,12 @@ Every distributed file has its own copyable jsDelivr URL:
 
 | File | URL |
 | --- | --- |
-| ESM entry | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/src/index.js` |
-| Bundled ESM (animejs included) | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/+esm` |
-| Stylesheet | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.css` |
-| SCSS source | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/styles/slider.scss` |
-| TypeScript types | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/types/index.d.ts` |
-| Package manifest | `https://cdn.jsdelivr.net/npm/anime-carousel@1.0.0/package.json` |
+| ESM entry | `https://cdn.jsdelivr.net/npm/anime-carousel@1/src/index.js` |
+| Bundled ESM (animejs included) | `https://cdn.jsdelivr.net/npm/anime-carousel@1/+esm` |
+| Stylesheet | `https://cdn.jsdelivr.net/npm/anime-carousel@1/styles/slider.css` |
+| SCSS source | `https://cdn.jsdelivr.net/npm/anime-carousel@1/styles/slider.scss` |
+| TypeScript types | `https://cdn.jsdelivr.net/npm/anime-carousel@1/types/index.d.ts` |
+| Package manifest | `https://cdn.jsdelivr.net/npm/anime-carousel@1/package.json` |
 
 ### Script tag without a bundler (local files)
 
