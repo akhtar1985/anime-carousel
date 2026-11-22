@@ -1,7 +1,15 @@
 {
   "name": "anime-carousel",
   "version": "1.0.0",
-  "description": "A Slick-easy, Swiper-capable slider and carousel plugin powered by Anime.js v4 — 10 modes, sync/thumbnails, virtual loop, drag, autoplay, lazy load, responsive and full a11y.",
+  "description": "A Slick-easy, Swiper-capable slider and carousel plugin powered by Anime.js v4 — 13 modes, sync/thumbnails, virtual loop, drag, autoplay, lazy load, responsive and full a11y.",
+  "homepage": "https://akhtar1985.github.io/anime-carousel/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhtar1985/anime-carousel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/akhtar1985/anime-carousel/issues"
+  },
   "type": "module",
   "main": "./src/index.js",
   "module": "./src/index.js",
@@ -31,7 +39,7 @@
     "dev": "npx --yes serve . -l 4173",
     "start": "npx --yes serve . -l 4173",
     "check": "node ./scripts/check.js",
-    "test": "node --test scripts/check.test.js"
+    "test": "node --test scripts/check.test.js scripts/state.test.js scripts/effects.test.js"
   },
   "keywords": [
     "carousel",

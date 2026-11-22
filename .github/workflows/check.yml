@@ -28,9 +28,13 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 20
+          cache: npm
 
-      # scripts/check.js only uses node: built-ins, so no install step is needed.
-      # Adding dependencies later? Add a lockfile and an `npm ci` step above.
+      # check.js only needs node: built-ins, but the state/effect tests import
+      # the engine, which imports animejs — so the dev dependency is required.
+      - name: Install dev dependency
+        run: npm ci --no-audit --no-fund
+
       - name: Run checks
         run: npm run check
 

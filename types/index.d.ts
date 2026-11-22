@@ -6,11 +6,15 @@ export type Mode =
   | 'fade'
   | 'coverflow'
   | 'cards'
+  | 'wheel'
+  | 'helix'
+  | 'flip'
+  | 'fold'
+  | 'cube'
+  | 'zoom'
   | 'marquee'
   | 'kenburns'
-  | 'staggered'
-  | 'flip'
-  | 'cube';
+  | 'staggered';
 
 export type DotsType = 'bullets' | 'fraction' | 'progress';
 export type LazyLoadMode = false | 'ondemand' | 'progressive';
@@ -24,7 +28,6 @@ export interface SpringConfig {
 }
 
 export interface FadeEffect {
-  crossFade?: boolean;
   scale?: number;
   blur?: number;
 }
@@ -33,9 +36,13 @@ export interface CoverflowEffect {
   rotate?: number;
   depth?: number;
   scale?: number;
-  stretch?: number;
   modifier?: number;
   opacity?: number;
+  offset?: number;
+  tilt?: number;
+  lift?: number;
+  blur?: number;
+  visible?: number;
 }
 
 export interface CardsEffect {
@@ -47,7 +54,38 @@ export interface CardsEffect {
   opacity?: number;
 }
 
+export interface WheelEffect {
+  radius?: number;
+  angle?: number;
+  scale?: number;
+  opacity?: number;
+  offset?: number;
+  depth?: number;
+  tilt?: number;
+  blur?: number;
+  visible?: number;
+}
+
+export interface HelixEffect {
+  radius?: number;
+  rotate?: number;
+  rise?: number;
+  scale?: number;
+  opacity?: number;
+  offset?: number;
+  depth?: number;
+  tilt?: number;
+  blur?: number;
+  visible?: number;
+}
+
 export interface FlipEffect {
+  rotate?: number;
+  depth?: number;
+  opacity?: number;
+}
+
+export interface FoldEffect {
   rotate?: number;
   depth?: number;
   opacity?: number;
@@ -56,7 +94,14 @@ export interface FlipEffect {
 export interface CubeEffect {
   rotate?: number;
   depth?: number;
-  shadow?: boolean;
+}
+
+export interface ZoomEffect {
+  scale?: number;
+  exitScale?: number;
+  depth?: number;
+  blur?: number;
+  opacity?: number;
 }
 
 export interface KenBurnsEffect {
@@ -74,7 +119,6 @@ export interface StaggerEffect {
   each?: number;
   duration?: number;
   distance?: number;
-  outDuration?: number;
   ease?: string;
   from?: string | number;
 }
@@ -127,7 +171,6 @@ export interface AnimeCarouselOptions {
   centeredSlides?: boolean;
   centerPadding?: string | number;
   vertical?: boolean;
-  verticalSwiping?: boolean;
   rtl?: boolean;
   adaptiveHeight?: boolean;
   watchOverflow?: boolean;
@@ -194,8 +237,12 @@ export interface AnimeCarouselOptions {
   fadeEffect?: FadeEffect;
   coverflowEffect?: CoverflowEffect;
   cardsEffect?: CardsEffect;
+  wheelEffect?: WheelEffect;
+  helixEffect?: HelixEffect;
   flipEffect?: FlipEffect;
+  foldEffect?: FoldEffect;
   cubeEffect?: CubeEffect;
+  zoomEffect?: ZoomEffect;
   kenBurns?: KenBurnsEffect;
   kenburns?: KenBurnsEffect;
   staggerEffect?: StaggerEffect;
@@ -223,6 +270,25 @@ export interface AnimeCarouselOptions {
   onReachEnd?: (detail: CarouselDetail) => void;
 
   [key: string]: unknown;
+}
+
+export interface NavigationController {
+  mount(): void;
+  update(index?: number): void;
+  destroy(): void;
+}
+
+export interface DragController {
+  mount(): void;
+  updateCursor(): void;
+  destroy(): void;
+}
+
+export interface EffectDescriptor {
+  limit(options: AnimeCarouselOptions): number;
+  stacked?: boolean;
+  perspective?: boolean;
+  apply(state: Record<string, unknown>, context: Record<string, unknown>): void;
 }
 
 export declare class AnimeCarousel {
@@ -261,9 +327,9 @@ export declare class AnimeCarousel {
   destroy(): void;
 
   /* controllers, exposed for advanced use */
-  nav: unknown;
+  nav: NavigationController;
   autoplay: { start(): void; pause(reason?: string): void; isRunning: boolean };
-  drag: unknown;
+  drag: DragController;
   marquee: { play(): void; pause(): void; toggle(): void; restart(): void };
   lazy: { load(): void; scan(): void };
 }
@@ -271,6 +337,7 @@ export declare class AnimeCarousel {
 export declare const VERSION: string;
 export declare const MODES: Mode[];
 export declare const DEFAULT_OPTIONS: AnimeCarouselOptions;
+export declare const EFFECTS: Record<Exclude<Mode, 'marquee'>, EffectDescriptor>;
 
 export declare function create(element: string | Element, options?: AnimeCarouselOptions): AnimeCarousel;
 export declare function autoInit(scope?: Document | Element): AnimeCarousel[];
@@ -279,5 +346,6 @@ export declare function resolveInstances(
   reference: string | Element | AnimeCarousel | Array<string | Element | AnimeCarousel>,
   self?: AnimeCarousel,
 ): AnimeCarousel[];
+export declare function attachSync(source: AnimeCarousel, targets?: AnimeCarousel[]): void;
 
 export default AnimeCarousel;

@@ -4,7 +4,7 @@
  * - Swiper: `responsive: { 768: { slidesToShow: 2 } }` (min-width)
  */
 import { normalizeOptions } from './defaults.js';
-import { mergeDeep } from './utils.js';
+import { mergeDeep, resolveProgress } from './utils.js';
 
 export class Responsive {
   constructor(slider) {
@@ -77,17 +77,27 @@ export class Responsive {
 
     const slider = this.slider;
     const settings = matched ? matched.settings : {};
+    const previousIndex = slider.activeIndex;
     slider.options = normalizeOptions(mergeDeep({}, slider._baseOptions, settings));
 
     slider._applyClasses();
     slider._prepareSlides();
     slider._measure();
-    if (!slider.looping) {
-      slider.progress = Math.min(slider.progress, slider._geo.maxIndex);
-    }
-    slider.progress = Math.max(0, slider.progress);
+    // Keep the user on the same logical slide across a breakpoint. Using the
+    // raw progress clamped negatives to 0 in loop mode, which visually jumped
+    // from the last slide back to the first on every resize.
+    slider.progress = resolveProgress(
+      previousIndex,
+      slider.progress,
+      slider.slides.length,
+      slider.looping,
+      slider._geo.maxIndex,
+    );
+    slider._target = slider.progress;
     slider._render();
     slider.nav && slider.nav.mount();
+    slider.a11y && slider.a11y.update();
+    slider.drag && slider.drag.updateCursor();
     slider.lazy && slider.lazy.scan();
     if (slider.marquee) slider.marquee.restart();
 

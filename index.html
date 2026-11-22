@@ -6,11 +6,11 @@
     <title>anime-carousel — Slider &amp; Carousel plugin on Anime.js v4</title>
     <meta
       name="description"
-      content="A production-ready slider and carousel built on Anime.js v4: slide, fade, coverflow, cards, marquee, ken burns, staggered, flip and cube modes with Slick-ease and Swiper power."
+      content="A production-ready slider and carousel built on Anime.js v4: slide, fade, coverflow, cards, wheel, helix, flip, fold, cube, zoom, marquee, ken burns and staggered modes with Slick-ease and Swiper power."
     />
 
     <meta property="og:title" content="anime-carousel — Slider &amp; Carousel plugin on Anime.js v4" />
-    <meta property="og:description" content="9 modes, virtual infinite loop, spring physics, drag, lazy load, a11y. No build step. ESM." />
+    <meta property="og:description" content="13 modes, virtual infinite loop, spring physics, drag, lazy load, a11y. No build step. ESM." />
     <meta property="og:url" content="https://akhtar1985.github.io/anime-carousel/" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -52,6 +52,8 @@
         <a href="#api">API</a>
         <a href="#responsive">Responsive</a>
         <a href="./settings.html">Options ↗</a>
+        <a href="./docs/comparison.html">Compare</a>
+        <a href="./docs/">Docs</a>
         <a href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a>
       </nav>
       <span class="pill">v1.0 · Anime.js v4</span>
@@ -63,7 +65,7 @@
         <div class="hero__copy">
           <p class="eyebrow">Slider &amp; carousel plugin · Anime.js v4 · no build step</p>
           <h1>
-            Nine carousel modes.<br />
+            Thirteen carousel modes.<br />
             <em>One</em> tiny API.
           </h1>
           <p class="lede">
@@ -78,7 +80,7 @@
           </div>
 
           <dl class="hero-meta">
-            <div><dt>modes</dt><dd>9</dd></div>
+            <div><dt>modes</dt><dd>13</dd></div>
             <div><dt>clone nodes</dt><dd>0</dd></div>
             <div><dt>ESM</dt><dd>2.9k</dd></div>
             <div><dt>a11y</dt><dd>built in</dd></div>
@@ -88,7 +90,6 @@
           <ul class="chips" aria-label="Anime.js v4 APIs used">
             <li>animate()</li>
             <li>createTimeline()</li>
-            <li>createScope()</li>
             <li>stagger()</li>
             <li>createSpring()</li>
             <li>utils</li>
@@ -117,14 +118,14 @@
           <span class="block__num">00</span>
           <div>
             <h2 id="features-title">Why anime-carousel?</h2>
-            <p>Everything you need, nothing you don’t. One fractional <code>progress</code> value drives all nine modes.</p>
+            <p>Everything you need, nothing you don’t. One fractional <code>progress</code> value drives all thirteen modes.</p>
           </div>
         </header>
         <div class="features">
           <div class="feature">
             <div class="feature__icon">&#9654;</div>
-            <p class="feature__title">9 animation modes</p>
-            <p class="feature__desc">slide, fade, coverflow, cards, cube, flip, kenburns, staggered, marquee — switch at runtime with <code>setMode()</code>.</p>
+            <p class="feature__title">13 animation modes</p>
+            <p class="feature__desc">slide, fade, coverflow, cards, wheel, helix, flip, fold, cube, zoom, kenburns, staggered, marquee — switch at runtime with <code>setMode()</code>.</p>
           </div>
           <div class="feature">
             <div class="feature__icon">&#8734;</div>
@@ -244,8 +245,12 @@ new AnimeCarousel('#hero', {
                 <button type="button" class="chip" data-mode="fade">fade</button>
                 <button type="button" class="chip" data-mode="coverflow">coverflow</button>
                 <button type="button" class="chip" data-mode="cards">cards</button>
+                <button type="button" class="chip" data-mode="wheel">wheel</button>
+                <button type="button" class="chip" data-mode="helix">helix</button>
                 <button type="button" class="chip" data-mode="cube">cube</button>
                 <button type="button" class="chip" data-mode="flip">flip</button>
+                <button type="button" class="chip" data-mode="fold">fold</button>
+                <button type="button" class="chip" data-mode="zoom">zoom</button>
                 <button type="button" class="chip" data-mode="kenburns">kenburns</button>
                 <button type="button" class="chip" data-mode="staggered">staggered</button>
                 <button type="button" class="chip" data-mode="marquee">marquee</button>
@@ -445,8 +450,9 @@ new AnimeCarousel('#hero', {
         </header>
 
         <div class="cards-grid">
-          <article class="demo-card">
+          <article class="demo-card demo-card--wide">
             <h3>coverflow <code>coverflowEffect</code></h3>
+            <p class="studio__hint">Shape the stack live: offset, tilt, lift, blur and the painted depth.</p>
             <div class="ajc" id="d-coverflow" aria-label="Coverflow carousel" data-ajc>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
@@ -454,6 +460,7 @@ new AnimeCarousel('#hero', {
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
             </div>
+            <div class="studio" id="cf-studio" role="group" aria-label="Coverflow effect controls"></div>
           </article>
 
           <article class="demo-card">
@@ -465,6 +472,32 @@ new AnimeCarousel('#hero', {
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
             </div>
+          </article>
+
+          <article class="demo-card demo-card--wide">
+            <h3>wheel <code>wheelEffect</code></h3>
+            <p class="studio__hint">Bend the arc live: radius, angle, offset, tilt and depth.</p>
+            <div class="ajc" id="d-wheel" aria-label="Wheel carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+            </div>
+            <div class="studio" id="wheel-studio" role="group" aria-label="Wheel effect controls"></div>
+          </article>
+
+          <article class="demo-card demo-card--wide">
+            <h3>helix <code>helixEffect</code></h3>
+            <p class="studio__hint">Tune the cylinder: radius, rotation, climb, tilt and depth.</p>
+            <div class="ajc" id="d-helix" aria-label="Helix carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+            </div>
+            <div class="studio" id="helix-studio" role="group" aria-label="Helix effect controls"></div>
           </article>
 
           <article class="demo-card demo-card--dark">
@@ -483,6 +516,26 @@ new AnimeCarousel('#hero', {
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>fold <code>foldEffect</code></h3>
+            <div class="ajc" id="d-fold" aria-label="Fold carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/forest.jpg" alt="Pine forest" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/liquid.jpg" alt="Liquid gradient" /></div>
+            </div>
+          </article>
+
+          <article class="demo-card">
+            <h3>zoom <code>zoomEffect</code></h3>
+            <div class="ajc" id="d-zoom" aria-label="Zoom carousel" data-ajc>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/alpine.jpg" alt="Alpine lake" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/concrete.jpg" alt="Concrete balconies" /></div>
+              <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/dunes.jpg" alt="Desert dunes" /></div>
               <div class="ajc__slide dslide"><img class="dslide__img" src="demo/img/neon.jpg" alt="Neon street" /></div>
             </div>
           </article>
@@ -599,7 +652,6 @@ new AnimeCarousel('#hero', {
           <div class="ajc" id="m-one" aria-label="Technology ticker 1" data-ajc>
             <div class="ajc__slide ticker__item">animate()</div>
             <div class="ajc__slide ticker__item">createTimeline()</div>
-            <div class="ajc__slide ticker__item">createScope()</div>
             <div class="ajc__slide ticker__item">stagger()</div>
             <div class="ajc__slide ticker__item">createSpring()</div>
             <div class="ajc__slide ticker__item">utils</div>
@@ -729,7 +781,10 @@ onReachStart/End   onDestroy
         <strong>anime-carousel</strong> v1.0 · MIT · built on
         <a href="https://animejs.com/documentation">Anime.js v4</a> ·
         <a href="https://github.com/akhtar1985/anime-carousel" target="_blank" rel="noopener">GitHub ↗</a> ·
-        <a href="./settings.html">Options reference ↗</a>
+        <a href="./settings.html">Options reference ↗</a> ·
+        <a href="./docs/comparison.html">Compare with other carousels ↗</a> ·
+        <a href="./docs/modes.html">Modes guide ↗</a> ·
+        <a href="./docs/recipes.html">Recipes ↗</a>
       </p>
       <p class="muted">Pure static files — no build step, no bundler, no runtime dependencies beyond Anime.js.</p>
     </footer>

@@ -70,7 +70,6 @@ group('layout', {
   centerMode: S('Centre the active slide; pair it with centerPadding.'),
   centerPadding: T('Inset on both sides in centre mode (px or %).'),
   vertical: S('Lay the slides on the Y axis.'),
-  verticalSwiping: S('Drag along Y instead of X.'),
   rtl: S('Mirror the layout and the drag direction.'),
   adaptiveHeight: S('Animate the viewport height to the active slide.'),
   watchOverflow: S('Disable arrows and looping when every slide already fits.'),
@@ -137,13 +136,17 @@ group('responsive', {
 });
 
 group('effects', {
-  fadeEffect: RO('{ crossFade, scale, blur }', 'object'),
-  coverflowEffect: RO('{ rotate, depth, scale, stretch, modifier, opacity }', 'object'),
+  fadeEffect: RO('{ scale, blur }', 'object'),
+  coverflowEffect: RO('{ rotate, depth, scale, modifier, opacity, offset, tilt, lift, blur, visible }', 'object'),
   cardsEffect: RO('{ offsetX, offsetY, rotate, scale, maxStack, opacity }', 'object'),
+  wheelEffect: RO('{ radius, angle, scale, opacity, offset, depth, tilt, blur, visible }', 'object'),
+  helixEffect: RO('{ radius, rotate, rise, scale, opacity, offset, depth, tilt, blur, visible }', 'object'),
   flipEffect: RO('{ rotate, depth, opacity }', 'object'),
-  cubeEffect: RO('{ rotate, depth, shadow }', 'object'),
+  foldEffect: RO('{ rotate, depth, opacity }', 'object'),
+  cubeEffect: RO('{ rotate, depth }', 'object'),
+  zoomEffect: RO('{ scale, exitScale, depth, blur, opacity }', 'object'),
   kenBurns: RO('{ targets, from, to, duration, alternate, panX, panY }', 'object'),
-  staggerEffect: RO('{ targets, each, duration, distance, outDuration, ease, from }', 'object'),
+  staggerEffect: RO('{ targets, each, duration, distance, ease, from }', 'object'),
   marquee: RO('{ speed, direction, pauseOnHover, duplicated }', 'object'),
 });
 
@@ -434,11 +437,15 @@ function renderModes() {
     fade: ['fadeEffect', 'Opacity, with optional scale and blur on the leaving slide.'],
     coverflow: ['coverflowEffect', 'rotateY plus translateZ and scale on a shared perspective.'],
     cards: ['cardsEffect', 'Deck offsets, rotateZ and a shadowed stack behind the active card.'],
+    wheel: ['wheelEffect', 'Slides ride a circular arc and tilt with the tangent.'],
+    helix: ['helixEffect', 'A 3D helix: each step rotates around Y and climbs by rise.'],
     marquee: ['marquee', 'One looping timeline translating a cloned strip.'],
     kenburns: ['kenBurns', 'Pan and zoom timeline on the active media.'],
     staggered: ['staggerEffect', 'createTimeline() with stagger() across data-ajc-reveal nodes.'],
     flip: ['flipEffect', '3D rotateY flip with a depth offset.'],
+    fold: ['foldEffect', '3D fold on the X axis, like a page turning away.'],
     cube: ['cubeEffect', 'A real cube: faces positioned at half the slide size.'],
+    zoom: ['zoomEffect', 'Dolly-through: incoming slides grow from depth, outgoing ones fly past.'],
   };
 
   $('#modes-body').innerHTML = MODES.map((mode) => {

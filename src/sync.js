@@ -1,13 +1,10 @@
 /**
  * asNavFor / controller sync.
  *
- * Instances are registered by id, then linked in a bidirectional graph. Each
- * slider pushes its index to its partners at transition end; partners whose
- * index already matches No-op, so the propagation always terminates.
+ * Instances are registered by id, then linked in a graph. Each slider pushes
+ * its settled index to its partners; a partner that was driven by sync does
+ * not push back, so propagation always terminates.
  */
-import { wrap } from './utils.js';
-
-/** @type {Map<string, object>} */
 const registry = new Map();
 /** @type {Map<object, Set<object>>} */
 const links = new Map();
@@ -110,15 +107,7 @@ export function syncClicks(slider, event) {
   if (!slide || !slider.track.contains(slide)) return;
   const index = slider.slides.indexOf(slide);
   if (index < 0) return;
+  // The settle handler pushes the index through the link graph; doing it here
+  // as well produced a second, unguarded navigation on the partner.
   slider.goTo(index);
-
-  if (options.syncClick && Array.isArray(slider._syncRefs)) {
-    slider._syncRefs.forEach((target) => {
-      if (!target || target.destroyed) return;
-      const total = target.slides.length;
-      if (!total) return;
-      const mapped = Math.round((index / Math.max(1, slider.slides.length - 1)) * (total - 1));
-      target.goTo(wrap(mapped, total));
-    });
-  }
 }

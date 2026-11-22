@@ -141,11 +141,14 @@ export class Marquee {
     this.cleanup.length = 0;
     if (this.timeline) {
       this.timeline.revert();
+      this.slider._release(this.timeline);
       this.timeline = null;
     }
     this.clones.forEach((clone) => clone.remove());
     this.clones.length = 0;
     this.slider.track.style.transform = '';
+    this.slider.track.style.display = '';
+    this.slider.track.style.gap = '';
     this.slider.track.style.willChange = '';
     this.slider.root.classList.remove('ajc--marquee');
   }

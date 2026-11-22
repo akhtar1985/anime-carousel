@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How anime-carousel compares · anime-carousel docs</title>
+  <meta name="description" content="A fair, feature-first comparison of anime-carousel with Swiper, Slick, Splide, Embla, Glide and Flickity — plus migration notes for Slick and Swiper users." />
+  <link rel="stylesheet" href="./docs.css" />
+</head>
+<body>
+  <header class="doc-top">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      anime-carousel
+      <span class="brand__tag">docs</span>
+    </a>
+    <nav class="doc-nav" aria-label="Documentation">
+      <a href="../index.html">Demo</a>
+      <a href="../settings.html">Options</a>
+      <a href="./index.html">Docs</a>
+      <a href="./comparison.html" aria-current="page">Compare</a>
+      <a href="./modes.html">Modes</a>
+      <a href="./recipes.html">Recipes</a>
+      <a href="https://github.com/akhtar1985/anime-carousel" rel="noopener">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main class="doc-main">
+    <div class="doc-hero">
+      <p class="eyebrow">Comparison · snapshot late 2026</p>
+      <h1>How anime-carousel compares</h1>
+      <p class="lede">
+        There is no “best” carousel library — there is a best fit. This page compares
+        <strong>built-in features</strong> so you can decide quickly, and it is candid about where
+        the established libraries are stronger.
+      </p>
+      <div class="meta-row">
+        <span class="chip">13 built-in modes</span>
+        <span class="chip">loop without clones</span>
+        <span class="chip">MIT</span>
+        <span class="chip">one peer dep: animejs@^4</span>
+        <span class="chip">no build step</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <div class="callout">
+        <span class="callout__label">How to read this page</span>
+        <p>
+          Capabilities change between majors. The table describes default, built-in behaviour as of
+          late 2026 — not what community plugins or custom code can add. A dash (—) means “not
+          built in”, not “impossible”. Check each project’s current documentation before you commit.
+        </p>
+      </div>
+
+      <h2 id="who-for">Who should use it — and who shouldn’t</h2>
+
+      <h3>Good fit</h3>
+      <ul>
+        <li><strong>Static sites, landing pages and documentation</strong> that want depth effects without a bundler.</li>
+        <li><strong>Shopify themes and CMS embeds</strong> — Liquid or a CMS block plus an import map is enough; there is no build step.</li>
+        <li><strong>Teams migrating off Slick</strong> — the option vocabulary is intentionally compatible, but there is no jQuery and no clone-slide loop.</li>
+        <li><strong>React / Vue / Svelte apps</strong> that only need the carousel as an imperative instance (one <code>ref</code>, one effect), not another wrapper to maintain.</li>
+        <li><strong>Music, photo and portfolio sites</strong> where wheel / helix / fold / zoom motion is the point.</li>
+        <li><strong>Anyone already using Anime.js</strong> who wants the carousel on the same animation engine, easing vocabulary and spring physics.</li>
+      </ul>
+
+      <h3>Pick something else when…</h3>
+      <ul>
+        <li><strong>You need official React / Vue / Svelte components with SSR-safe rendering.</strong> Swiper, Splide and Embla ship maintained wrappers.</li>
+        <li><strong>You virtualise thousands of slides.</strong> This plugin keeps every slide in the DOM (like Slick, Splide and Glide). Swiper’s virtual slides module is built for large data sets.</li>
+        <li><strong>You want only free-scroll physics.</strong> Embla is smaller and focuses entirely on drag momentum.</li>
+        <li><strong>You need IE11 or very old Safari.</strong> This is modern ESM with CSS 3D and <code>inert</code>; Slick is the retro option.</li>
+        <li><strong>You need a plugin marketplace.</strong> Swiper and Splide have years of ecosystem ahead of this project.</li>
+      </ul>
+
+      <h2 id="matrix">Feature matrix</h2>
+
+      <div class="table-wrap">
+        <table class="matrix">
+          <caption>Built-in behaviour, late 2026. “Clones” means loop is implemented by duplicating slides.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col" class="col-ours">anime-carousel</th>
+              <th scope="col">Swiper</th>
+              <th scope="col">Slick</th>
+              <th scope="col">Splide</th>
+              <th scope="col">Embla</th>
+              <th scope="col">Glide</th>
+              <th scope="col">Flickity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Animated layout modes built in</th>
+              <td class="col-ours"><strong>13</strong></td>
+              <td>7 effects</td>
+              <td>2</td>
+              <td>1–2</td>
+              <td>1</td>
+              <td>1</td>
+              <td>1</td>
+            </tr>
+            <tr>
+              <th scope="row">3D stack modes (coverflow, cards, cube, flip)</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">Wheel, helix, fold and zoom modes</th>
+              <td class="col-ours">Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">Per-effect layout knobs (<code>offset</code>, <code>depth</code>, <code>tilt</code>, <code>lift</code>, <code>blur</code>, <code>visible</code>)</th>
+              <td class="col-ours">Yes</td>
+              <td>Coverflow params only</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">Infinite loop without clone nodes</th>
+              <td class="col-ours">Yes</td>
+              <td>Clones</td>
+              <td>Clones</td>
+              <td>Clones</td>
+              <td>Yes</td>
+              <td>Clones</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <th scope="row">Fractional <code>slidesToShow</code></th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">Center mode with neighbour peek</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <th scope="row">Vertical axis</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">RTL</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <th scope="row">Autoplay pause rules (hover / focus / dots / interaction)</th>
+              <td class="col-ours">Yes</td>
+              <td>Partial</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Plugin</td>
+              <td>Hover only</td>
+              <td>Hover only</td>
+            </tr>
+            <tr>
+              <th scope="row">Dots: bullets, fraction, progress</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Bullets only</td>
+              <td>Bullets</td>
+              <td>—</td>
+              <td>Bullets</td>
+              <td>Bullets</td>
+            </tr>
+            <tr>
+              <th scope="row">Controller / thumbnail sync</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">Lazy loading (on demand / progressive)</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <th scope="row">a11y: <code>aria-hidden</code>, <code>inert</code>, live region</th>
+              <td class="col-ours">Yes</td>
+              <td>Module</td>
+              <td>Basic</td>
+              <td>Yes</td>
+              <td>Basic</td>
+              <td>Basic</td>
+              <td>Basic</td>
+            </tr>
+            <tr>
+              <th scope="row"><code>prefers-reduced-motion</code> handling</th>
+              <td class="col-ours">Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">TypeScript definitions included</th>
+              <td class="col-ours">Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">Official React / Vue / Svelte wrappers</th>
+              <td class="col-ours">— (instance API)</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>Yes</td>
+              <td>Yes</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <th scope="row">jQuery required</th>
+              <td class="col-ours">No</td>
+              <td>No</td>
+              <td><strong>Yes</strong></td>
+              <td>No</td>
+              <td>No</td>
+              <td>No</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <th scope="row">Runtime dependencies</th>
+              <td class="col-ours">animejs@^4</td>
+              <td>none</td>
+              <td>jQuery</td>
+              <td>none</td>
+              <td>none</td>
+              <td>none</td>
+              <td>none</td>
+            </tr>
+            <tr>
+              <th scope="row">License</th>
+              <td class="col-ours">MIT</td>
+              <td>MIT</td>
+              <td>MIT</td>
+              <td>MIT</td>
+              <td>MIT</td>
+              <td>MIT</td>
+              <td>MIT</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="differences">What is genuinely different here</h2>
+
+      <h3>1. Thirteen modes, not just “slide and fade”</h3>
+      <p>
+        The engine projects every slide through the same geometry snapshot, so each mode is a pure
+        <code>(distance, options) → transform state</code> function. That is why the unusual modes
+        are small and composable instead of separate plugins:
+      </p>
+      <p>
+        <code>slide</code> · <code>fade</code> · <code>coverflow</code> · <code>cards</code> ·
+        <strong><code>wheel</code></strong> · <strong><code>helix</code></strong> ·
+        <code>flip</code> · <strong><code>fold</code></strong> · <code>cube</code> ·
+        <strong><code>zoom</code></strong> · <code>marquee</code> · <code>kenburns</code> ·
+        <code>staggered</code>
+      </p>
+      <p>See <a href="./modes.html">The 13 modes, in depth</a> for defaults, tuning and use cases.</p>
+
+      <h3>2. Effect studios instead of one fixed preset</h3>
+      <p>
+        Coverflow, wheel and helix are small layout engines. Every value is applied per slide
+        distance, so the active slide is untouched and neighbours reshape live:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Mode</th>
+              <th scope="col">Layout knobs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><code>coverflow</code></th>
+              <td><code>rotate</code>, <code>depth</code>, <code>scale</code>, <code>modifier</code>, <code>opacity</code>, <code>offset</code>, <code>tilt</code>, <code>lift</code>, <code>blur</code>, <code>visible</code></td>
+            </tr>
+            <tr>
+              <th scope="row"><code>wheel</code></th>
+              <td><code>radius</code>, <code>angle</code>, <code>scale</code>, <code>opacity</code>, <code>offset</code>, <code>depth</code>, <code>tilt</code>, <code>blur</code>, <code>visible</code></td>
+            </tr>
+            <tr>
+              <th scope="row"><code>helix</code></th>
+              <td><code>radius</code>, <code>rotate</code>, <code>rise</code>, <code>scale</code>, <code>opacity</code>, <code>offset</code>, <code>depth</code>, <code>tilt</code>, <code>blur</code>, <code>visible</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Swiper’s coverflow exposes rotate, stretch, depth, modifier and shadows. The
+        <code>tilt</code>, <code>lift</code>, <code>blur</code> and <code>visible</code> controls —
+        and the same vocabulary on wheel and helix — are unique to this plugin. The
+        <a href="../index.html">demo</a> ships live studios for all three.
+      </p>
+
+      <h3>3. Virtual loop, logical indices</h3>
+      <p>
+        Infinite loop is modular index maths over a progress value, not cloned DOM. There is nothing
+        to style twice, <code>activeIndex</code> stays in <code>0…n-1</code>, events stay logical, and
+        <code>destroy()</code> has no clones to unwrap. Only <code>marquee</code> duplicates slides,
+        and it removes them on teardown. Embla and Flickity also avoid clones; Slick, Splide, Glide
+        and Swiper’s loop use duplicates.
+      </p>
+
+      <h3>4. One vocabulary, two ecosystems</h3>
+      <p>Slick and Swiper names are normalised by the same option layer:</p>
+      <div class="table-wrap">
+        <table class="kv">
+          <thead>
+            <tr>
+              <th scope="col">Slick</th>
+              <th scope="col">Swiper</th>
+              <th scope="col">Canonical name here</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>slidesToShow</code></td><td><code>slidesPerView</code></td><td><code>slidesToShow</code></td></tr>
+            <tr><td><code>infinite</code></td><td><code>loop</code></td><td><code>infinite</code></td></tr>
+            <tr><td><code>dots</code></td><td><code>pagination</code></td><td><code>dots</code></td></tr>
+            <tr><td><code>arrows</code></td><td><code>navigation</code></td><td><code>arrows</code></td></tr>
+            <tr><td><code>autoplaySpeed</code></td><td><code>delay</code></td><td><code>autoplaySpeed</code></td></tr>
+            <tr><td><code>asNavFor</code></td><td><code>controller</code></td><td><code>asNavFor</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Aliases are documented in the <a href="../README.md#options">main README options table</a>.</p>
+
+      <h3>5. Same animation engine as the rest of your app</h3>
+      <p>
+        Easing strings, <code>spring: true</code> with <code>createSpring()</code>,
+        <code>stagger()</code> reveals, and the same <code>animate</code> /
+        <code>createTimeline</code> primitives used elsewhere. No legacy <code>anime({…})</code>
+        syntax and no second animation engine.
+      </p>
+
+      <h3>6. Runtime <code>setMode()</code></h3>
+      <p>Switch layouts without destroying the instance:</p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>runtime mode switching</span><span>ESM</span></div>
+        <pre><code>slider.setMode('helix', { helixEffect: { radius: 200, rotate: 30 } });
+slider.setMode('coverflow', { coverflowEffect: { tilt: 10, blur: 1.5 } });</code></pre>
+      </div>
+      <p>
+        The instance keeps its index, listeners, DOM and a11y state. This is what powers the demo’s
+        mode chips.
+      </p>
+
+      <h3>7. Accessible and reduced-motion aware by default</h3>
+      <p>
+        Roles, per-slide labels, <code>aria-hidden</code> + <code>inert</code> on off-screen slides,
+        a polite live region, roving-tabindex bullets, keyboard support (including RTL and vertical)
+        and instant transitions when <code>prefers-reduced-motion: reduce</code> is set. See the
+        <a href="../README.md#accessibility">README accessibility section</a>.
+      </p>
+
+      <h2 id="behind">Where the established libraries are ahead</h2>
+      <p>Being fair:</p>
+      <ul>
+        <li><strong>Ecosystem and maturity.</strong> Swiper and Splide have years of issues, answers and third-party extensions. This project is a v1 with a small, readable source base.</li>
+        <li><strong>Framework coverage.</strong> Swiper, Splide and Embla ship official React / Vue / Svelte components. Here you mount the instance yourself (see the React recipe).</li>
+        <li><strong>Virtualisation.</strong> Swiper’s virtual slides handles very large collections by rendering a window. This plugin renders every slide, like Slick.</li>
+        <li><strong>Free-scroll physics.</strong> Embla’s drag engine is more specialised and lighter for momentum-only behaviour.</li>
+        <li><strong>Module breadth.</strong> Swiper also ships zoom, grid, parallax and history modules. This plugin intentionally keeps one engine and 13 modes.</li>
+      </ul>
+      <p>
+        If those matter more than animation depth, pick the mature library. If the animation is the
+        product, this plugin removes a lot of bespoke work.
+      </p>
+
+      <h2 id="switching">Switching from Slick or Swiper</h2>
+
+      <h3>From Slick</h3>
+      <p>
+        Markup: Slick items become direct children of the slider. The plugin generates
+        <code>.ajc__viewport</code> and <code>.ajc__track</code> wrappers for you (or write them
+        yourself — both are supported).
+      </p>
+      <div class="table-wrap">
+        <table class="kv">
+          <thead>
+            <tr>
+              <th scope="col">Slick</th>
+              <th scope="col">anime-carousel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row"><code>$('.slider').slick({…})</code></th><td><code>new AnimeCarousel('.slider', {…})</code></td></tr>
+            <tr><th scope="row"><code>.slick('slickNext')</code> / <code>slickPrev</code></th><td><code>.next()</code> / <code>.prev()</code></td></tr>
+            <tr><th scope="row"><code>.slick('slickGoTo', i)</code></th><td><code>.goTo(i)</code></td></tr>
+            <tr><th scope="row"><code>.slick('slickAdd', html)</code></th><td><code>.addSlide(html)</code></td></tr>
+            <tr><th scope="row"><code>.slick('slickRemove', i)</code></th><td><code>.removeSlide(i)</code></td></tr>
+            <tr><th scope="row"><code>.slick('unslick')</code></th><td><code>.destroy()</code></td></tr>
+            <tr><th scope="row"><code>slidesToShow</code>, <code>infinite</code>, <code>dots</code>, <code>arrows</code>, <code>autoplaySpeed</code></th><td>Same names</td></tr>
+            <tr><th scope="row"><code>centerMode</code>, <code>centerPadding</code>, <code>asNavFor</code></th><td>Same names</td></tr>
+            <tr><th scope="row"><code>afterChange</code></th><td><code>onAfterChange</code> or <code>ajc:after-change</code></td></tr>
+            <tr><th scope="row"><code>beforeChange</code></th><td><code>onBeforeChange</code> or <code>ajc:before-change</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout--warn">
+        <span class="callout__label">Gotchas</span>
+        <p>
+          Remove jQuery and Slick CSS; import <code>anime-carousel/styles</code>. Slick’s
+          <code>.slick-current</code> / <code>.slick-active</code> classes do not exist — the active
+          slide carries <code>.is-active</code>, and <code>slider.activeIndex</code> is always the
+          logical index.
+        </p>
+      </div>
+
+      <h3>From Swiper</h3>
+      <div class="table-wrap">
+        <table class="kv">
+          <thead>
+            <tr>
+              <th scope="col">Swiper</th>
+              <th scope="col">anime-carousel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row"><code>new Swiper('.swiper', {…})</code></th><td><code>new AnimeCarousel('#hero', {…})</code></td></tr>
+            <tr><th scope="row"><code>swiper.slideNext()</code> / <code>slidePrev()</code></th><td><code>.next()</code> / <code>.prev()</code></td></tr>
+            <tr><th scope="row"><code>swiper.slideTo(i)</code></th><td><code>.goTo(i)</code></td></tr>
+            <tr><th scope="row"><code>slidesPerView</code></th><td><code>slidesToShow</code> (alias accepted)</td></tr>
+            <tr><th scope="row"><code>loop</code></th><td><code>infinite</code> (alias accepted)</td></tr>
+            <tr><th scope="row"><code>navigation</code></th><td><code>arrows</code> (alias accepted)</td></tr>
+            <tr><th scope="row"><code>pagination</code></th><td><code>dots</code> (alias accepted)</td></tr>
+            <tr><th scope="row"><code>delay</code></th><td><code>autoplaySpeed</code> (alias accepted)</td></tr>
+            <tr><th scope="row"><code>controller</code></th><td><code>asNavFor</code> / <code>.sync()</code></td></tr>
+            <tr><th scope="row"><code>thumbs</code> module</th><td><code>asNavFor</code> both ways, or <code>.sync()</code></td></tr>
+            <tr><th scope="row"><code>effect: 'coverflow'</code></th><td><code>mode: 'coverflow'</code></td></tr>
+            <tr><th scope="row"><code>slideChange</code></th><td><code>onSlideChange</code> / <code>ajc:change</code></td></tr>
+            <tr><th scope="row"><code>update()</code></th><td><code>.refresh()</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout callout--warn">
+        <span class="callout__label">Gotchas</span>
+        <p>
+          Swiper’s <code>.swiper-wrapper</code> / <code>.swiper-slide</code> markup is not required.
+          Slides are the direct children and the plugin adds <code>.ajc__slide</code>. There is no
+          module import step — effects, a11y, keyboard, mousewheel and controller sync are built in.
+          Loop creates no duplicates, so never style <code>.swiper-slide-duplicate</code>.
+        </p>
+      </div>
+
+      <h3>CDN and import map</h3>
+      <div class="snippet snippet--lg">
+        <div class="snippet__bar"><span>index.html</span><span>no build step</span></div>
+        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" /&gt;
+&lt;script type="importmap"&gt;
+  { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
+&lt;/script&gt;
+&lt;script type="module"&gt;
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  new AnimeCarousel('#hero', { mode: 'coverflow', infinite: true, dots: true });
+&lt;/script&gt;</code></pre>
+      </div>
+      <p>
+        Pin a tag instead of <code>@main</code> for reproducible builds. See the
+        <a href="../README.md#quick-start">README quick start</a> for npm and local-file setups.
+      </p>
+
+      <h2 id="decide">Still deciding?</h2>
+      <div class="card-grid">
+        <a class="doc-card" href="../index.html">
+          <span class="doc-card__kicker">Try it</span>
+          <h3>Live demo</h3>
+          <p>Twenty-one live instances, every mode, drag the effect studios.</p>
+        </a>
+        <a class="doc-card" href="../settings.html">
+          <span class="doc-card__kicker">Tune it</span>
+          <h3>Options page</h3>
+          <p>Every option with a live slider and generated config.</p>
+        </a>
+        <a class="doc-card" href="./modes.html">
+          <span class="doc-card__kicker">Read it</span>
+          <h3>The 13 modes</h3>
+          <p>Defaults, tuning and use cases, mode by mode.</p>
+        </a>
+        <a class="doc-card" href="./recipes.html">
+          <span class="doc-card__kicker">Copy it</span>
+          <h3>Recipes</h3>
+          <p>Complete HTML + JS for heroes, galleries, tickers and framework mounting.</p>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="doc-footer">
+    <div class="doc-footer__inner">
+      <p>anime-carousel · MIT · built on Anime.js v4</p>
+      <nav aria-label="Documentation footer">
+        <a href="../index.html">Demo</a>
+        <a href="../settings.html">Options</a>
+        <a href="./index.html">Docs</a>
+        <a href="./comparison.html">Compare</a>
+        <a href="./modes.html">Modes</a>
+        <a href="./recipes.html">Recipes</a>
+        <a href="../README.md">README</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

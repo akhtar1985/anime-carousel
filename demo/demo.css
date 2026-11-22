@@ -910,6 +910,42 @@ input[type='range']::-moz-range-thumb {
   background: var(--film);
 }
 
+/* The coverflow studio spans the grid and swaps the 4:3 card frame for a
+   wider stage, leaving room for the control deck underneath. */
+.demo-card--wide {
+  grid-column: 1 / -1;
+}
+
+.demo-card.demo-card--wide .ajc .ajc__viewport {
+  aspect-ratio: 16 / 9;
+  max-height: 440px;
+}
+
+.studio__hint {
+  margin: -4px 0 12px;
+  color: var(--dim);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.studio {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0 18px;
+  margin-top: 12px;
+}
+
+.studio .range {
+  margin-bottom: 9px;
+}
+
+.studio__actions {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  padding-top: 2px;
+}
+
 /* Every mode card keeps one 4:3 frame, and the slides fill its height.
    Modes that size their slides by slidesToShow (coverflow, centreMode,
    vertical) would otherwise give the card a different height to its

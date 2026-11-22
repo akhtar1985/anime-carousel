@@ -7,7 +7,7 @@
  * animates that one number, so spring physics, easing and dragging all share
  * the exact same code path.
  */
-import { animate, createTimeline, createScope, stagger, createSpring, utils } from 'animejs';
+import { animate, createTimeline, stagger, createSpring, utils } from 'animejs';
 
 import { DEFAULT_OPTIONS, MODES, normalizeOptions, readDataAttributes } from './defaults.js';
 import { createGeometry, getEffect, toTransform } from './layout.js';
@@ -16,12 +16,16 @@ import {
   debounce,
   emitDomEvent,
   isBrowser,
+  isFormField,
+  isInteractive,
   mergeDeep,
   prefersReducedMotion,
   resolveElement,
   resolvePx,
+  resolveProgress,
   round,
   signedWrap,
+  stepProgress,
   toKebab,
   wrap,
 } from './utils.js';
@@ -32,12 +36,19 @@ import { Marquee } from './marquee.js';
 import { Lazy } from './lazy.js';
 import { Responsive } from './responsive.js';
 import { A11y } from './a11y.js';
-import { attachSync, detachSync, registerInstance, resolveInstances, syncClicks } from './sync.js';
+import { attachSync, detachSync, getLinks, registerInstance, resolveInstances, syncClicks } from './sync.js';
 
 export const VERSION = '1.0.0';
 
 // Anime.js v4 `utils` — same semantics as the local helpers, shared with the engine.
 const clamp = utils.clamp;
+
+// Callback keys are terse; the documented DOM event names are not all a plain
+// kebab-case transform (`before` → `ajc:before-change`).
+const DOM_EVENT_NAMES = {
+  before: 'before-change',
+  after: 'after-change',
+};
 
 const CALLBACKS = {
   init: 'onInit',
@@ -55,8 +66,6 @@ const CALLBACKS = {
   reachStart: 'onReachStart',
   reachEnd: 'onReachEnd',
 };
-
-const SLIDE_CLASSES = ['ajc__slide', 'is-active', 'is-visible', 'is-lazy-loading', 'is-lazy-loaded'];
 
 export class AnimeCarousel {
   /**
@@ -77,6 +86,7 @@ export class AnimeCarousel {
 
     this.destroyed = false;
     this.progress = 0;
+    this._target = 0;
     this._viewportSize = 0;
     this._geo = null;
     this._anim = null;
@@ -87,6 +97,8 @@ export class AnimeCarousel {
     this._lastReach = null;
     this._syncing = false;
     this._initialised = false;
+    this._animations = new Set();
+    this._revealAnims = new Map();
 
     this._dataOptions = readDataAttributes(root);
     this._baseOptions = mergeDeep({}, this._dataOptions, options);
@@ -101,7 +113,7 @@ export class AnimeCarousel {
     this._setup();
 
     this._initialised = true;
-    this.emit('init', { index: this.activeIndex, slides: this.slides });
+    this.emit('init', this._detail(this.activeIndex, this.activeIndex, 'none'));
   }
 
   /* ══════════════════════════════════════════════════════════════════
@@ -142,6 +154,8 @@ export class AnimeCarousel {
       (el) => el.nodeType === 1 && !el.hasAttribute('data-ajc-clone'),
     );
     this.slides.forEach((slide, index) => {
+      slide.__ajcHadSlideClass = slide.classList.contains('ajc__slide');
+      slide.__ajcHadSlideAttr = slide.hasAttribute('data-ajc-slide');
       slide.classList.add('ajc__slide');
       if (!slide.hasAttribute('data-ajc-slide')) slide.setAttribute('data-ajc-slide', '');
       slide.dataset.ajcIndex = String(index);
@@ -160,7 +174,6 @@ export class AnimeCarousel {
   }
 
   _setup() {
-    this.scope = createScope({ root: this.root });
     this._applyClasses();
     this._prepareSlides();
 
@@ -178,6 +191,7 @@ export class AnimeCarousel {
 
     this._measure();
     this.progress = this._initialProgress();
+    this._target = this.progress;
     this._render(true);
     this._settle(true);
 
@@ -252,19 +266,24 @@ export class AnimeCarousel {
 
     let sizes;
     if (slidesToShow === 'auto') {
+      // `width: 100%` in the core stylesheet defeats getBoundingClientRect on
+      // an absolutely positioned slide. `width: auto` makes it shrink-to-fit
+      // so the author's natural slide width can be measured before it becomes
+      // an explicit px size for the geometry engine.
       for (const slide of this.slides) {
-        slide.style.width = vertical ? '100%' : '';
-        slide.style.height = '';
+        slide.style.width = vertical ? '100%' : 'auto';
+        slide.style.height = vertical ? 'auto' : '';
       }
-      // One reflow, then measure the natural box of every slide.
-      sizes = this.slides.map((slide) => {
+      const measured = this.slides.map((slide) => {
         const rect = slide.getBoundingClientRect();
         return Math.max(0, vertical ? rect.height : rect.width);
       });
-      if (!sizes.some((size) => size > 0)) {
-        const fallback = Math.max(0, viewportSize - pad * 2);
-        sizes = new Array(n).fill(fallback);
-      }
+      const fallback = Math.max(0, viewportSize - pad * 2);
+      sizes = measured.map((size) => (size > 0 ? size : fallback));
+      this.slides.forEach((slide, index) => {
+        if (vertical) slide.style.height = `${round(sizes[index])}px`;
+        else slide.style.width = `${round(sizes[index])}px`;
+      });
     } else {
       const count = Math.max(0.1, Number(slidesToShow) || 1);
       const avail = Math.max(0, viewportSize - pad * 2);
@@ -360,6 +379,7 @@ export class AnimeCarousel {
         geo,
         slider: this,
         dir,
+        vertical,
         center: { x: (viewport - size) / 2, y: (viewport - size) / 2 },
       });
 
@@ -396,35 +416,45 @@ export class AnimeCarousel {
   }
 
   /**
-   * Create an Anime.js instance inside the scope (so `destroy()` reverts it) and
-   * hand it back. `scope.add()` returns the *scope*, not the animation, so the
-   * instance is captured from inside the callback.
+   * Create an Anime.js instance and own it until completion or teardown.
+   *
+   * `scope.add()` keeps every factory in `scope.constructors` so a refresh can
+   * replay it; using it for one-shot transitions leaked one constructor and one
+   * live animation per navigation. This set is the lifecycle contract instead:
+   * completed proxy animations are released, everything still live is reverted
+   * by `destroy()`.
    */
   _track(factory) {
-    let created = null;
-    this.scope.add(() => {
-      created = factory();
-    });
+    const created = factory();
+    if (created && typeof created.revert === 'function') this._animations.add(created);
     return created;
+  }
+
+  _release(animation) {
+    if (animation) this._animations.delete(animation);
   }
 
   _animateTo(target, { instant = false, speed, ease, silent = false } = {}) {
     const from = this.progress;
+    this._target = target;
     if (Math.abs(target - from) < 0.0005) {
+      // A no-op request is not a slide change; keep the DOM/ARIA in sync without
+      // emitting a `0 → 0` change that would look like a real transition.
       this.progress = target;
       this._render();
-      this._settle(false, { silent, previous: Math.round(from), instant: true });
+      this._settle(false, { silent: true, previous: from, instant: true });
       return this;
     }
 
     if (this._anim) {
       this._anim.pause();
+      this._release(this._anim);
       this._anim = null;
     }
 
     if (!silent) {
       this._emitBefore(from, target);
-      this.emit('change', this._detail(from, target));
+      this.emit('change', this._detail(this._indexAt(target), this._indexAt(from), this._direction(from, target)));
     }
 
     const duration = instant || this._reduced ? 0 : Math.max(0, speed == null ? this.options.speed : speed);
@@ -432,12 +462,13 @@ export class AnimeCarousel {
     if (duration <= 0) {
       this.progress = target;
       this._render();
-      this._settle(false, { previous: Math.round(from), instant: true });
+      this._settle(false, { previous: from, instant: true });
       return this;
     }
 
     const proxy = { p: from };
-    this._anim = this._track(() =>
+    let animation = null;
+    animation = this._track(() =>
       animate(proxy, {
         p: target,
         duration,
@@ -447,25 +478,31 @@ export class AnimeCarousel {
           this._render();
         },
         onComplete: () => {
+          if (this._anim && this._anim !== animation) return;
           this._anim = null;
+          this._release(animation);
           this.progress = target;
           this._render();
-          this._settle(false, { previous: Math.round(from) });
+          this._settle(false, { previous: from });
         },
       }),
     );
+    this._anim = animation;
     return this;
   }
 
   /** Called whenever the position is final (either instant or at transition end). */
   _settle(initial = false, { silent = false, previous = null, instant = false } = {}) {
     const index = this.activeIndex;
+    const from = previous == null ? this.progress : previous;
+    const direction = this._direction(from, this.progress);
 
     // Keep `progress` bounded so long sessions never lose precision.
     if (this._geo && this._geo.loop && Math.abs(this.progress) > this._geo.n * 4) {
       this.progress = wrap(this.progress, this._geo.n);
       this._render();
     }
+    this._target = this.progress;
 
     this.nav && this.nav.update();
     this.a11y && this.a11y.update();
@@ -475,16 +512,16 @@ export class AnimeCarousel {
     this._runEnterEffect(index);
 
     if (!silent && !initial) {
-      const prev = previous == null ? index : previous;
-      this.emit('after', this._detail(index, prev));
-      this.emit('transitionEnd', { index, previousIndex: prev, slides: this.slides });
+      const previousIndex = this._indexAt(from);
+      this.emit('after', this._detail(index, previousIndex, direction));
+      this.emit('transitionEnd', this._detail(index, previousIndex, direction));
     }
 
     this._reachState(index, initial);
     if (!initial) {
-      // Keep `_syncing` true while pushing outwards so partners never echo back.
-      this._syncTo(index, instant);
-      this._syncing = false;
+      // A partner drove this transition: do not echo the same index back out.
+      if (this._syncing) this._syncing = false;
+      else this._syncTo(index, instant);
     }
     if (this.lazy) this.lazy.load();
   }
@@ -499,11 +536,13 @@ export class AnimeCarousel {
       this.viewport.style.height = `${height}px`;
       return;
     }
-    this._track(() =>
+    let animation = null;
+    animation = this._track(() =>
       animate(this.viewport, {
         height: `${height}px`,
         duration: Math.min(this.options.speed, 500),
         ease: this.options.easing,
+        onComplete: () => this._release(animation),
       }),
     );
   }
@@ -535,7 +574,12 @@ export class AnimeCarousel {
     const targets = this._revealTargets(slide);
     if (!targets.length) return;
     const cfg = this.options.staggerEffect;
-    this.scope.add(() =>
+    const previous = this._revealAnims.get(slide);
+    if (previous) {
+      previous.revert();
+      this._release(previous);
+    }
+    const timeline = this._track(() =>
       createTimeline({ defaults: { duration: cfg.duration, ease: cfg.ease } }).add(
         targets,
         {
@@ -547,6 +591,7 @@ export class AnimeCarousel {
         0,
       ),
     );
+    this._revealAnims.set(slide, timeline);
   }
 
   _kenburns(index) {
@@ -558,6 +603,7 @@ export class AnimeCarousel {
     if (!targets.length) return;
     if (this._kenburnsTl) {
       this._kenburnsTl.revert();
+      this._release(this._kenburnsTl);
       this._kenburnsTl = null;
     }
     this._kenburnsTl = this._track(() =>
@@ -583,34 +629,47 @@ export class AnimeCarousel {
   }
 
   get activeIndex() {
+    return this._indexAt();
+  }
+
+  /** Logical slide index for any (possibly fractional or unwrapped) progress. */
+  _indexAt(progress = this.progress) {
     const n = this.slides.length;
     if (!n) return 0;
-    if (this.looping) return wrap(Math.round(this.progress), n);
-    return clamp(Math.round(this.progress), 0, this._geo ? this._geo.maxIndex : n - 1);
+    const value = Math.round(Number(progress) || 0);
+    if (this.looping) return wrap(value, n);
+    return clamp(value, 0, this._geo ? this._geo.maxIndex : n - 1);
+  }
+
+  _direction(from, to) {
+    return to > from ? 'next' : to < from ? 'prev' : 'none';
   }
 
   _initialProgress() {
     const n = this.slides.length;
     if (!n) return 0;
-    return clamp(Number(this.options.initialSlide) || 0, 0, n - 1);
+    return clamp(Math.round(Number(this.options.initialSlide) || 0), 0, n - 1);
   }
 
-  _detail(index, previousIndex) {
+  _detail(index, previousIndex, direction) {
     const total = this.slides.length;
+    const previous = previousIndex == null ? index : previousIndex;
     return {
       index,
-      previousIndex,
+      previousIndex: previous,
       slide: this.slides[index] || null,
       slides: this.slides,
-      direction: index > previousIndex ? 'next' : index < previousIndex ? 'prev' : 'none',
+      direction: direction || (index > previous ? 'next' : index < previous ? 'prev' : 'none'),
       total,
       instance: this,
     };
   }
 
   _emitBefore(from, to) {
-    const detail = this._detail(Math.round(to), Math.round(from));
-    this.emit('before', detail);
+    this.emit(
+      'before',
+      this._detail(this._indexAt(to), this._indexAt(from), this._direction(from, to)),
+    );
   }
 
   _reachState(index) {
@@ -639,7 +698,7 @@ export class AnimeCarousel {
         console.error(`[AnimeCarousel] ${CALLBACKS[type]} threw:`, error);
       }
     }
-    if (this.options.emitEvents) emitDomEvent(this.root, toKebab(type), detail);
+    if (this.options.emitEvents) emitDomEvent(this.root, DOM_EVENT_NAMES[type] || toKebab(type), detail);
   }
 
   _bindEvents() {
@@ -680,15 +739,19 @@ export class AnimeCarousel {
 
   _onKeyDown(event) {
     if (!this.options.keyboard) return;
+    if (isInteractive(event.target)) return;
+
     const vertical = this.options.vertical;
     const horizontal = !vertical;
     const rtl = this.options.rtl;
     const key = event.key;
+    const nextKey = rtl ? 'ArrowLeft' : 'ArrowRight';
+    const prevKey = rtl ? 'ArrowRight' : 'ArrowLeft';
 
     let handled = true;
-    if ((horizontal && (key === 'ArrowRight' || (rtl && key === 'ArrowLeft'))) || (!horizontal && key === 'ArrowDown')) {
+    if ((horizontal && key === nextKey) || (!horizontal && key === 'ArrowDown')) {
       this.next();
-    } else if ((horizontal && key === 'ArrowLeft') || (!horizontal && key === 'ArrowUp')) {
+    } else if ((horizontal && key === prevKey) || (!horizontal && key === 'ArrowUp')) {
       this.prev();
     } else if (key === 'Home') {
       this.goTo(0);
@@ -705,11 +768,12 @@ export class AnimeCarousel {
 
   _onWheel(event) {
     if (!this.options.mousewheel || this.options.mode === 'marquee') return;
-    if (event.ctrlKey) return;
+    if (event.ctrlKey || isFormField(event.target)) return;
 
     const { deltaX, deltaY } = event;
     const vertical = this.options.vertical;
-    const delta = vertical ? deltaY : Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+    let delta = vertical ? deltaY : Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+    if (this.options.rtl && !vertical) delta *= -1;
     if (Math.abs(delta) < 2) return;
 
     const now = Date.now();
@@ -729,18 +793,24 @@ export class AnimeCarousel {
      ══════════════════════════════════════════════════════════════════ */
 
   next() {
-    return this.goTo(this._stepTarget(1));
+    return this._animateTo(this._stepTarget(1));
   }
 
   prev() {
-    return this.goTo(this._stepTarget(-1));
+    return this._animateTo(this._stepTarget(-1));
   }
 
   _stepTarget(direction) {
-    const step = Math.max(1, this.options.slidesToScroll);
-    if (this.looping && this.slides.length > 1) return this.progress + direction * step;
-    const max = this._geo ? this._geo.maxIndex : this.slides.length - 1;
-    return clamp(Math.round(this.progress) + direction * step, 0, max);
+    const n = this.slides.length;
+    const max = this._geo ? this._geo.maxIndex : n - 1;
+    return stepProgress(
+      this._target == null ? this.progress : this._target,
+      direction,
+      this.options.slidesToScroll,
+      n,
+      this.looping,
+      max,
+    );
   }
 
   /**
@@ -753,14 +823,13 @@ export class AnimeCarousel {
     if (!Number.isFinite(target)) return this;
     target = Math.round(target);
 
-    let resolved;
-    if (this.looping && this.slides.length > 1) {
-      const current = Math.round(this.progress);
-      const delta = signedWrap(target - wrap(current, this.slides.length), this.slides.length);
-      resolved = this.progress + delta;
-    } else {
-      resolved = clamp(target, 0, this._geo.maxIndex);
-    }
+    const resolved = resolveProgress(
+      target,
+      this.progress,
+      this.slides.length,
+      this.looping,
+      this._geo.maxIndex,
+    );
 
     const isInstant = instant === true || (instant && typeof instant === 'object' && !!instant.instant);
     return this._animateTo(resolved, { instant: isInstant });
@@ -790,12 +859,14 @@ export class AnimeCarousel {
       return this;
     }
     const previous = this.options.mode;
+    const previousIndex = this.activeIndex;
     this._baseOptions = mergeDeep({}, this._baseOptions, extra, { mode });
     this.options = normalizeOptions(this._baseOptions);
 
     if (previous === 'marquee') this.marquee && this.marquee.unmount();
     if (this._kenburnsTl) {
       this._kenburnsTl.revert();
+      this._release(this._kenburnsTl);
       this._kenburnsTl = null;
     }
 
@@ -803,9 +874,30 @@ export class AnimeCarousel {
     this._prepareSlides();
     this.nav.mount();
     this._measure();
-    this.progress = this.looping ? this.progress : clamp(this.progress, 0, this._geo.maxIndex);
+    this.progress = resolveProgress(
+      previousIndex,
+      this.progress,
+      this.slides.length,
+      this.looping,
+      this._geo.maxIndex,
+    );
+    this._target = this.progress;
+    if (mode === 'marquee') {
+      // The previous mode may have hidden off-screen slides inline; the ticker
+      // shows every item and must not inherit those transforms.
+      for (const slide of this.slides) {
+        slide.style.transform = '';
+        slide.style.opacity = '';
+        slide.style.zIndex = '';
+        slide.style.visibility = '';
+        slide.style.pointerEvents = '';
+        slide.style.filter = '';
+      }
+    }
     this._render();
     this.nav.update();
+    this.a11y && this.a11y.update();
+    this.drag && this.drag.updateCursor();
     this.lazy.scan();
 
     if (mode === 'marquee') this.marquee && this.marquee.mount();
@@ -824,6 +916,8 @@ export class AnimeCarousel {
     const slide = typeof content === 'string' ? createElement('div', '', { html: content }) : content;
     if (!slide || slide.nodeType !== 1) return this;
 
+    slide.__ajcHadSlideClass = slide.classList.contains('ajc__slide');
+    slide.__ajcHadSlideAttr = slide.hasAttribute('data-ajc-slide');
     slide.classList.add('ajc__slide');
     slide.setAttribute('data-ajc-slide', '');
 
@@ -833,10 +927,9 @@ export class AnimeCarousel {
     this.slides.splice(at, 0, slide);
     this.slides.forEach((item, i) => (item.dataset.ajcIndex = String(i)));
 
-    this.refresh(); 
+    this.refresh();
     this.nav.mount();
-    this.nav.update();
-    if (this.options.mode === 'marquee') this.marquee.restart();
+    this.a11y && this.a11y.addSlide(slide, at);
     return slide;
   }
 
@@ -844,13 +937,26 @@ export class AnimeCarousel {
     const at = clamp(Number(index), 0, this.slides.length - 1);
     const slide = this.slides[at];
     if (!slide) return this;
+    const reveal = this._revealAnims.get(slide);
+    if (reveal) {
+      reveal.revert();
+      this._release(reveal);
+      this._revealAnims.delete(slide);
+    }
     slide.remove();
     this.slides.splice(at, 1);
     this.slides.forEach((item, i) => (item.dataset.ajcIndex = String(i)));
-    this.progress = clamp(this.progress, 0, Math.max(0, this.slides.length - 1));
+    this.progress = resolveProgress(
+      this.activeIndex,
+      this.progress,
+      this.slides.length,
+      this.looping,
+      this._geo ? this._geo.maxIndex : Math.max(0, this.slides.length - 1),
+    );
+    this._target = this.progress;
     this.refresh();
     this.nav.mount();
-    this.nav.update();
+    this.a11y && this.a11y.update();
     if (this.options.mode === 'marquee') this.marquee.restart();
     return this;
   }
@@ -861,6 +967,7 @@ export class AnimeCarousel {
     this._measure();
     const max = this._geo.maxIndex;
     if (!this.looping) this.progress = clamp(this.progress, 0, max);
+    this._target = this.progress;
     this._render();
     this.nav && this.nav.update();
     if (this.marquee) this.marquee.restart();
@@ -880,7 +987,11 @@ export class AnimeCarousel {
     this.emit('destroy', { instance: this });
 
     detachSync(this);
-    if (this._kenburnsTl) this._kenburnsTl.revert();
+    if (this._kenburnsTl) {
+      this._kenburnsTl.revert();
+      this._release(this._kenburnsTl);
+      this._kenburnsTl = null;
+    }
     this.autoplay && this.autoplay.destroy();
     this.drag && this.drag.destroy();
     this.nav && this.nav.destroy();
@@ -892,9 +1003,12 @@ export class AnimeCarousel {
 
     if (this._anim) {
       this._anim.pause();
+      this._release(this._anim);
       this._anim = null;
     }
-    this.scope.revert();
+    for (const animation of this._animations) animation.revert();
+    this._animations.clear();
+    this._revealAnims.clear();
 
     for (const slide of this.slides) {
       // Inline animation styles are removed property by property: `utils.set()`
@@ -912,7 +1026,13 @@ export class AnimeCarousel {
       slide.removeAttribute('aria-roledescription');
       slide.removeAttribute('aria-label');
       slide.removeAttribute('tabindex');
-      SLIDE_CLASSES.forEach((name) => slide.classList.remove(name));
+      ['is-active', 'is-visible', 'is-lazy-loading', 'is-lazy-loaded'].forEach((name) =>
+        slide.classList.remove(name),
+      );
+      if (!slide.__ajcHadSlideClass) slide.classList.remove('ajc__slide');
+      if (!slide.__ajcHadSlideAttr) slide.removeAttribute('data-ajc-slide');
+      delete slide.__ajcHadSlideClass;
+      delete slide.__ajcHadSlideAttr;
     }
     this._lastTransform.clear();
 
@@ -926,8 +1046,14 @@ export class AnimeCarousel {
     }
 
     // Put user slides back where they came from when we generated wrappers.
+    // Move one layer at a time: an author-supplied viewport may still have had
+    // a generated track inside it, and removing that track used to take the
+    // slides with it.
+    if (this._createdTrack) {
+      while (this.track.firstChild) this.viewport.appendChild(this.track.firstChild);
+    }
     if (this._createdViewport) {
-      while (this.track.firstChild) this.root.appendChild(this.track.firstChild);
+      while (this.viewport.firstChild) this.root.appendChild(this.viewport.firstChild);
     }
     this._created.forEach((node) => node.remove());
 
@@ -964,33 +1090,49 @@ export class AnimeCarousel {
     const others = Array.isArray(target) ? target : [target];
     const resolved = others
       .flatMap((item) => (item instanceof AnimeCarousel ? [item] : resolveInstances(item, this)))
-      .filter((item) => item && item !== this);
+      .filter((item) => item && item !== this && !item.destroyed);
+    if (!resolved.length) return this;
+
     this._syncRefs = Array.from(new Set([...(this._syncRefs || []), ...resolved]));
-    if (options.bidirectional !== false) resolved.forEach((item) => attachSync(item, [this]));
     attachSync(this, resolved);
+
+    if (options.bidirectional !== false) {
+      for (const item of resolved) {
+        item._syncRefs = Array.from(new Set([...(item._syncRefs || []), this]));
+        attachSync(item, [this]);
+      }
+    }
     return this;
   }
 
+  /**
+   * Push the settled index to every linked slider. The link graph is the source
+   * of truth so a runtime `sync()` works without either side declaring
+   * `asNavFor`. Each partner is marked as sync-driven until it settles, which
+   * stops the same index from being echoed back and causing duplicate events.
+   */
   _syncTo(index, instant = false) {
-    if (this._syncing) return;
-    const targets = this._syncRefs || [];
-    if (!targets.length) return;
-    this._syncing = true;
-    try {
-      for (const target of targets) {
-        if (!target || target.destroyed) continue;
-        const total = target.slides.length;
-        if (!total) continue;
-        const mapped =
-          this.slides.length > 1
-            ? Math.round((index / (this.slides.length - 1)) * (total - 1))
-            : Math.min(index, total - 1);
-        target._syncing = true;
-        target.goTo(mapped, instant);
-        target._syncing = false;
-      }
-    } finally {
-      this._syncing = false;
+    let targets = getLinks(this);
+    if (!targets.length && this.options.asNavFor) {
+      // A sibling script may have been appended after init; resolve lazily.
+      this._syncRefs = resolveInstances(this.options.asNavFor, this);
+      attachSync(this, this._syncRefs);
+      targets = getLinks(this);
+    }
+    if (!targets.length || this._syncing) return;
+    const sourceMax = this._geo ? this._geo.maxIndex : this.slides.length - 1;
+
+    for (const target of targets) {
+      if (!target || target === this || target.destroyed || !target._geo) continue;
+      const targetMax = target._geo.maxIndex;
+      const mapped =
+        sourceMax > 0 && targetMax > 0
+          ? clamp(Math.round((index / sourceMax) * targetMax), 0, targetMax)
+          : 0;
+      if (target.activeIndex === mapped && Number.isInteger(target.progress)) continue;
+
+      target._syncing = true;
+      target.goTo(mapped, instant);
     }
   }
 }

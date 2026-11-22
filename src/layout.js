@@ -140,18 +140,26 @@ export const EFFECTS = {
   },
 
   coverflow: {
-    limit: () => 5,
+    limit: (o) => {
+      const painted = Math.round(Number(o.coverflowEffect?.visible) || 5);
+      return Math.max(1, Math.min(10, painted));
+    },
     perspective: true,
-    apply(st, { d, options }) {
+    apply(st, { d, options, dir }) {
       const effect = options.coverflowEffect || {};
       const a = abs(d);
-      st.x *= Number(effect.modifier) || 1;
+      const painted = Math.max(1, Math.min(10, Math.round(Number(effect.visible) || 5)));
+      st.x = st.x * (Number(effect.modifier) || 1) + d * (Number(effect.offset) || 0) * dir;
+      st.y -= a * (Number(effect.lift) || 0);
       st.z = -a * (Number(effect.depth) || 0);
       st.rotateY = -d * (Number(effect.rotate) || 0);
+      st.rotateX = d * (Number(effect.tilt) || 0);
       st.scale = Math.max(0, 1 - a * (1 - (Number(effect.scale) || 1)));
       const op = Number(effect.opacity);
       st.opacity = Number.isFinite(op) && op > 0 ? Math.pow(op, a) : 1;
-      st.visible = a < 5;
+      const blur = Number(effect.blur) || 0;
+      if (blur && a > 0.001) st.filter = `blur(${round(blur * a, 2)}px)`;
+      st.visible = a <= painted;
     },
   },
 
@@ -170,6 +178,118 @@ export const EFFECTS = {
       const maxStack = Number(effect.maxStack) || 3;
       st.opacity = a <= maxStack ? 1 : Math.max(0, 1 - (a - maxStack) * 1.6);
       st.visible = st.opacity > 0.01;
+    },
+  },
+
+  wheel: {
+    limit: (o) => Math.max(1, Math.min(10, Math.round(Number(o.wheelEffect?.visible) || 4))),
+    perspective: true,
+    apply(st, { d, options, center, dir, vertical }) {
+      const effect = options.wheelEffect || {};
+      const radius = Math.max(0, Number(effect.radius) || 0);
+      const step = ((Number(effect.angle) || 0) * Math.PI) / 180;
+      const theta = d * step;
+      const t = abs(d);
+      const rise = (1 - Math.cos(theta)) * radius;
+      const spread = d * (Number(effect.offset) || 0) * dir;
+      const tilt = d * (Number(effect.tilt) || 0);
+      const painted = Math.max(1, Math.min(10, Math.round(Number(effect.visible) || 4)));
+      if (vertical) {
+        st.x = rise * dir;
+        st.y = center.y + Math.sin(theta) * radius + spread;
+        st.rotateZ = (-theta * 180) / Math.PI * dir;
+        st.rotateY = tilt;
+      } else {
+        st.x = center.x + Math.sin(theta) * radius * dir + spread;
+        st.y = center.y + rise;
+        st.rotateZ = (theta * 180) / Math.PI * dir;
+        st.rotateX = tilt;
+      }
+      st.z = -t * (Number(effect.depth) || 0);
+      st.scale = Math.max(0, 1 - t * (1 - (Number(effect.scale) || 1)));
+      st.opacity = Math.pow(Number(effect.opacity) || 0, t);
+      const blur = Number(effect.blur) || 0;
+      if (blur && t > 0.001) st.filter = `blur(${round(blur * t, 2)}px)`;
+      st.visible = t <= painted && st.opacity > 0.02;
+    },
+  },
+
+  helix: {
+    limit: (o) => Math.max(1, Math.min(10, Math.round(Number(o.helixEffect?.visible) || 5))),
+    perspective: true,
+    apply(st, { d, options, center, dir, vertical }) {
+      const effect = options.helixEffect || {};
+      const radius = Math.max(0, Number(effect.radius) || 0);
+      const step = ((Number(effect.rotate) || 0) * Math.PI) / 180;
+      const theta = d * step;
+      const t = abs(d);
+      const cos = Math.cos(theta);
+      const rise = Number(effect.rise) || 0;
+      const spread = d * (Number(effect.offset) || 0) * dir;
+      const tilt = d * (Number(effect.tilt) || 0);
+      const painted = Math.max(1, Math.min(10, Math.round(Number(effect.visible) || 5)));
+      st.z = (cos - 1) * radius - t * (Number(effect.depth) || 0);
+      if (vertical) {
+        st.x = d * rise * dir;
+        st.y = center.y + Math.sin(theta) * radius + spread;
+        st.rotateX = (-theta * 180) / Math.PI;
+        st.rotateY = tilt;
+      } else {
+        st.x = center.x + Math.sin(theta) * radius * dir + spread;
+        st.y = center.y + d * rise;
+        st.rotateY = (-theta * 180) / Math.PI * dir;
+        st.rotateX = tilt;
+      }
+      st.scale = Math.max(0, 1 - t * (1 - (Number(effect.scale) || 1)));
+      st.opacity = Math.pow(Number(effect.opacity) || 0, t);
+      const blur = Number(effect.blur) || 0;
+      if (blur && t > 0.001) st.filter = `blur(${round(blur * t, 2)}px)`;
+      st.visible = t <= painted && cos > -0.15 && st.opacity > 0.02;
+      st.zIndex = Math.round((cos + 1) * 500);
+    },
+  },
+
+  fold: {
+    limit: () => 2,
+    stacked: true,
+    perspective: true,
+    apply(st, { d, options }) {
+      const effect = options.foldEffect || {};
+      const t = Math.min(abs(d), 1);
+      const endOpacity = Number(effect.opacity);
+      st.x = 0;
+      st.y = 0;
+      st.rotateX = d * (Number(effect.rotate) || 0);
+      st.z = -t * (Number(effect.depth) || 0);
+      st.opacity = 1 - t * (1 - (Number.isFinite(endOpacity) ? endOpacity : 0));
+      st.visible = abs(d) < 1.15;
+    },
+  },
+
+  zoom: {
+    limit: () => 2,
+    stacked: true,
+    perspective: true,
+    apply(st, { d, options }) {
+      const effect = options.zoomEffect || {};
+      const t = Math.min(abs(d), 1);
+      const enterScale = Number(effect.scale);
+      const exitScale = Number(effect.exitScale);
+      const endOpacity = Number(effect.opacity);
+      const depth = Number(effect.depth) || 0;
+      const blur = Number(effect.blur) || 0;
+      st.x = 0;
+      st.y = 0;
+      if (d >= 0) {
+        st.scale = lerp(1, Number.isFinite(enterScale) ? enterScale : 1, t);
+        st.z = -t * depth;
+      } else {
+        st.scale = lerp(1, Number.isFinite(exitScale) ? exitScale : 1, t);
+        st.z = t * depth;
+      }
+      st.opacity = 1 - t * (1 - (Number.isFinite(endOpacity) ? endOpacity : 0));
+      if (blur && t > 0.001) st.filter = `blur(${round(blur * t, 2)}px)`;
+      st.visible = abs(d) < 1.2 && st.opacity > 0.002;
     },
   },
 

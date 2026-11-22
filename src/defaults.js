@@ -12,11 +12,15 @@ export const MODES = Object.freeze([
   'fade',
   'coverflow',
   'cards',
+  'wheel',
+  'helix',
+  'flip',
+  'fold',
+  'cube',
+  'zoom',
   'marquee',
   'kenburns',
   'staggered',
-  'flip',
-  'cube',
 ]);
 
 export const DEFAULT_OPTIONS = {
@@ -32,7 +36,6 @@ export const DEFAULT_OPTIONS = {
   centerMode: false,
   centerPadding: '0px',
   vertical: false,
-  verticalSwiping: false,
   rtl: false,
   adaptiveHeight: false,
   watchOverflow: true,
@@ -80,7 +83,7 @@ export const DEFAULT_OPTIONS = {
 
   /* ── media ────────────────────────────────────────────────────────── */
   lazyLoad: false, // false | 'ondemand' | 'progressive'
-  lazyLoadSelector: 'img[data-src], source[data-srcset]',
+  lazyLoadSelector: 'img[data-src], img[data-srcset], source[data-srcset], [data-background]',
 
   /* ── responsive & sync ────────────────────────────────────────────── */
   responsive: null,
@@ -89,11 +92,47 @@ export const DEFAULT_OPTIONS = {
   syncClick: false,
 
   /* ── per-mode effects ─────────────────────────────────────────────── */
-  fadeEffect: { crossFade: true, scale: 0, blur: 0 },
-  coverflowEffect: { rotate: 42, depth: 180, scale: 0.86, stretch: 0, modifier: 1, opacity: 1 },
+  fadeEffect: { scale: 0, blur: 0 },
+  coverflowEffect: {
+    rotate: 42,
+    depth: 180,
+    scale: 0.86,
+    modifier: 1,
+    opacity: 1,
+    offset: 0,
+    tilt: 0,
+    lift: 0,
+    blur: 0,
+    visible: 5,
+  },
   cardsEffect: { offsetX: 26, offsetY: 10, rotate: 3.5, scale: 0.92, maxStack: 3, opacity: 0.45 },
+  wheelEffect: {
+    radius: 240,
+    angle: 30,
+    scale: 0.82,
+    opacity: 0.38,
+    offset: 0,
+    depth: 0,
+    tilt: 0,
+    blur: 0,
+    visible: 4,
+  },
+  helixEffect: {
+    radius: 240,
+    rotate: 38,
+    rise: 44,
+    scale: 0.88,
+    opacity: 0.45,
+    offset: 0,
+    depth: 0,
+    tilt: 0,
+    blur: 0,
+    visible: 5,
+  },
   flipEffect: { rotate: 90, depth: 120, opacity: 0.25 },
-  cubeEffect: { rotate: 90, depth: 0, shadow: true },
+  foldEffect: { rotate: 82, depth: 100, opacity: 0.2 },
+  cubeEffect: { rotate: 90, depth: 0 },
+  zoomEffect: { scale: 0.62, exitScale: 1.45, depth: 260, blur: 3, opacity: 0 },
   kenBurns: {
     targets: 'img, [data-ajc-kenburns]',
     from: 1,
@@ -108,7 +147,6 @@ export const DEFAULT_OPTIONS = {
     each: 65,
     duration: 720,
     distance: 26,
-    outDuration: 220,
     ease: 'out(3)',
     from: 'start',
   },

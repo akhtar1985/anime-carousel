@@ -129,7 +129,21 @@ export function mergeDeep(target, ...sources) {
 }
 
 export const isInteractive = (target) =>
-  !!(target && target.closest && target.closest('a, button, input, textarea, select, label, [data-ajc-no-drag]'));
+  !!(
+    target &&
+    target.closest &&
+    target.closest(
+      'a, button, input, textarea, select, label, [contenteditable]:not([contenteditable="false"]), [data-ajc-no-drag]',
+    )
+  );
+
+/** Form fields and editable regions own their pointer/keyboard/wheel gestures. */
+export const isFormField = (target) =>
+  !!(
+    target &&
+    target.closest &&
+    target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')
+  );
 
 /** Dispatch a namespaced DOM CustomEvent, ignoring user data that fails to clone. */
 export function emitDomEvent(element, type, detail) {
@@ -183,9 +197,42 @@ export function resolveTemplate(template, className, fallbackHtml) {
   if (found) {
     const element = found;
     element.classList.add(...className.split(' ').filter(Boolean));
+    // The author owns this node; Navigation must not remove it on rebuild.
+    element.__ajcExternal = true;
     return element;
   }
   return createElement('button', className, { html: fallbackHtml });
+}
+
+/**
+ * Resolve an absolute slide target into the nearest progress value.
+ *
+ * The origin is rounded to a whole slide: resolving against a fractional
+ * progress (left behind by an interrupted drag or a mid-flight transition)
+ * used to snap back onto that fraction instead of the nearest index. In loop
+ * mode the result keeps the shortest direction from the origin and is never
+ * wrapped, so `progress` stays monotonic across the loop boundary.
+ */
+export function resolveProgress(target, progress, length, loop, maxIndex = Math.max(0, length - 1)) {
+  const requested = Math.round(Number(target));
+  const last = Math.max(0, Math.round(maxIndex));
+  if (!Number.isFinite(requested)) return Math.round(Number(progress)) || 0;
+  if (!loop || length <= 1) return clamp(requested, 0, last);
+  const origin = Math.round(Number(progress) || 0);
+  return origin + signedWrap(requested - wrap(origin, length), length);
+}
+
+/**
+ * Absolute target for `next()` / `prev()`: whole slides, never a fraction.
+ * Unlike `resolveProgress` this keeps the requested direction for large
+ * `slidesToScroll` values, so a forward step never animates backwards just
+ * because the wrap in the other direction is shorter.
+ */
+export function stepProgress(progress, direction, step, length, loop, maxIndex = Math.max(0, length - 1)) {
+  const amount = Math.max(1, Math.round(Number(step) || 1));
+  const target = Math.round(Number(progress) || 0) + (direction < 0 ? -amount : amount);
+  if (loop && length > 1) return target;
+  return clamp(target, 0, Math.max(0, Math.round(maxIndex)));
 }
 
 /** Fractional index → { index, fraction } with wrap support. */

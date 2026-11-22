@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Live demo
+    url: https://akhtar1985.github.io/anime-carousel/
+    about: Twenty-one running instances, every mode, live effect studios.
+  - name: Options reference
+    url: https://akhtar1985.github.io/anime-carousel/settings.html
+    about: Every option with a live control and a generated config.
+  - name: Comparison, modes and recipes
+    url: https://akhtar1985.github.io/anime-carousel/docs/
+    about: How it compares, what each mode does, and complete copy-paste setups.

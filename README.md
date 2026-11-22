@@ -1,7 +1,7 @@
 # anime-carousel
 
 **A slider & carousel plugin built on [Anime.js v4](https://animejs.com/documentation).**
-Slick's ergonomics, Swiper's range: nine modes, virtual infinite loop, controller sync, drag, autoplay,
+Slick's ergonomics, Swiper's range: thirteen modes, virtual infinite loop, controller sync, drag, autoplay,
 lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 lines of readable, commented ESM with no build step.
 
 ![Anime.js v4](https://img.shields.io/badge/Anime.js-v4-ff3b7f?style=flat-square)
@@ -12,7 +12,10 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 [![check](https://github.com/akhtar1985/anime-carousel/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/akhtar1985/anime-carousel/actions/workflows/check.yml)
 
 **[Live demo](https://akhtar1985.github.io/anime-carousel/)** ·
-**[Options reference](https://akhtar1985.github.io/anime-carousel/settings.html)** — every option, live.
+**[Options reference](https://akhtar1985.github.io/anime-carousel/settings.html)** — every option, live ·
+**[How it compares](https://akhtar1985.github.io/anime-carousel/docs/comparison.html)** ·
+**[Modes guide](https://akhtar1985.github.io/anime-carousel/docs/modes.html)** ·
+**[Recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html)**
 
 ---
 
@@ -21,18 +24,51 @@ lazy loading, responsive breakpoints and a fully accessible DOM — in ~2,900 li
 - **One fractional `progress` value drives everything.** Every slide is projected through a geometry
   snapshot and written as a GPU transform, so infinite loop is seamless **without clone nodes**, partial
   `slidesToShow` works, and index math never breaks.
-- **Anime.js v4, no legacy syntax.** `animate`, `createTimeline`, `createScope`, `stagger`,
-  `createSpring` and `utils` — no `anime({...})`, no `easing:` or `direction: 'alternate'`.
+- **Anime.js v4, no legacy syntax.** `animate`, `createTimeline`, `stagger`, `createSpring` and
+  `utils` — no `anime({...})`, no `easing:` or `direction: 'alternate'`.
 - **Slick + Swiper vocabulary.** Both names work: `slidesToShow`/`slidesPerView`,
   `infinite`/`loop`, `dots`/`pagination`, `arrows`/`navigation`, `autoplaySpeed`/`delay`,
   `asNavFor`/`controller`.
 - **Real cleanup.** `destroy()` removes listeners, timers, observers, cloned nodes, generated
-  navigation, ARIA attributes, inline animation styles, and reverts every Anime.js instance in its `createScope`.
+  navigation, ARIA attributes and inline animation styles, restores your own wrappers, and reverts
+  every animation the instance created.
+
+---
+
+## Compare with other carousels
+
+A feature-first comparison with Swiper, Slick, Splide, Embla, Glide and Flickity — including who it
+is *not* for and migration tables for Slick and Swiper — lives on the
+**[comparison page](https://akhtar1985.github.io/anime-carousel/docs/comparison.html)**.
+The condensed version:
+
+| Capability | anime-carousel | Swiper | Slick | Splide | Embla | Flickity |
+| --- | --- | --- | --- | --- | --- | --- |
+| Built-in animated modes | **13** | 7 effects | 2 | 1–2 | 1 | 1 |
+| Effect knobs (`offset`, `tilt`, `lift`, `blur`, `visible`) | **Yes** | Coverflow only | — | — | — | — |
+| Infinite loop without clones | **Yes** | Clones | Clones | Clones | Yes | Yes |
+| Runtime `setMode()` | **Yes** | Via re-init | — | — | — | — |
+| Official React / Vue / Svelte wrappers | — (instance API) | Yes | — | Yes | Yes | — |
+| jQuery required | **No** | No | Yes | No | No | No |
+| Runtime dependencies | animejs@^4 | none | jQuery | none | none | none |
+
+Snapshot: late 2026; built-in behaviour only, community plugins excluded. Dashes mean “not built
+in”, not “impossible”.
+
+Ready to switch? The comparison page has [Slick and Swiper migration tables](https://akhtar1985.github.io/anime-carousel/docs/comparison.html#switching)
+(`slickNext` → `next()`, `slidesPerView` → `slidesToShow`, `effect: 'coverflow'` → `mode: 'coverflow'`),
+and the [recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html) show complete page setups.
+
+**More documentation:** [docs index](https://akhtar1985.github.io/anime-carousel/docs/) ·
+[The 13 modes, in depth](https://akhtar1985.github.io/anime-carousel/docs/modes.html) ·
+[Recipes](https://akhtar1985.github.io/anime-carousel/docs/recipes.html) ·
+[Options reference](https://akhtar1985.github.io/anime-carousel/settings.html)
 
 ---
 
 ## Table of contents
 
+- [Compare with other carousels](#compare-with-other-carousels)
 - [Quick start](#quick-start)
 - [Markup contract](#markup-contract)
 - [Modes](#modes)
@@ -167,17 +203,80 @@ Rules:
 | `fade` | Crossfade with optional scale/blur; all slides share the centre. | `fadeEffect` |
 | `coverflow` | 3D `rotateY` + `translateZ` + scale perspective stack. | `coverflowEffect` |
 | `cards` | Stacked card deck with rotation and offset; deals out on navigation. | `cardsEffect` |
+| `wheel` | Slides ride a circular arc around the active one, tilting with the tangent. | `wheelEffect` |
+| `helix` | 3D helix: every step rotates around `Y` and climbs by `rise`, around a cylinder. | `helixEffect` |
+| `flip` | 3D flip on the `Y` axis with depth and fade. | `flipEffect` |
+| `fold` | 3D fold on the `X` axis, like a page turning away. | `foldEffect` |
+| `cube` | True cube rotation: faces are `translateZ(size/2)` after the rotation, `backface-visibility: hidden`. | `cubeEffect` |
+| `zoom` | Dolly-through: incoming slides grow in from depth, outgoing ones fly past the camera. | `zoomEffect` |
 | `marquee` | Continuous ticker. Clone strip + one looping `createTimeline()`. Pause on hover/focus. | `marquee` |
 | `kenburns` | Slide layout plus a slow pan/zoom timeline on the active media. | `kenBurns` |
 | `staggered` | Slide layout plus `createTimeline()` + `stagger()` reveal of `data-ajc-reveal` children. | `staggerEffect` |
-| `flip` | 3D flip on the `Y` axis with depth and fade. | `flipEffect` |
-| `cube` | True cube rotation: faces are `translateZ(size/2)` after the rotation, `backface-visibility: hidden`. | `cubeEffect` |
 
 ```js
-slider.setMode('cards', { cardsEffect: { offsetX: 28, rotateZ: 4 } });
+slider.setMode('cards', { cardsEffect: { offsetX: 28, rotate: 4 } });
 ```
 
 `marquee` owns the axis: drag, autoplay and pagination are disabled for it by design.
+
+### Coverflow layout
+
+`coverflowEffect` is a small layout engine of its own. All values are per slide distance, so the
+active slide stays untouched and the settings only reshape its neighbours.
+
+| Key | Default | What it does |
+| --- | --- | --- |
+| `rotate` | `42` | `rotateY` degrees per slide. |
+| `depth` | `180` | `translateZ` px pushed back per slide. |
+| `scale` | `0.86` | Scale of the first neighbour; further slides shrink on the same curve. |
+| `modifier` | `1` | Multiplier applied to the measured horizontal position. |
+| `opacity` | `1` | Per-step opacity multiplier (`0.65` fades neighbours quickly). |
+| `offset` | `0` | Extra px between covers, on top of the measured layout. |
+| `tilt` | `0` | Neighbour `rotateX` degrees; negative values tilt the other way. |
+| `lift` | `0` | Neighbour vertical offset in px; negative values drop them. |
+| `blur` | `0` | Neighbour blur in px per slide step. |
+| `visible` | `5` | Slides painted on each side, clamped to 1–10. |
+
+```js
+new AnimeCarousel('#hero', {
+  mode: 'coverflow',
+  slidesToShow: 1.6,
+  centerMode: true,
+  coverflowEffect: {
+    rotate: 36, depth: 190, scale: 0.82, offset: 12, tilt: 8, lift: 10, blur: 1.5, visible: 5,
+  },
+});
+```
+
+### Wheel & helix layout
+
+`wheel` and `helix` take the same layout vocabulary as coverflow on top of their arc/cylinder maths:
+every value is per slide distance, so the active slide stays put.
+
+| Key | Default (`wheel` / `helix`) | What it does |
+| --- | --- | --- |
+| `radius` | `240` / `240` | Arc (wheel) or cylinder (helix) radius in px. |
+| `angle` / `rotate` | `30` / `38` | Degrees travelled per slide along the arc / around the cylinder. |
+| `rise` | — / `44` | px climbed along the axis per slide (helix only). |
+| `scale` | `0.82` / `0.88` | Scale of the first neighbour; further slides shrink on the same curve. |
+| `opacity` | `0.38` / `0.45` | Per-step opacity multiplier. |
+| `offset` | `0` / `0` | Extra px between slides along the axis. |
+| `depth` | `0` / `0` | Extra `translateZ` recession per slide. |
+| `tilt` | `0` / `0` | Cross-axis lean in degrees (`rotateX` horizontal, `rotateY` vertical). |
+| `blur` | `0` / `0` | Neighbour blur in px per slide step. |
+| `visible` | `4` / `5` | Slides painted on each side, clamped to 1–10. |
+
+```js
+new AnimeCarousel('#reels', {
+  mode: 'wheel',
+  slidesToShow: 1.5,
+  wheelEffect: {
+    radius: 200, angle: 24, scale: 0.8, opacity: 0.4, offset: 10, depth: 80, tilt: 10, blur: 0.5, visible: 4,
+  },
+});
+```
+
+`helixEffect` takes the same keys, with `rotate` instead of `angle` and `rise` for the climb.
 
 ---
 
@@ -189,7 +288,7 @@ Defaults shown. Pass them to the constructor, via `data-*`, or at runtime with `
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `mode` | `string` | `'slide'` | One of the nine modes above. Alias: `effect`. |
+| `mode` | `string` | `'slide'` | One of the thirteen modes above. Alias: `effect`. |
 | `initialSlide` | `number` | `0` | Starting index. Alias: `startIndex`. |
 | `slidesToShow` | `number \| 'auto'` | `1` | Slides per view; fractions allowed (`1.25`). `'auto'` measures each slide. Alias: `slidesPerView`. |
 | `slidesToScroll` | `number` | `1` | Step for `next()`/`prev()` and pagination pages. |
@@ -197,9 +296,8 @@ Defaults shown. Pass them to the constructor, via `data-*`, or at runtime with `
 | `infinite` | `boolean` | `false` | Seamless wrap with no clones and no broken indices. Alias: `loop`. |
 | `centerMode` | `boolean` | `false` | Centre the active slide; neighbours peek. Alias: `centeredSlides`. |
 | `centerPadding` | `string \| number` | `'0px'` | Inset applied in centre mode (`px` or `%`). |
-| `vertical` | `boolean` | `false` | Vertical axis (needs a viewport height). |
-| `verticalSwiping` | `boolean` | `false` | Drag along the vertical axis. |
-| `rtl` | `boolean` | `false` | Mirrors layout and drag direction. |
+| `vertical` | `boolean` | `false` | Vertical axis (needs a viewport height). Dragging follows the Y axis. |
+| `rtl` | `boolean` | `false` | Mirrors layout, drag and arrow-key direction. |
 | `adaptiveHeight` | `boolean` | `false` | Animate the viewport height to the active slide. |
 | `watchOverflow` | `boolean` | `true` | Hide arrows and disable nav when everything fits. |
 
@@ -212,7 +310,7 @@ Defaults shown. Pass them to the constructor, via `data-*`, or at runtime with `
 | `spring` | `boolean` | `false` | Use `createSpring()` instead of the easing curve. |
 | `springConfig` | `object` | `{ stiffness: 110, damping: 16, mass: 1, velocity: 0 }` | Passed to `createSpring()`. |
 | `reducedMotion` | `'respect' \| 'ignore'` | `'respect'` | `'respect'` makes every transition instant and pauses decorative effects when `prefers-reduced-motion: reduce` is set. |
-| `perspective` | `number` | `1200` | 3D perspective for `coverflow`, `cards`, `flip`, `cube`. |
+| `perspective` | `number` | `1200` | 3D perspective for `coverflow`, `cards`, `wheel`, `helix`, `flip`, `fold`, `cube` and `zoom`. |
 
 ### Autoplay
 
@@ -236,7 +334,7 @@ Defaults shown. Pass them to the constructor, via `data-*`, or at runtime with `
 | `dots` | `boolean \| object` | `false` | `{ type, dynamicBullets, clickable }` also accepted. Alias: `pagination`. |
 | `dotsType` | `'bullets' \| 'fraction' \| 'progress'` | `'bullets'` | `1 / 8`, progress bar, or bullets. |
 | `dynamicBullets` | `boolean` | `false` | Highlights near/far bullets (`is-near` / `is-far`). |
-| `customPaging` | `(page, dot) => string` | `null` | Custom bullet inner HTML. |
+| `customPaging` | `(page, dot) => string \| Element` | `null` | Custom bullet content (HTML string or node). |
 | `dotsPerPage` | `boolean` | `true` | One bullet per `slidesToScroll` page (Slick) instead of per slide. |
 | `paginationClickable` | `boolean` | `true` | Bullets navigate. |
 
@@ -261,7 +359,7 @@ Defaults shown. Pass them to the constructor, via `data-*`, or at runtime with `
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `lazyLoad` | `false \| 'ondemand' \| 'progressive'` | `false` | `'ondemand'` loads the visible window + 1; `'progressive'` loads in idle slices. |
-| `lazyLoadSelector` | `string` | `'img[data-src], source[data-srcset]'` | Elements to upgrade. |
+| `lazyLoadSelector` | `string` | `'img[data-src], img[data-srcset], source[data-srcset], [data-background]'` | Elements to upgrade. |
 
 Lazy loading swaps `data-src` → `src`, `data-srcset` → `srcset` (including `<picture><source>`),
 supports `data-background`, and toggles `is-lazy-loading` / `is-lazy-loaded`.
@@ -272,7 +370,7 @@ supports `data-background`, and toggles `is-lazy-loading` / `is-lazy-loaded`.
 | --- | --- | --- | --- |
 | `responsive` | `array \| object` | `null` | Slick array (max-width) **or** Swiper map (min-width). Alias: `breakpoints`. |
 | `breakpointsBase` | `'window' \| 'container'` | `'window'` | Measure the window or the viewport. |
-| `asNavFor` | `string \| Element \| instance \| array` | `null` | Bidirectional sync. Alias: `controller`. |
+| `asNavFor` | `string \| Element \| instance \| array` | `null` | Push settled indexes to these sliders. Alias: `controller`. |
 
 ```js
 // Slick style — applies at and below each breakpoint
@@ -288,18 +386,24 @@ responsive: { 640: { slidesToShow: 2 }, 1024: { slidesToShow: 3 } }
 ### Per-mode effects
 
 ```js
-fadeEffect:       { crossFade: true, scale: 0, blur: 0 },
-coverflowEffect:  { rotate: 42, depth: 180, scale: 0.86, stretch: 0, modifier: 1, opacity: 1 },
+fadeEffect:       { scale: 0, blur: 0 },
+coverflowEffect:  { rotate: 42, depth: 180, scale: 0.86, modifier: 1, opacity: 1, offset: 0, tilt: 0, lift: 0, blur: 0, visible: 5 },
 cardsEffect:      { offsetX: 26, offsetY: 10, rotate: 3.5, scale: 0.92, maxStack: 3, opacity: 0.45 },
+wheelEffect:      { radius: 240, angle: 30, scale: 0.82, opacity: 0.38, offset: 0, depth: 0, tilt: 0, blur: 0, visible: 4 },
+helixEffect:      { radius: 240, rotate: 38, rise: 44, scale: 0.88, opacity: 0.45, offset: 0, depth: 0, tilt: 0, blur: 0, visible: 5 },
 flipEffect:       { rotate: 90, depth: 120, opacity: 0.25 },
-cubeEffect:       { rotate: 90, depth: 0, shadow: true },
+foldEffect:       { rotate: 82, depth: 100, opacity: 0.2 },
+cubeEffect:       { rotate: 90, depth: 0 },
+zoomEffect:       { scale: 0.62, exitScale: 1.45, depth: 260, blur: 3, opacity: 0 },
 kenBurns:         { targets: 'img, [data-ajc-kenburns]', from: 1, to: 1.14, duration: 9000, alternate: true, panX: 0, panY: 0 },
-staggerEffect:    { targets: null, each: 65, duration: 720, distance: 26, outDuration: 220, ease: 'out(3)', from: 'start' },
+staggerEffect:    { targets: null, each: 65, duration: 720, distance: 26, ease: 'out(3)', from: 'start' },
 marquee:          { speed: 60, direction: 'normal', pauseOnHover: true, duplicated: true },
 ```
 
 `staggerEffect.targets` defaults to `[data-ajc-reveal]` elements, then common media/heading/copy
-children. `marquee.speed` is **px per second**.
+children. `marquee.speed` is **px per second**; `wheelEffect.angle` and `helixEffect.rotate` are
+degrees per slide, and `helixEffect.rise` is vertical px per slide. `offset`, `depth`, `tilt`,
+`blur` and `visible` behave exactly as they do in `coverflowEffect`.
 
 ### Accessibility & misc
 
@@ -327,8 +431,9 @@ new AnimeCarousel('#hero', {
 ## Synchronisation & thumbnails
 
 Slick's `asNavFor` and Swiper's controller are the same mechanism here: a link graph where each slider
-pushes its index to its partners when a transition settles. Links are bidirectional by default, and
-propagation is guarded so it can never loop.
+pushes its index to its partners when a transition settles. Propagation is guarded so it can never loop.
+Declare `asNavFor` on both sliders for two-way control, or call `sync(target)`, which links both
+directions by default.
 
 ```html
 <div class="ajc" id="gallery-main">…</div>
@@ -357,11 +462,13 @@ const main = new AnimeCarousel('#gallery-main', {
 });
 ```
 
-Link at runtime, and to more than two sliders:
-
 ```js
-main.sync(thumbs);              // bidirectional
-main.sync([thumbs, '#chapter-list'], { bidirectional: false });
+import { attachSync } from 'anime-carousel';
+
+// Link at runtime, and to more than two sliders:
+main.sync(thumbs);                                      // both directions
+main.sync([thumbs, '#chapter-list'], { bidirectional: false }); // main → partners only
+attachSync(main, [thumbs]);                             // low-level: main → partners only
 ```
 
 Different slide counts map proportionally, so a 20-slide main can drive a 6-thumb strip.
@@ -380,18 +487,31 @@ Different slide counts map proportionally, so a 20-slide main can drive a 6-thum
 | `addSlide(htmlOrEl, index?)` | `HTMLElement` | Append or insert a slide, then refresh. |
 | `removeSlide(index)` | `this` | Remove a slide and clamp the position. |
 | `refresh()` / `update()` | `this` | Re-measure after DOM/size changes. |
-| `sync(target, options?)` | `this` | Link other instances (see above). |
+| `sync(target, options?)` | `this` | Link other instances; `{ bidirectional: false }` links one way. |
 | `destroy()` | `void` | Full teardown (see below). |
 | `activeIndex` | `number` | Current (settled) index. |
 | `count` | `number` | Number of slides. |
 | `looping` | `boolean` | Whether the strip actually wraps right now. |
 | `options` | `object` | Live, normalised options. |
 
+Static and module-level helpers:
+
+```js
+import AnimeCarousel, { create, autoInit, getInstance, resolveInstances, EFFECTS } from 'anime-carousel';
+
+const slider = create('#hero');        // same as new AnimeCarousel('#hero')
+autoInit(document);                    // upgrade every [data-ajc]
+getInstance(slider.id);                // registry lookup by instance id
+resolveInstances('#thumbs');           // selector → instance[]
+EFFECTS.fade;                          // per-mode projection descriptors
+```
+
 ### `destroy()` removes
 
 event listeners, ResizeObserver, autoplay timers, idle-callback queues, generated arrows/dots/status
-nodes, marquee clones, ARIA attributes, `inert`, inline transforms/opacity/sizes, generated wrapper
-elements, and reverts every animation created inside the instance's `createScope()`.
+nodes, marquee clones, ARIA attributes, `inert`, inline transforms/opacity/sizes, and every animation
+the instance created. Generated wrappers are dissolved; wrappers you authored yourself (for example a
+hand-written `.ajc__viewport`) stay in place with their children moved back.
 
 ```js
 const slider = new AnimeCarousel('#hero');
@@ -433,6 +553,9 @@ DOM custom events (bubbling, cancelable, `detail` identical) are dispatched on t
 | `onDragStart` / `onDragMove` / `onDragEnd` | `ajc:drag-start` / `ajc:drag-move` / `ajc:drag-end` |
 | `onAutoplayStart` / `onAutoplayStop` | `ajc:autoplay-start` / `ajc:autoplay-stop` |
 | `onReachStart` / `onReachEnd` | `ajc:reach-start` / `ajc:reach-end` |
+
+`detail.index` and `detail.previousIndex` are logical 0-based slide indexes, including in loop mode
+where the internal progress value can be negative or wrapped.
 
 ```js
 document.querySelector('#hero').addEventListener('ajc:change', (event) => {
@@ -523,6 +646,13 @@ AnimeCarousel.create('#hero', {}); // factory alias
 ```
 anime-carousel/
 ├── index.html              # interactive all-modes demo (ESM CDN, no build)
+├── settings.html           # live options reference, generated from defaults
+├── docs/                   # comparison, modes guide, recipes (static HTML)
+│   ├── index.html
+│   ├── comparison.html
+│   ├── modes.html
+│   ├── recipes.html
+│   └── docs.css
 ├── src/
 │   ├── index.js            # public entry: exports, create(), autoInit()
 │   ├── slider.js           # core engine, state machine, public API, lifecycle
@@ -596,13 +726,16 @@ Chromium 111+, Firefox 113+, Safari 16.4+ — anything with ES modules, `ResizeO
 
 ## Contributing
 
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup, ground rules and the PR checklist. In short:
+
 ```bash
-node scripts/check.js    # import/export audit + "no legacy Anime.js v3" lint
+npm install              # dev dependency: animejs
+npm run check            # import audit + option docs + legacy v3 API lint
+npm test                 # state machine, effect geometry, check self-tests
 npx serve .              # run the demo
 ```
 
-Keep the source ESM, no build step, and no v3 Anime.js syntax (`anime({...})`, `easing:`,
-`direction: 'alternate'`).
+Security reports: [SECURITY.md](./SECURITY.md) (private advisory, please do not open a public issue).
 
 ## License
 

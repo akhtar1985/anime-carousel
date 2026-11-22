@@ -51,7 +51,6 @@ function playgroundOptions() {
     spring: state.spring,
     springConfig: { stiffness: 78, damping: 15, mass: 1, velocity: 0 },
     vertical: state.vertical,
-    verticalSwiping: true,
     rtl: state.rtl,
     arrows: state.arrows,
     dots: state.dots,
@@ -59,7 +58,7 @@ function playgroundOptions() {
     draggable: true,
     keyboard: true,
     mousewheel: false,
-    autoplay: false,
+    autoplay: state.autoplay,
     pauseOnDotsHover: true,
     onBeforeChange: (detail) => log(`onBeforeChange  ${detail.previousIndex} → ${detail.index}`),
     onAfterChange: (detail) => log(`onAfterChange   index ${detail.index}`),
@@ -208,7 +207,7 @@ gallery.sync(thumbs);
 
 /* ── mode demos ─────────────────────────────────────────────────────── */
 
-new AnimeCarousel('#d-coverflow', {
+const coverflow = new AnimeCarousel('#d-coverflow', {
   mode: 'coverflow',
   slidesToShow: 1.6,
   centerMode: true,
@@ -217,7 +216,90 @@ new AnimeCarousel('#d-coverflow', {
   speed: 700,
   arrows: true,
   dots: false,
-  coverflowEffect: { rotate: 36, depth: 190, scale: 0.82, stretch: 0, modifier: 1, opacity: 0.65 },
+  coverflowEffect: {
+    rotate: 36,
+    depth: 190,
+    scale: 0.82,
+    modifier: 1,
+    opacity: 0.65,
+    offset: 8,
+    tilt: 0,
+    lift: 8,
+    blur: 0,
+    visible: 5,
+  },
+});
+
+/* ── effect studios ─────────────────────────────────────────────────── */
+
+function mountStudio({ root, instance, mode, effectKey, controls, resetLabel }) {
+  if (!root) return;
+
+  const state = { ...instance.options[effectKey] };
+  const initial = { ...state };
+  const format = (value, suffix) => `${Number(value)}${suffix}`;
+  const controlFor = (key) => controls.find((item) => item.key === key);
+
+  root.innerHTML = `${controls.map(({ key, label, min, max, step, suffix }) => `
+    <label class="range">
+      <span>${label} <output data-studio-out="${key}">${format(state[key], suffix)}</output></span>
+      <input type="range" data-studio="${key}" min="${min}" max="${max}" step="${step}"
+        value="${state[key]}" aria-label="${label}" />
+    </label>`).join('')}
+    <div class="studio__actions">
+      <button class="btn" type="button" data-studio-reset>${resetLabel}</button>
+    </div>`;
+
+  let timer = 0;
+  const apply = () => {
+    timer = 0;
+    instance.setMode(mode, { [effectKey]: { ...state } });
+  };
+  const schedule = () => {
+    if (!timer) timer = setTimeout(apply, 16);
+  };
+
+  root.addEventListener('input', (event) => {
+    const input = event.target.closest('[data-studio]');
+    if (!input) return;
+    const key = input.dataset.studio;
+    state[key] = Number(input.value);
+    const output = $(`[data-studio-out="${key}"]`, root);
+    if (output) output.textContent = format(state[key], controlFor(key).suffix);
+    schedule();
+  });
+
+  root.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-studio-reset]')) return;
+    Object.assign(state, initial);
+    $$('[data-studio]', root).forEach((input) => {
+      const key = input.dataset.studio;
+      input.value = String(state[key]);
+      const output = $(`[data-studio-out="${key}"]`, root);
+      if (output) output.textContent = format(state[key], controlFor(key).suffix);
+    });
+    schedule();
+  });
+}
+
+const CF_CONTROLS = [
+  { key: 'rotate', label: 'rotateY', min: 0, max: 90, step: 1, suffix: '°' },
+  { key: 'depth', label: 'depth', min: 0, max: 320, step: 5, suffix: 'px' },
+  { key: 'scale', label: 'scale', min: 0.4, max: 1, step: 0.02, suffix: '' },
+  { key: 'offset', label: 'offset', min: 0, max: 60, step: 1, suffix: 'px' },
+  { key: 'tilt', label: 'tilt', min: 0, max: 60, step: 1, suffix: '°' },
+  { key: 'lift', label: 'lift', min: 0, max: 80, step: 2, suffix: 'px' },
+  { key: 'blur', label: 'blur', min: 0, max: 8, step: 0.5, suffix: 'px' },
+  { key: 'visible', label: 'painted', min: 1, max: 8, step: 1, suffix: '' },
+];
+
+mountStudio({
+  root: $('#cf-studio'),
+  instance: coverflow,
+  mode: 'coverflow',
+  effectKey: 'coverflowEffect',
+  controls: CF_CONTROLS,
+  resetLabel: 'Reset coverflow',
 });
 
 new AnimeCarousel('#d-cards', {
@@ -227,6 +309,84 @@ new AnimeCarousel('#d-cards', {
   arrows: true,
   dots: false,
   cardsEffect: { offsetX: 20, offsetY: 14, rotate: 3, scale: 0.93, maxStack: 3 },
+});
+
+const wheel = new AnimeCarousel('#d-wheel', {
+  mode: 'wheel',
+  slidesToShow: 1.5,
+  infinite: true,
+  speed: 700,
+  arrows: true,
+  dots: false,
+  wheelEffect: {
+    radius: 170,
+    angle: 26,
+    scale: 0.78,
+    opacity: 0.35,
+    offset: 6,
+    depth: 70,
+    tilt: 10,
+    blur: 0,
+    visible: 4,
+  },
+});
+
+const helix = new AnimeCarousel('#d-helix', {
+  mode: 'helix',
+  slidesToShow: 1.5,
+  infinite: true,
+  speed: 750,
+  arrows: true,
+  dots: false,
+  helixEffect: {
+    radius: 155,
+    rotate: 34,
+    rise: 24,
+    scale: 0.84,
+    opacity: 0.4,
+    offset: 4,
+    depth: 50,
+    tilt: 6,
+    blur: 0.5,
+    visible: 5,
+  },
+});
+
+mountStudio({
+  root: $('#wheel-studio'),
+  instance: wheel,
+  mode: 'wheel',
+  effectKey: 'wheelEffect',
+  controls: [
+    { key: 'radius', label: 'radius', min: 0, max: 360, step: 5, suffix: 'px' },
+    { key: 'angle', label: 'angle', min: 0, max: 60, step: 1, suffix: '°' },
+    { key: 'scale', label: 'scale', min: 0.4, max: 1, step: 0.02, suffix: '' },
+    { key: 'offset', label: 'offset', min: 0, max: 60, step: 1, suffix: 'px' },
+    { key: 'depth', label: 'depth', min: 0, max: 240, step: 5, suffix: 'px' },
+    { key: 'tilt', label: 'tilt', min: 0, max: 60, step: 1, suffix: '°' },
+    { key: 'blur', label: 'blur', min: 0, max: 8, step: 0.5, suffix: 'px' },
+    { key: 'visible', label: 'painted', min: 1, max: 8, step: 1, suffix: '' },
+  ],
+  resetLabel: 'Reset wheel',
+});
+
+mountStudio({
+  root: $('#helix-studio'),
+  instance: helix,
+  mode: 'helix',
+  effectKey: 'helixEffect',
+  controls: [
+    { key: 'radius', label: 'radius', min: 0, max: 360, step: 5, suffix: 'px' },
+    { key: 'rotate', label: 'rotate', min: 0, max: 90, step: 1, suffix: '°' },
+    { key: 'rise', label: 'rise', min: 0, max: 120, step: 2, suffix: 'px' },
+    { key: 'scale', label: 'scale', min: 0.4, max: 1, step: 0.02, suffix: '' },
+    { key: 'offset', label: 'offset', min: 0, max: 60, step: 1, suffix: 'px' },
+    { key: 'depth', label: 'depth', min: 0, max: 240, step: 5, suffix: 'px' },
+    { key: 'tilt', label: 'tilt', min: 0, max: 60, step: 1, suffix: '°' },
+    { key: 'blur', label: 'blur', min: 0, max: 8, step: 0.5, suffix: 'px' },
+    { key: 'visible', label: 'painted', min: 1, max: 8, step: 1, suffix: '' },
+  ],
+  resetLabel: 'Reset helix',
 });
 
 new AnimeCarousel('#d-cube', {
@@ -247,6 +407,26 @@ new AnimeCarousel('#d-flip', {
   flipEffect: { rotate: 90, depth: 140, opacity: 0.2 },
 });
 
+new AnimeCarousel('#d-fold', {
+  mode: 'fold',
+  infinite: true,
+  speed: 750,
+  arrows: true,
+  dots: false,
+  foldEffect: { rotate: 82, depth: 90, opacity: 0.15 },
+});
+
+new AnimeCarousel('#d-zoom', {
+  mode: 'zoom',
+  infinite: true,
+  autoplay: true,
+  autoplaySpeed: 3200,
+  speed: 850,
+  arrows: true,
+  dots: true,
+  zoomEffect: { scale: 0.6, exitScale: 1.5, depth: 240, blur: 3, opacity: 0 },
+});
+
 new AnimeCarousel('#d-fade', {
   mode: 'fade',
   infinite: true,
@@ -255,7 +435,7 @@ new AnimeCarousel('#d-fade', {
   speed: 900,
   arrows: true,
   dots: true,
-  fadeEffect: { crossFade: true, scale: 0.05 },
+  fadeEffect: { scale: 0.05 },
 });
 
 new AnimeCarousel('#d-kenburns', {
@@ -282,7 +462,6 @@ new AnimeCarousel('#d-stagger', {
 
 new AnimeCarousel('#d-vertical', {
   vertical: true,
-  verticalSwiping: true,
   infinite: true,
   spaceBetween: 12,
   speed: 700,
@@ -392,6 +571,9 @@ if (!reduceMotion) {
 /* Handy from the devtools console: demo.pg().next(), demo.gallery.options … */
 window.demo = {
   pg: () => pg,
+  coverflow,
+  wheel,
+  helix,
   gallery,
   thumbs,
   lazy,
@@ -399,4 +581,4 @@ window.demo = {
   log,
 };
 
-log('AnimeCarousel ready — 12 instances online.');
+log('AnimeCarousel ready — all demo instances online.');

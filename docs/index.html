@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>anime-carousel documentation</title>
+  <meta name="description" content="Documentation for anime-carousel: a vanilla-ESM carousel engine on Anime.js v4 with 13 modes, effect studios and a clone-free infinite loop." />
+  <link rel="stylesheet" href="./docs.css" />
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "anime-carousel",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "description": "Vanilla-ESM carousel engine built on Anime.js v4 with 13 layout modes, live effect studios and a clone-free infinite loop.",
+      "url": "https://akhtar1985.github.io/anime-carousel/",
+      "codeRepository": "https://github.com/akhtar1985/anime-carousel",
+      "license": "https://opensource.org/licenses/MIT",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+  </script>
+</head>
+<body>
+  <header class="doc-top">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      anime-carousel
+      <span class="brand__tag">docs</span>
+    </a>
+    <nav class="doc-nav" aria-label="Documentation">
+      <a href="../index.html">Demo</a>
+      <a href="../settings.html">Options</a>
+      <a href="./index.html" aria-current="page">Docs</a>
+      <a href="./comparison.html">Compare</a>
+      <a href="./modes.html">Modes</a>
+      <a href="./recipes.html">Recipes</a>
+      <a href="https://github.com/akhtar1985/anime-carousel" rel="noopener">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main class="doc-main">
+    <div class="doc-hero">
+      <p class="eyebrow">Documentation</p>
+      <h1>Thirteen modes. One engine. No build step.</h1>
+      <p class="lede">
+        <strong>anime-carousel</strong> is a vanilla-ESM carousel built on Anime.js v4. It keeps
+        Slick’s ease of use, adds Swiper-grade depth effects, and runs from a single
+        <code>&lt;script type="module"&gt;</code>.
+      </p>
+      <div class="meta-row">
+        <span class="chip">MIT</span>
+        <span class="chip">animejs@^4 peer</span>
+        <span class="chip">zero clones for infinite</span>
+        <span class="chip">ship TypeScript types</span>
+        <span class="chip">a11y on by default</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <div class="card-grid">
+        <a class="doc-card" href="./comparison.html">
+          <span class="doc-card__kicker">Decide</span>
+          <h3>How it compares</h3>
+          <p>Feature matrix vs Swiper, Slick, Splide, Embla, Glide and Flickity — plus Slick/Swiper migration tables.</p>
+        </a>
+        <a class="doc-card" href="./modes.html">
+          <span class="doc-card__kicker">Learn</span>
+          <h3>The 13 modes</h3>
+          <p>What moves, which effect keys exist, the defaults from source, and when to pick each mode.</p>
+        </a>
+        <a class="doc-card" href="./recipes.html">
+          <span class="doc-card__kicker">Build</span>
+          <h3>Recipes</h3>
+          <p>Complete HTML + JS: coverflow hero, synced gallery, vertical feed, ticker, fade hero, lazy gallery.</p>
+        </a>
+        <a class="doc-card" href="../settings.html">
+          <span class="doc-card__kicker">Tune</span>
+          <h3>Options reference</h3>
+          <p>All 80 option rows with live controls, generated config, and a Try-this-settings flow.</p>
+        </a>
+        <a class="doc-card" href="../index.html">
+          <span class="doc-card__kicker">See</span>
+          <h3>Live demo</h3>
+          <p>Twenty-one running instances, mode chips, and the coverflow, wheel and helix studios.</p>
+        </a>
+        <a class="doc-card" href="../README.md">
+          <span class="doc-card__kicker">Reference</span>
+          <h3>Main README</h3>
+          <p>Install, markup contract, option tables, methods, events, a11y and browser support.</p>
+        </a>
+      </div>
+
+      <h2 id="features">The short version</h2>
+      <ul>
+        <li><strong>13 animated layout modes</strong> — slide, fade, coverflow, cards, wheel, helix, flip, fold, cube, zoom, marquee, kenburns, staggered.</li>
+        <li><strong>Effect studios</strong> — coverflow, wheel and helix expose <code>offset</code>, <code>depth</code>, <code>tilt</code>, <code>blur</code>, <code>visible</code> (plus <code>lift</code> for coverflow) per neighbour distance, live at runtime.</li>
+        <li><strong>Virtual infinite loop</strong> — modular index maths instead of clone nodes, so events, <code>activeIndex</code> and <code>aria-label</code> stay logical at the wrap point.</li>
+        <li><strong>Slick and Swiper vocabulary</strong> — both aliases work, so migration is mostly copy-paste.</li>
+        <li><strong>Runtime <code>setMode()</code></strong> — swap layout without destroying the instance.</li>
+        <li><strong>Accessible by default</strong> — roles, <code>aria-hidden</code>, <code>inert</code>, live region, keyboard navigation, RTL and reduced motion.</li>
+        <li><strong>No build step</strong> — the <code>src/</code> ESM files are the distributable; one peer dependency, <code>animejs@^4</code>.</li>
+      </ul>
+
+      <h2 id="start">Quick start</h2>
+      <div class="snippet snippet--lg">
+        <div class="snippet__bar"><span>index.html</span><span>CDN · no bundler</span></div>
+        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" /&gt;
+&lt;script type="importmap"&gt;
+  { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
+&lt;/script&gt;
+
+&lt;div class="ajc" id="hero"&gt;
+  &lt;div class="ajc__slide"&gt;1&lt;/div&gt;
+  &lt;div class="ajc__slide"&gt;2&lt;/div&gt;
+  &lt;div class="ajc__slide"&gt;3&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="module"&gt;
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  new AnimeCarousel('#hero', { mode: 'slide', infinite: true, dots: true, autoplay: true });
+&lt;/script&gt;</code></pre>
+      </div>
+      <p>
+        Pin a tag instead of <code>@main</code> for reproducible builds, or install from npm:
+        <code>npm i anime-carousel animejs</code>. Full instructions in the
+        <a href="../README.md#quick-start">README quick start</a>.
+      </p>
+
+      <h2 id="compatibility">Compatibility</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Module format</th><td>ESM (<code>src/index.js</code>), no bundler required</td></tr>
+            <tr><th scope="row">Runtime dependency</th><td><code>animejs@^4</code> (peer)</td></tr>
+            <tr><th scope="row">Styles</th><td><code>styles/slider.css</code> or <code>styles/slider.scss</code></td></tr>
+            <tr><th scope="row">Types</th><td><code>types/index.d.ts</code> included</td></tr>
+            <tr><th scope="row">Browsers</th><td>Chromium 111+, Firefox 113+, Safari 16.4+</td></tr>
+            <tr><th scope="row">License</th><td>MIT</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        If your site can load an import map and modern ES modules, it can run this plugin — static
+        pages, Shopify themes, WordPress embeds, React / Vue / Svelte apps, Electron shells.
+      </p>
+
+      <h2 id="links">Project links</h2>
+      <ul>
+        <li><a href="https://github.com/akhtar1985/anime-carousel" rel="noopener">Source on GitHub</a></li>
+        <li><a href="https://github.com/akhtar1985/anime-carousel/releases" rel="noopener">Releases and changelog</a></li>
+        <li><a href="https://github.com/akhtar1985/anime-carousel/issues" rel="noopener">Issues</a></li>
+        <li><a href="../README.md#license">License (MIT)</a></li>
+      </ul>
+    </div>
+  </main>
+
+  <footer class="doc-footer">
+    <div class="doc-footer__inner">
+      <p>anime-carousel · MIT · built on Anime.js v4</p>
+      <nav aria-label="Documentation footer">
+        <a href="../index.html">Demo</a>
+        <a href="../settings.html">Options</a>
+        <a href="./index.html">Docs</a>
+        <a href="./comparison.html">Compare</a>
+        <a href="./modes.html">Modes</a>
+        <a href="./recipes.html">Recipes</a>
+        <a href="../README.md">README</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

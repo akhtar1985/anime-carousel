@@ -2,7 +2,7 @@
  * Pointer/touch dragging with momentum snapping, resistance on the edges and
  * `swipeToSlide` support. Works for both axes and respects RTL.
  */
-import { clamp, isInteractive } from './utils.js';
+import { clamp, isFormField } from './utils.js';
 
 /**
  * Read a numeric option, falling back only when it is absent or not a number.
@@ -29,8 +29,7 @@ export class Drag {
   }
 
   _axis() {
-    const { options } = this.slider;
-    return options.vertical && (options.verticalSwiping || options.vertical) ? 'y' : 'x';
+    return this.slider.options.vertical ? 'y' : 'x';
   }
 
   mount() {
@@ -64,7 +63,9 @@ export class Drag {
   _down(event) {
     if (!this.enabled) return;
     if (event.pointerType === 'mouse' && event.button !== 0) return;
-    if (isInteractive(event.target) && !event.target.closest('[data-ajc-slide]')) return;
+    // Never steal a gesture from a form field or editable region inside a
+    // slide; those need their native selection, caret and click.
+    if (isFormField(event.target)) return;
     if (event.target.closest('.ajc__arrow, .ajc__dots, [data-ajc-no-drag]')) return;
 
     const slider = this.slider;

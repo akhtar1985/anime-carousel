@@ -31,9 +31,12 @@ export class Lazy {
   }
 
   _targets(slide) {
-    return Array.from(
-      slide.querySelectorAll('img[data-src], img[data-srcset], source[data-srcset], [data-background]'),
-    );
+    const selector = this.slider.options.lazyLoadSelector || 'img[data-src], img[data-srcset], source[data-srcset], [data-background]';
+    try {
+      return Array.from(slide.querySelectorAll(selector));
+    } catch {
+      return [];
+    }
   }
 
   _loadSlide(slide) {

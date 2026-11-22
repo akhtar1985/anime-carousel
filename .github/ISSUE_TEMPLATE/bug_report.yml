@@ -1,0 +1,90 @@
+name: Bug report
+description: Something behaves incorrectly — navigation, layout, drag, a11y, events.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. A minimal reproduction (CodePen, gist or a small HTML file) makes a fix
+        much faster. Please check the [existing issues](https://github.com/akhtar1985/anime-carousel/issues)
+        first.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happens?
+      description: The observed behaviour, and what you expected instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: HTML + options, a link, or numbered steps. The smaller the better.
+      render: html
+    validations:
+      required: true
+
+  - type: input
+    id: demo-url
+    attributes:
+      label: Live URL (optional)
+      placeholder: https://…
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - slide
+        - fade
+        - coverflow
+        - cards
+        - wheel
+        - helix
+        - flip
+        - fold
+        - cube
+        - zoom
+        - marquee
+        - kenburns
+        - staggered
+        - not mode-specific
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: anime-carousel version and Anime.js version.
+      placeholder: anime-carousel 1.0.0 · animejs 4.5.0
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Chrome 142 / macOS 15 · or iOS 18 Safari
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Errors or warnings, if any.
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched the existing issues for this problem.
+          required: true
+        - label: This is not a security issue (those go to SECURITY.md).
+          required: true

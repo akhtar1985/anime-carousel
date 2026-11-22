@@ -139,7 +139,7 @@ test('fails when an option loses its only documentation', () => {
     [
       {
         file: 'README.md',
-        find: "| `mode` | `string` | `'slide'` | One of the nine modes above. Alias: `effect`. |",
+        find: "| `mode` | `string` | `'slide'` | One of the thirteen modes above. Alias: `effect`. |",
         replace: '',
       },
     ],

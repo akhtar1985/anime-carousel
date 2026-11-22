@@ -128,6 +128,9 @@ const NON_OPTION_ATTRIBUTES = new Set([
   'opt',
   'out',
   'search',
+  'studio',
+  'studio-out',
+  'studio-reset',
 ]);
 
 const kebab = (key) => key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
@@ -408,8 +411,12 @@ const DOCUMENTED_ELSEWHERE = {
   fadeEffect: { section: '### Per-mode effects', fence: true },
   coverflowEffect: { section: '### Per-mode effects', fence: true },
   cardsEffect: { section: '### Per-mode effects', fence: true },
+  wheelEffect: { section: '### Per-mode effects', fence: true },
+  helixEffect: { section: '### Per-mode effects', fence: true },
   flipEffect: { section: '### Per-mode effects', fence: true },
+  foldEffect: { section: '### Per-mode effects', fence: true },
   cubeEffect: { section: '### Per-mode effects', fence: true },
+  zoomEffect: { section: '### Per-mode effects', fence: true },
   kenBurns: { section: '### Per-mode effects', fence: true },
   staggerEffect: { section: '### Per-mode effects', fence: true },
   marquee: { section: '### Per-mode effects', fence: true },

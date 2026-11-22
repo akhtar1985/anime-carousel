@@ -50,15 +50,28 @@ export class A11y {
 
     slides.forEach((slide, i) => {
       const visible = slide.classList.contains('is-visible');
-      if (visible === slide.__ajcVisible) return;
-      slide.__ajcVisible = visible;
-      slide.inert = !visible;
-      if (visible) slide.removeAttribute('tabindex');
-      else slide.setAttribute('tabindex', '-1');
+      if (visible !== slide.__ajcVisible) {
+        slide.__ajcVisible = visible;
+        slide.inert = !visible;
+        if (visible) slide.removeAttribute('tabindex');
+        else slide.setAttribute('tabindex', '-1');
+      }
+      // Labels change when slides are added or removed, not just on navigation.
       slide.setAttribute('aria-label', options.ariaLabels.slide(i, slides.length));
     });
 
     if (this.status) this.status.textContent = `Slide ${index + 1} of ${slides.length}`;
+  }
+
+  /** Apply roles/labels to a slide added at runtime. */
+  addSlide(slide, index) {
+    const { options, slides } = this.slider;
+    if (!options.a11y || !slide) return;
+    slide.setAttribute('role', 'group');
+    slide.setAttribute('aria-roledescription', 'slide');
+    slide.setAttribute('aria-label', options.ariaLabels.slide(index, slides.length));
+    delete slide.__ajcVisible;
+    this.update();
   }
 
   destroy() {
@@ -74,6 +87,7 @@ export class A11y {
     slides.forEach((slide) => {
       ['role', 'aria-roledescription', 'aria-label'].forEach((attribute) => slide.removeAttribute(attribute));
       slide.inert = false;
+      delete slide.__ajcVisible;
     });
   }
 }

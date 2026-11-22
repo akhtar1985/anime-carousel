@@ -49,6 +49,11 @@
   isolation: isolate;
 }
 
+.ajc .ajc__viewport:focus-visible {
+  outline: 2px solid var(--ajc-accent);
+  outline-offset: 2px;
+}
+
 .ajc--vertical .ajc__viewport {
   touch-action: pan-x;
 }

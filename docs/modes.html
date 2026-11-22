@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The 13 modes, in depth · anime-carousel docs</title>
+  <meta name="description" content="Every anime-carousel mode explained: what moves, effect-object keys and defaults, tuning advice and gotchas." />
+  <link rel="stylesheet" href="./docs.css" />
+</head>
+<body>
+  <header class="doc-top">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      anime-carousel
+      <span class="brand__tag">docs</span>
+    </a>
+    <nav class="doc-nav" aria-label="Documentation">
+      <a href="../index.html">Demo</a>
+      <a href="../settings.html">Options</a>
+      <a href="./index.html">Docs</a>
+      <a href="./comparison.html">Compare</a>
+      <a href="./modes.html" aria-current="page">Modes</a>
+      <a href="./recipes.html">Recipes</a>
+      <a href="https://github.com/akhtar1985/anime-carousel" rel="noopener">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main class="doc-main">
+    <div class="doc-hero">
+      <p class="eyebrow">Reference · 13 modes</p>
+      <h1>The 13 modes, in depth</h1>
+      <p class="lede">
+        Every mode is the same engine: each slide gets its own GPU transform, projected from one
+        geometry snapshot. This page explains <strong>what actually moves</strong> in each mode and
+        the exact effect-object defaults, read from <code>src/defaults.js</code>.
+      </p>
+      <div class="meta-row">
+        <span class="chip">defaults from source</span>
+        <span class="chip">effect keys per mode</span>
+        <span class="chip">vertical + RTL notes</span>
+        <span class="chip">updated November 2026</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <div class="callout">
+        <span class="callout__label">Before you pick a mode</span>
+        <p>
+          Layout options (<code>slidesToShow</code>, <code>spaceBetween</code>, <code>centerMode</code>,
+          <code>vertical</code>, <code>rtl</code>) work in every mode. Stacked modes — fade, flip,
+          fold, cube, zoom — ignore slide spacing because every slide shares the centre point.
+          Mode objects deep-merge with defaults, so you only pass the keys you change.
+        </p>
+      </div>
+
+      <h2 id="matrix">Quick matrix</h2>
+      <div class="table-wrap">
+        <table class="matrix">
+          <caption>Mode → motion → effect object. Defaults below are the shipped values.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Mode</th>
+              <th scope="col">What moves</th>
+              <th scope="col">Effect object</th>
+              <th scope="col">Best for</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><a href="#mode-slide"><code>slide</code></a></th>
+              <td>Neighbours step along the axis with partial <code>slidesToShow</code>.</td>
+              <td>—</td>
+              <td>General browsing, cards, product rows.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-fade"><code>fade</code></a></th>
+              <td>Stacked opacity crossfade with optional scale and blur.</td>
+              <td><code>fadeEffect</code></td>
+              <td>Quiet heroes, quotes, background imagery.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-coverflow"><code>coverflow</code></a></th>
+              <td>Depth shelf: neighbours rotate on Y, recede, tilt and lift.</td>
+              <td><code>coverflowEffect</code></td>
+              <td>Albums, posters, app screenshots.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-cards"><code>cards</code></a></th>
+              <td>Card deck: offset, rotateZ and scale behind the active slide.</td>
+              <td><code>cardsEffect</code></td>
+              <td>Testimonials, swipeable decks.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-wheel"><code>wheel</code></a></th>
+              <td>Arc: neighbours ride a circle, rotating as they rise.</td>
+              <td><code>wheelEffect</code></td>
+              <td>Reels, “physical carousel” browsing.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-helix"><code>helix</code></a></th>
+              <td>Spiral ribbon: Y rotation plus depth and vertical rise, z-sorted.</td>
+              <td><code>helixEffect</code></td>
+              <td>3D galleries, fashion and photo rings.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-flip"><code>flip</code></a></th>
+              <td>Stacked rotateY page flip with recede and fade.</td>
+              <td><code>flipEffect</code></td>
+              <td>Postcards, story cards.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-fold"><code>fold</code></a></th>
+              <td>Stacked rotateX fold, like closing a flap.</td>
+              <td><code>foldEffect</code></td>
+              <td>Editorial, brochures, reveal panels.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-cube"><code>cube</code></a></th>
+              <td>Stacked cube: quarter turn per slide on a shared depth.</td>
+              <td><code>cubeEffect</code></td>
+              <td>Showreels, bold landing heroes.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-zoom"><code>zoom</code></a></th>
+              <td>Stacked push/pull: incoming shrinks in, outgoing expands out.</td>
+              <td><code>zoomEffect</code></td>
+              <td>Photography, product detail.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-marquee"><code>marquee</code></a></th>
+              <td>Continuous linear strip, cloned to cover the viewport twice.</td>
+              <td><code>marquee</code></td>
+              <td>Logos, tickers, credits.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-kenburns"><code>kenburns</code></a></th>
+              <td>Slide motion plus a looping Ken Burns pan/zoom on the active image.</td>
+              <td><code>kenBurns</code></td>
+              <td>Cinematic heroes, travel, real estate.</td>
+            </tr>
+            <tr>
+              <th scope="row"><a href="#mode-staggered"><code>staggered</code></a></th>
+              <td>Slide motion plus a staggered anime.js reveal of slide contents.</td>
+              <td><code>staggerEffect</code></td>
+              <td>Marketing slides, feature callouts.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="mode-slide">slide</h2>
+      <p>
+        The default. Each slide is positioned by cumulative widths and <code>spaceBetween</code>, so
+        fractional <code>slidesToShow</code> (e.g. <code>1.5</code> for a peek), <code>centerMode</code>,
+        vertical and RTL all share the same maths. There is no “track transform” — every slide owns
+        its transform, which is what makes the clone-free loop possible.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>peek + per-view snapping</span><span>JS</span></div>
+        <pre><code>new AnimeCarousel('#row', {
+  mode: 'slide',
+  slidesToShow: 2.35,
+  slidesToScroll: 2,
+  spaceBetween: 18,
+  infinite: true,
+});</code></pre>
+      </div>
+      <p>
+        <strong>Watch out:</strong> the loop only engages when the strip is wider than the viewport
+        (<code>total &gt; viewport</code>), otherwise it would jump. With <code>infinite: true</code>
+        and fewer slides than <code>slidesToShow</code>, loop stays off by design.
+      </p>
+
+      <h2 id="mode-fade">fade</h2>
+      <p>All slides share the centre point; only opacity (plus optional scale and blur) changes.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>scale</code></td><td>0</td><td>How much the outgoing slide shrinks (0–1).</td></tr>
+            <tr><td><code>blur</code></td><td>0</td><td>Blur in px at full fade.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Only the active and departing slides are painted. Pair with <code>adaptiveHeight: false</code> — stacked slides size to the container.</p>
+
+      <h2 id="mode-coverflow">coverflow</h2>
+      <p>
+        A depth shelf. The active slide is untouched; each neighbour rotates on Y by
+        <code>rotate × distance</code>, recedes by <code>depth × distance</code>, scales down, and can
+        tilt toward the viewer, lift, blur and fade. Slides beyond <code>visible</code> are not painted.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>rotate</code></td><td>42</td><td>Degrees of Y rotation per slide of distance.</td></tr>
+            <tr><td><code>depth</code></td><td>180</td><td>px of recession per slide of distance.</td></tr>
+            <tr><td><code>scale</code></td><td>0.86</td><td>Scale of the first neighbour.</td></tr>
+            <tr><td><code>modifier</code></td><td>1</td><td>Multiplies the along-axis spread of neighbours.</td></tr>
+            <tr><td><code>opacity</code></td><td>1</td><td>Opacity of the first neighbour (falloff is exponential).</td></tr>
+            <tr><td><code>offset</code></td><td>0</td><td>Extra px per slide of distance to spread the stack.</td></tr>
+            <tr><td><code>tilt</code></td><td>0</td><td>Degrees of X tilt per slide of distance.</td></tr>
+            <tr><td><code>lift</code></td><td>0</td><td>px each painted neighbour rises (negative lifts downward).</td></tr>
+            <tr><td><code>blur</code></td><td>0</td><td>Blur in px at one slide of distance.</td></tr>
+            <tr><td><code>visible</code></td><td>5</td><td>How many slots from the centre stay painted (1–10).</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>studio preset</span><span>JS</span></div>
+        <pre><code>new AnimeCarousel('#shelf', {
+  mode: 'coverflow',
+  slidesToShow: 3,
+  spaceBetween: 12,
+  coverflowEffect: {
+    rotate: 36, depth: 140, scale: 0.9,
+    offset: 8, tilt: 8, lift: 18, blur: 1.2, visible: 6,
+  },
+});</code></pre>
+      </div>
+      <p>
+        <strong>Watch out:</strong> if neighbours disappear too early, raise <code>visible</code>.
+        If they feel cramped, raise <code>offset</code> or <code>modifier</code> rather than
+        <code>depth</code> — depth is perspective, not spacing. Vertical mode keeps the Y-rotation
+        shelf, which reads like a vertical stack of tilted cards.
+      </p>
+
+      <h2 id="mode-cards">cards</h2>
+      <p>A deck behind the active card: horizontal offset, downward drop, small rotation and scale.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>offsetX</code></td><td>26</td><td>px each card shifts sideways (0 in vertical mode).</td></tr>
+            <tr><td><code>offsetY</code></td><td>10</td><td>px each card drops behind the active one.</td></tr>
+            <tr><td><code>rotate</code></td><td>3.5</td><td>Degrees of Z rotation per card of distance.</td></tr>
+            <tr><td><code>scale</code></td><td>0.92</td><td>Scale of the next card.</td></tr>
+            <tr><td><code>maxStack</code></td><td>3</td><td>Cards kept fully opaque before fading out.</td></tr>
+            <tr><td><code>opacity</code></td><td>0.45</td><td>Reserved; currently does not affect rendering — see the note below.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Watch out:</strong> the deck fades at a fixed rate one slot past <code>maxStack</code>. Use <code>maxStack</code> to control deck depth; <code>cardsEffect.opacity</code> is accepted but not applied by the current engine.</p>
+
+      <h2 id="mode-wheel">wheel</h2>
+      <p>
+        Neighbours ride a circle: <code>theta = distance × angle</code>, horizontal sine offset and a
+        cosine rise, so the row curls away like a physical wheel. The active slide sits at the hub;
+        painted neighbours spin with it.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>radius</code></td><td>240</td><td>px radius of the arc.</td></tr>
+            <tr><td><code>angle</code></td><td>30</td><td>Degrees of arc per slide of distance.</td></tr>
+            <tr><td><code>scale</code></td><td>0.82</td><td>Scale of the first neighbour.</td></tr>
+            <tr><td><code>opacity</code></td><td>0.38</td><td>Opacity of the first neighbour (exponential falloff).</td></tr>
+            <tr><td><code>offset</code></td><td>0</td><td>Extra px per slide of distance along the axis.</td></tr>
+            <tr><td><code>depth</code></td><td>0</td><td>Extra px of recession per slide (on top of the arc).</td></tr>
+            <tr><td><code>tilt</code></td><td>0</td><td>Degrees of X tilt per slide (rotateY in vertical mode).</td></tr>
+            <tr><td><code>blur</code></td><td>0</td><td>Blur in px at one slide of distance.</td></tr>
+            <tr><td><code>visible</code></td><td>4</td><td>Painted slots each side (1–10).</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>wheel reel</span><span>JS</span></div>
+        <pre><code>new AnimeCarousel('#reels', {
+  mode: 'wheel',
+  slidesToShow: 1.5,
+  centerMode: true,
+  wheelEffect: { radius: 200, angle: 24, scale: 0.8, opacity: 0.4, visible: 5, blur: 0.6 },
+});</code></pre>
+      </div>
+      <p><strong>Watch out:</strong> <code>angle × visible</code> should stay under ~180°, or painted neighbours wrap onto the far side of the circle. Large <code>radius</code> with small <code>angle</code> gives a subtle fan; the reverse gives a tight drum.</p>
+
+      <h2 id="mode-helix">helix</h2>
+      <p>
+        A spiral ribbon. Neighbours rotate on Y (<code>rotate</code> per slide), recede with
+        <code>(cos θ − 1) × radius</code>, and rise by <code>rise</code> per slide. Slides are
+        z-sorted from their cosine, so the ribbon reads correctly from either side.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>radius</code></td><td>240</td><td>Depth radius of the spiral.</td></tr>
+            <tr><td><code>rotate</code></td><td>38</td><td>Degrees of Y rotation per slide of distance.</td></tr>
+            <tr><td><code>rise</code></td><td>44</td><td>px each slide climbs.</td></tr>
+            <tr><td><code>scale</code></td><td>0.88</td><td>Scale of the first neighbour.</td></tr>
+            <tr><td><code>opacity</code></td><td>0.45</td><td>Opacity of the first neighbour (exponential falloff).</td></tr>
+            <tr><td><code>offset</code></td><td>0</td><td>Extra px per slide of distance along the axis.</td></tr>
+            <tr><td><code>depth</code></td><td>0</td><td>Extra px of recession per slide.</td></tr>
+            <tr><td><code>tilt</code></td><td>0</td><td>Degrees of X tilt per slide (rotateY in vertical mode).</td></tr>
+            <tr><td><code>blur</code></td><td>0</td><td>Blur in px at one slide of distance.</td></tr>
+            <tr><td><code>visible</code></td><td>5</td><td>Painted slots each side (1–10).</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>photo ribbon</span><span>JS</span></div>
+        <pre><code>new AnimeCarousel('#ribbon', {
+  mode: 'helix',
+  slidesToShow: 3,
+  spaceBetween: 16,
+  helixEffect: { radius: 180, rotate: 30, rise: 18, scale: 0.86, opacity: 0.42, visible: 6 },
+});</code></pre>
+      </div>
+      <p><strong>Watch out:</strong> slides with <code>cos θ &lt; −0.15</code> (roughly 98° of rotation, where the face turns away) are hidden automatically. If the ribbon looks too short, raise <code>visible</code> in step with <code>rotate</code>.</p>
+
+      <h2 id="mode-flip">flip</h2>
+      <p>Stacked page flip: the outgoing slide rotates −90° on Y while receding and fading.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>rotate</code></td><td>90</td><td>Degrees of Y rotation at one slide of distance.</td></tr>
+            <tr><td><code>depth</code></td><td>120</td><td>px of recession during the flip.</td></tr>
+            <tr><td><code>opacity</code></td><td>0.25</td><td>Opacity of the fully-flipped slide.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="mode-fold">fold</h2>
+      <p>Stacked fold along X: the slide rotates like a flap closing away from you.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>rotate</code></td><td>82</td><td>Degrees of X rotation at one slide of distance.</td></tr>
+            <tr><td><code>depth</code></td><td>100</td><td>px of recession during the fold.</td></tr>
+            <tr><td><code>opacity</code></td><td>0.2</td><td>Opacity of the fully-folded slide.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Watch out:</strong> fold and flip paint only the active and one neighbour each side — they are stacked transitions, not shelves.</p>
+
+      <h2 id="mode-cube">cube</h2>
+      <p>
+        Slides become cube faces: each rotates a quarter turn per index on Y, offset by
+        <code>half slide size + depth</code> on Z, so adjacent faces meet at an edge.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>rotate</code></td><td>90</td><td>Degrees of Y rotation per slide of distance.</td></tr>
+            <tr><td><code>depth</code></td><td>0</td><td>Extra px added to the half-size face offset.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Watch out:</strong> cube faces should be equal size for seams to line up; give slides an explicit aspect ratio. <code>perspective</code> (default 1200) sets how strong the corner looks.</p>
+
+      <h2 id="mode-zoom">zoom</h2>
+      <p>
+        Stacked push/pull. The incoming slide starts at <code>scale</code> and grows to 1; the
+        outgoing slide grows to <code>exitScale</code> while fading and blurring out.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>scale</code></td><td>0.62</td><td>Starting scale of the incoming slide.</td></tr>
+            <tr><td><code>exitScale</code></td><td>1.45</td><td>Ending scale of the outgoing slide.</td></tr>
+            <tr><td><code>depth</code></td><td>260</td><td>px of Z travel during the push/pull.</td></tr>
+            <tr><td><code>blur</code></td><td>3</td><td>Blur in px at full exit.</td></tr>
+            <tr><td><code>opacity</code></td><td>0</td><td>Opacity of the fully departed slide.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Watch out:</strong> a large <code>exitScale</code> can overflow the slide box; the root clips it, but inner shadows may be cut off.</p>
+
+      <h2 id="mode-marquee">marquee</h2>
+      <p>
+        Not a navigation mode: the strip becomes an inline flex row, cloned until it covers the
+        viewport twice, and translated by one looping anime.js timeline at a constant px/second.
+        Hover pause and reduced motion are respected.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>speed</code></td><td>60</td><td>Pixels per second.</td></tr>
+            <tr><td><code>direction</code></td><td><code>'normal'</code></td><td><code>'normal'</code> or <code>'reverse'</code>.</td></tr>
+            <tr><td><code>pauseOnHover</code></td><td>true</td><td>Pause while the pointer is over the strip.</td></tr>
+            <tr><td><code>duplicated</code></td><td>true</td><td>Clone slides to fill the loop; disable for a short strip that does not need to wrap.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>logo ticker</span><span>JS</span></div>
+        <pre><code>new AnimeCarousel('#logos', {
+  mode: 'marquee',
+  slidesToShow: 'auto',
+  spaceBetween: 40,
+  arrows: false,
+  marquee: { speed: 40, direction: 'reverse', pauseOnHover: true },
+});</code></pre>
+      </div>
+      <p>
+        <strong>Watch out:</strong> marquee scrolls horizontally; use <code>direction: 'reverse'</code>
+        for the opposite flow. Clones are <code>aria-hidden</code> and <code>inert</code>, and they are
+        removed by <code>destroy()</code> / <code>setMode()</code>. <code>slidesToShow: 'auto'</code>
+        is the usual choice so slide widths come from their content.
+      </p>
+
+      <h2 id="mode-kenburns">kenburns</h2>
+      <p>
+        Layout is plain slide motion. On every settle, the active slide’s images (or anything
+        matching <code>targets</code>) get a looping, alternating Ken Burns pan/zoom.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>targets</code></td><td><code>'img, [data-ajc-kenburns]'</code></td><td>Selector inside each slide.</td></tr>
+            <tr><td><code>from</code></td><td>1</td><td>Starting scale.</td></tr>
+            <tr><td><code>to</code></td><td>1.14</td><td>Ending scale.</td></tr>
+            <tr><td><code>duration</code></td><td>9000</td><td>ms per pass.</td></tr>
+            <tr><td><code>alternate</code></td><td>true</td><td>Ping-pong instead of restarting.</td></tr>
+            <tr><td><code>panX</code></td><td>0</td><td>px of horizontal drift.</td></tr>
+            <tr><td><code>panY</code></td><td>0</td><td>px of vertical drift.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Watch out:</strong> give images <code>overflow: hidden</code> on their slide, or the zoom will spill. Ken Burns is skipped when <code>prefers-reduced-motion: reduce</code> is active.</p>
+
+      <h2 id="mode-staggered">staggered</h2>
+      <p>
+        Layout is slide motion. On every settle, the active slide’s children rise, fade and scale in
+        with <code>stagger()</code>, using Anime.js v4 syntax.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Key</th><th scope="col">Default</th><th scope="col">What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>targets</code></td><td>null</td><td>Selector, node list or function. <code>null</code> uses <code>[data-ajc-reveal]</code>, then common content tags, then direct children.</td></tr>
+            <tr><td><code>each</code></td><td>65</td><td>ms between targets.</td></tr>
+            <tr><td><code>duration</code></td><td>720</td><td>ms per target.</td></tr>
+            <tr><td><code>distance</code></td><td>26</td><td>Starting y offset in px.</td></tr>
+            <tr><td><code>ease</code></td><td><code>'out(3)'</code></td><td>Anime.js ease string.</td></tr>
+            <tr><td><code>from</code></td><td><code>'start'</code></td><td>Stagger origin: <code>'start'</code>, <code>'center'</code>, <code>'end'</code>, or an index.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>reveal order</span><span>HTML + JS</span></div>
+        <pre><code>&lt;div class="ajc__slide"&gt;
+  &lt;h2 data-ajc-reveal&gt;Ship faster&lt;/h2&gt;
+  &lt;p data-ajc-reveal&gt;One engine, thirteen layouts.&lt;/p&gt;
+  &lt;a class="btn" data-ajc-reveal href="#start"&gt;Start&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;script type="module"&gt;
+  new AnimeCarousel('#story', {
+    mode: 'staggered',
+    staggerEffect: { each: 90, distance: 32, from: 'center' },
+  });
+&lt;/script&gt;</code></pre>
+      </div>
+      <p><strong>Watch out:</strong> staggered reveal is skipped under reduced motion; the slide still changes, just without the entrance animation.</p>
+
+      <h2 id="changing">Changing mode at runtime</h2>
+      <p>
+        <code>setMode(mode, extra)</code> deep-merges <code>extra</code>, re-measures and re-renders —
+        the instance, index, events and a11y wiring survive.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>mode switcher</span><span>JS</span></div>
+        <pre><code>const slider = new AnimeCarousel('#stage', { mode: 'slide', infinite: true });
+
+document.querySelectorAll('[data-mode]').forEach((button) =&gt; {
+  button.addEventListener('click', () =&gt; {
+    slider.setMode(button.dataset.mode);
+  });
+});</code></pre>
+      </div>
+      <p>See the <a href="../index.html#modes">demo’s mode chips</a> for a live version, or jump to <a href="./recipes.html">Recipes</a> for full page setups.</p>
+    </div>
+  </main>
+
+  <footer class="doc-footer">
+    <div class="doc-footer__inner">
+      <p>anime-carousel · MIT · built on Anime.js v4</p>
+      <nav aria-label="Documentation footer">
+        <a href="../index.html">Demo</a>
+        <a href="../settings.html">Options</a>
+        <a href="./index.html">Docs</a>
+        <a href="./comparison.html">Compare</a>
+        <a href="./modes.html">Modes</a>
+        <a href="./recipes.html">Recipes</a>
+        <a href="../README.md">README</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,57 @@
+name: Feature request
+description: Suggest an option, a mode tweak, an accessibility improvement or a recipe.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The project deliberately keeps one engine and thirteen modes. Small, focused additions with a
+        concrete use case are easiest to accept.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to build?
+      description: The page, the interaction, the constraint. A link or a sketch helps.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API or behaviour
+      description: Option name, effect key, expected default, or the mode you want to adjust.
+      render: javascript
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New mode
+        - Existing mode / effect keys
+        - Navigation or autoplay
+        - Drag / touch / keyboard
+        - Accessibility
+        - Responsive behaviour
+        - Sync / thumbnails
+        - Lazy loading
+        - Types / packaging
+        - Docs / demo
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds you have tried
+      description: Existing options, CSS or a different library — and why they are not enough.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched the existing issues and the docs for this request.
+          required: true

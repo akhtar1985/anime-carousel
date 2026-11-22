@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recipes · anime-carousel docs</title>
+  <meta name="description" content="Copy-paste anime-carousel recipes: coverflow hero, synced thumbnail gallery, vertical feed, fade hero, logo marquee, lazy gallery, responsive settings and framework mounting." />
+  <link rel="stylesheet" href="./docs.css" />
+</head>
+<body>
+  <header class="doc-top">
+    <a class="brand" href="../index.html">
+      <span class="brand__mark" aria-hidden="true"></span>
+      anime-carousel
+      <span class="brand__tag">docs</span>
+    </a>
+    <nav class="doc-nav" aria-label="Documentation">
+      <a href="../index.html">Demo</a>
+      <a href="../settings.html">Options</a>
+      <a href="./index.html">Docs</a>
+      <a href="./comparison.html">Compare</a>
+      <a href="./modes.html">Modes</a>
+      <a href="./recipes.html" aria-current="page">Recipes</a>
+      <a href="https://github.com/akhtar1985/anime-carousel" rel="noopener">GitHub ↗</a>
+    </nav>
+  </header>
+
+  <main class="doc-main">
+    <div class="doc-hero">
+      <p class="eyebrow">Recipes · copy-paste</p>
+      <h1>Recipes</h1>
+      <p class="lede">
+        Each recipe is a complete, runnable setup — markup, options and the small amount of CSS the
+        plugin does <strong>not</strong> own. Every option used here exists in
+        <code>src/defaults.js</code>; tune any value live on the
+        <a href="../settings.html">options page</a>.
+      </p>
+      <div class="meta-row">
+        <span class="chip">no build step</span>
+        <span class="chip">CDN import map</span>
+        <span class="chip">verified option names</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h2 id="anatomy">The anatomy every recipe shares</h2>
+      <p>
+        Load the stylesheet, provide an import map for Anime.js, put your slides as direct children of
+        the root, then construct the instance. The plugin generates the viewport and track wrappers —
+        write them yourself only if you need to.
+      </p>
+      <div class="snippet snippet--lg">
+        <div class="snippet__bar"><span>boilerplate</span><span>HTML</span></div>
+        <pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/styles/slider.css" /&gt;
+&lt;script type="importmap"&gt;
+  { "imports": { "animejs": "https://cdn.jsdelivr.net/npm/animejs@4.5.0/+esm" } }
+&lt;/script&gt;
+
+&lt;div class="ajc" id="slider"&gt;
+  &lt;div class="ajc__slide"&gt;…slide one…&lt;/div&gt;
+  &lt;div class="ajc__slide"&gt;…slide two…&lt;/div&gt;
+  &lt;div class="ajc__slide"&gt;…slide three…&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="module"&gt;
+  import { AnimeCarousel } from 'https://cdn.jsdelivr.net/gh/akhtar1985/anime-carousel@main/src/index.js';
+  const slider = new AnimeCarousel('#slider', {
+    mode: 'slide',
+    slidesToShow: 1,
+    infinite: true,
+    arrows: true,
+    dots: false,
+  });
+&lt;/script&gt;</code></pre>
+      </div>
+      <div class="callout">
+        <span class="callout__label">Sizing is automatic</span>
+        <p>
+          For a numeric <code>slidesToShow</code> the engine sets every slide’s width (or height in
+          vertical mode) to <code>(viewport − gaps) ÷ slidesToShow</code>. You only supply the slide’s
+          own height via <code>aspect-ratio</code> or content. With <code>slidesToShow: 'auto'</code>
+          the engine measures each slide’s natural size instead.
+        </p>
+      </div>
+
+      <h2 id="hero-coverflow">Recipe 1 · Coverflow hero</h2>
+      <p>A full-width hero with the centre card sharp and neighbours receding, tilting and lifting.</p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>HTML</span><span>slides are direct children</span></div>
+        <pre><code>&lt;section class="hero-carousel"&gt;
+  &lt;div class="ajc" id="hero"&gt;
+    &lt;figure class="ajc__slide"&gt;&lt;img src="art-01.jpg" alt="Poster one"&gt;&lt;/figure&gt;
+    &lt;figure class="ajc__slide"&gt;&lt;img src="art-02.jpg" alt="Poster two"&gt;&lt;/figure&gt;
+    &lt;figure class="ajc__slide"&gt;&lt;img src="art-03.jpg" alt="Poster three"&gt;&lt;/figure&gt;
+    &lt;figure class="ajc__slide"&gt;&lt;img src="art-04.jpg" alt="Poster four"&gt;&lt;/figure&gt;
+    &lt;figure class="ajc__slide"&gt;&lt;img src="art-05.jpg" alt="Poster five"&gt;&lt;/figure&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>CSS</span><span>app code, not plugin CSS</span></div>
+        <pre><code>.hero-carousel { max-width: 1180px; margin: 0 auto; padding: 32px 16px; }
+.hero-carousel .ajc__slide img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 12px;
+}</code></pre>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>JS</span><span>coverflow</span></div>
+        <pre><code>import { AnimeCarousel } from 'anime-carousel';
+
+new AnimeCarousel('#hero', {
+  mode: 'coverflow',
+  slidesToShow: 3,
+  centerMode: true,
+  spaceBetween: 24,
+  infinite: true,
+  arrows: true,
+  dots: false,
+  speed: 800,
+  coverflowEffect: {
+    rotate: 38,
+    depth: 160,
+    scale: 0.88,
+    offset: 10,
+    tilt: 8,
+    lift: 16,
+    blur: 1.2,
+    opacity: 0.8,
+    visible: 5,
+  },
+  responsive: [
+    { breakpoint: 900, settings: { slidesToShow: 2.2, centerMode: false } },
+    { breakpoint: 560, settings: { slidesToShow: 1.15, spaceBetween: 12 } },
+  ],
+});</code></pre>
+      </div>
+
+      <h2 id="gallery-thumbs">Recipe 2 · Gallery with thumbnails</h2>
+      <p>
+        The classic asNavFor pair: a fade gallery on top, a thumbnail strip below. Clicking a
+        thumbnail navigates the thumbnail strip, which pushes its settled index into the gallery.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>HTML</span><span>two instances</span></div>
+        <pre><code>&lt;div class="ajc gallery" id="gallery"&gt;
+  &lt;figure class="ajc__slide"&gt;&lt;img src="big-01.jpg" alt="View 1"&gt;&lt;/figure&gt;
+  &lt;figure class="ajc__slide"&gt;&lt;img src="big-02.jpg" alt="View 2"&gt;&lt;/figure&gt;
+  &lt;figure class="ajc__slide"&gt;&lt;img src="big-03.jpg" alt="View 3"&gt;&lt;/figure&gt;
+  &lt;figure class="ajc__slide"&gt;&lt;img src="big-04.jpg" alt="View 4"&gt;&lt;/figure&gt;
+&lt;/div&gt;
+
+&lt;div class="ajc thumbs" id="thumbs"&gt;
+  &lt;button class="ajc__slide" type="button"&gt;&lt;img src="thumb-01.jpg" alt="Select view 1"&gt;&lt;/button&gt;
+  &lt;button class="ajc__slide" type="button"&gt;&lt;img src="thumb-02.jpg" alt="Select view 2"&gt;&lt;/button&gt;
+  &lt;button class="ajc__slide" type="button"&gt;&lt;img src="thumb-03.jpg" alt="Select view 3"&gt;&lt;/button&gt;
+  &lt;button class="ajc__slide" type="button"&gt;&lt;img src="thumb-04.jpg" alt="Select view 4"&gt;&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>JS</span><span>asNavFor</span></div>
+        <pre><code>import { AnimeCarousel } from 'anime-carousel';
+
+const thumbs = new AnimeCarousel('#thumbs', {
+  slidesToShow: 4,
+  spaceBetween: 8,
+  focusOnSelect: true,
+  arrows: false,
+  dots: false,
+  asNavFor: '#gallery',
+});
+
+new AnimeCarousel('#gallery', {
+  mode: 'fade',
+  arrows: true,
+  dots: false,
+  fadeEffect: { scale: 0.04 },
+});</code></pre>
+      </div>
+      <div class="callout">
+        <span class="callout__label">Two-way is explicit</span>
+        <p>
+          <code>asNavFor</code> pushes this instance’s settled index to its partners. The gallery does
+          not push back — arrows on the gallery still work independently. For fully mirrored motion
+          call <code>gallery.sync(thumbs)</code> (bidirectional by default) or set
+          <code>asNavFor</code> on both.
+        </p>
+      </div>
+
+      <h2 id="vertical-feed">Recipe 3 · Vertical feed</h2>
+      <p>
+        Vertical mode measures the viewport’s height, so give the viewport an explicit height. Add
+        <code>mousewheel</code> if the page should scroll the feed.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>CSS</span><span>height is required</span></div>
+        <pre><code>.feed .ajc__viewport { height: min(72vh, 620px); }
+.feed .ajc__slide {
+  display: grid;
+  place-items: center;
+  background: #1c1813;
+  border-radius: 12px;
+}</code></pre>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>JS</span><span>vertical + mousewheel</span></div>
+        <pre><code>new AnimeCarousel('#feed', {
+  vertical: true,
+  slidesToShow: 2.4,
+  spaceBetween: 16,
+  centerMode: true,
+  infinite: true,
+  mousewheel: true,
+  keyboard: true,
+  dots: true,
+  dotsType: 'progress',
+});</code></pre>
+      </div>
+      <p>
+        <strong>Gotcha:</strong> vertical mode also flips drag and keyboard directions, and RTL does
+        not apply to the vertical axis. Slides with <code>aria-hidden="true"</code> are
+        <code>inert</code>, so links in off-screen cards cannot be tabbed to.
+      </p>
+
+      <h2 id="fade-progress">Recipe 4 · Fade hero with a progress bar</h2>
+      <div class="snippet">
+        <div class="snippet__bar"><span>JS</span><span>fade + autoplay</span></div>
+        <pre><code>new AnimeCarousel('#fade-hero', {
+  mode: 'fade',
+  autoplay: true,
+  autoplaySpeed: 5200,
+  speed: 900,
+  pauseOnHover: true,
+  pauseOnFocus: true,
+  pauseOnDotsHover: true,
+  arrows: false,
+  dots: true,
+  dotsType: 'progress',
+  loop: true,
+  fadeEffect: { scale: 0.02, blur: 0.5 },
+});</code></pre>
+      </div>
+      <p>
+        <code>dotsType</code> accepts <code>'bullets'</code>, <code>'fraction'</code> or
+        <code>'progress'</code>. All three pause rules are independent; <code>pauseOnInteraction</code>
+        (default <code>true</code>) stops autoplay after a drag or key press.
+      </p>
+
+      <h2 id="marquee">Recipe 5 · Logo marquee</h2>
+      <p>
+        Marquee is continuous motion, not navigation. Use <code>slidesToShow: 'auto'</code> so each
+        logo keeps its natural width.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>HTML + JS</span><span>ticker</span></div>
+        <pre><code>&lt;div class="ajc ticker" id="logos" aria-label="Trusted by"&gt;
+  &lt;div class="ajc__slide"&gt;&lt;img src="logo-a.svg" alt="Acme"&gt;&lt;/div&gt;
+  &lt;div class="ajc__slide"&gt;&lt;img src="logo-b.svg" alt="Globex"&gt;&lt;/div&gt;
+  &lt;div class="ajc__slide"&gt;&lt;img src="logo-c.svg" alt="Initech"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script type="module"&gt;
+  import { AnimeCarousel } from 'anime-carousel';
+
+  new AnimeCarousel('#logos', {
+    mode: 'marquee',
+    slidesToShow: 'auto',
+    spaceBetween: 48,
+    arrows: false,
+    dots: false,
+    marquee: { speed: 42, direction: 'normal', pauseOnHover: true },
+  });
+&lt;/script&gt;</code></pre>
+      </div>
+      <p>
+        Clones are <code>aria-hidden</code>, <code>inert</code>, stripped of IDs, and removed on
+        <code>destroy()</code> or <code>setMode()</code>. Reduced motion pauses the timeline at its
+        start position.
+      </p>
+
+      <h2 id="lazy">Recipe 6 · Lazy-loaded gallery</h2>
+      <p>
+        Point images at <code>data-src</code> / <code>data-srcset</code>. The plugin swaps them in,
+        adds <code>.is-lazy-loading</code> / <code>.is-lazy-loaded</code> (its stylesheet already
+        fades the image in) and fires <code>ajc:lazy-loaded</code>.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>HTML</span><span>data-src, real dimensions</span></div>
+        <pre><code>&lt;div class="ajc" id="lazy-gallery"&gt;
+  &lt;figure class="ajc__slide"&gt;
+    &lt;img data-src="photo-01.jpg" data-srcset="photo-01.jpg 1x, photo-01@2x.jpg 2x"
+         width="1200" height="800" alt="Dune at sunrise"&gt;
+  &lt;/figure&gt;
+  &lt;figure class="ajc__slide"&gt;
+    &lt;img data-src="photo-02.jpg" width="1200" height="800" alt="Harbour lights"&gt;
+  &lt;/figure&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>JS</span><span>ondemand | progressive</span></div>
+        <pre><code>const gallery = new AnimeCarousel('#lazy-gallery', {
+  slidesToShow: 2,
+  spaceBetween: 16,
+  infinite: true,
+  lazyLoad: 'ondemand', // loads the visible window + one slide each side
+});
+
+gallery.root.addEventListener('ajc:lazy-loaded', (event) => {
+  console.log('loaded', event.detail.slide);
+});</code></pre>
+      </div>
+      <p>
+        Use <code>'progressive'</code> to walk the whole set on idle frames instead. Always keep
+        <code>width</code>/<code>height</code> attributes (or an <code>aspect-ratio</code>) so layout
+        does not jump when the source arrives.
+      </p>
+
+      <h2 id="responsive">Recipe 7 · Responsive settings</h2>
+      <p>Both the Slick array (max-width) and the Swiper map (min-width) are accepted:</p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>JS</span><span>two styles, one option</span></div>
+        <pre><code>// Slick style — applies at and below each breakpoint
+new AnimeCarousel('#a', {
+  slidesToShow: 3,
+  responsive: [
+    { breakpoint: 1024, settings: { slidesToShow: 2 } },
+    { breakpoint: 640, settings: { slidesToShow: 1, arrows: false } },
+  ],
+});
+
+// Swiper style — applies at and above each key
+new AnimeCarousel('#b', {
+  slidesToShow: 1,
+  responsive: { 640: { slidesToShow: 2 }, 1024: { slidesToShow: 3 } },
+});</code></pre>
+      </div>
+      <p>
+        <code>breakpointsBase: 'container'</code> measures the slider’s own width instead of the
+        window — useful in sidebars and CMS columns. Listen for <code>ajc:breakpoint</code> (or
+        <code>onBreakpoint</code>) when external UI must follow.
+      </p>
+
+      <h2 id="frameworks">Recipe 8 · Mounting in React and Vue</h2>
+      <p>
+        The instance is imperative; the framework only owns the DOM node and cleanup. This is the
+        whole wrapper.
+      </p>
+      <div class="snippet">
+        <div class="snippet__bar"><span>React</span><span>useEffect + ref</span></div>
+        <pre><code>import { useEffect, useRef } from 'react';
+import { AnimeCarousel } from 'anime-carousel';
+import 'anime-carousel/styles';
+
+export function Hero({ slides }) {
+  const host = useRef(null);
+  const slider = useRef(null);
+
+  useEffect(() => {
+    slider.current = new AnimeCarousel(host.current, {
+      mode: 'coverflow',
+      slidesToShow: 3,
+      infinite: true,
+    });
+    return () =&gt; slider.current.destroy();
+  }, []);
+
+  return (
+    &lt;div className="ajc" ref={host}&gt;
+      {slides.map((slide) =&gt; (
+        &lt;div className="ajc__slide" key={slide.id}&gt;
+          &lt;img src={slide.src} alt={slide.alt} /&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+      </div>
+      <div class="snippet">
+        <div class="snippet__bar"><span>Vue 3</span><span>onMounted / onBeforeUnmount</span></div>
+        <pre><code>&lt;script setup&gt;
+import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { AnimeCarousel } from 'anime-carousel';
+import 'anime-carousel/styles';
+
+const host = ref(null);
+let slider = null;
+
+onMounted(() =&gt; {
+  slider = new AnimeCarousel(host.value, { mode: 'slide', dots: true });
+});
+onBeforeUnmount(() =&gt; slider?.destroy());
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;div class="ajc" ref="host"&gt;
+    &lt;div v-for="item in items" :key="item.id" class="ajc__slide"&gt;{{ item.label }}&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+      </div>
+      <div class="callout">
+        <span class="callout__label">Slides added after mount</span>
+        <p>
+          Rendering new slides later? Construct the instance after the first render, or call
+          <code>slider.refresh()</code> / <code>slider.addSlide()</code>. Vue and React render
+          asynchronously, so mounting in <code>useEffect</code> / <code>onMounted</code> (as above)
+          is the reliable order.
+        </p>
+      </div>
+
+      <h2 id="more">More one-liners</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th scope="col">Look</th><th scope="col">Options</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Wheel / reel</td><td><code>{ mode: 'wheel', slidesToShow: 1.5, centerMode: true, wheelEffect: { radius: 200, angle: 24, visible: 5 } }</code></td></tr>
+            <tr><td>Helix ribbon</td><td><code>{ mode: 'helix', slidesToShow: 3, helixEffect: { radius: 180, rotate: 30, rise: 18, visible: 6 } }</code></td></tr>
+            <tr><td>Card deck</td><td><code>{ mode: 'cards', cardsEffect: { offsetX: 22, offsetY: 12, maxStack: 4 } }</code></td></tr>
+            <tr><td>Page flip</td><td><code>{ mode: 'flip', flipEffect: { rotate: 85, depth: 140 } }</code></td></tr>
+            <tr><td>Fold away</td><td><code>{ mode: 'fold', foldEffect: { rotate: 78, depth: 90 } }</code></td></tr>
+            <tr><td>Cube</td><td><code>{ mode: 'cube', cubeEffect: { rotate: 90, depth: 20 } }</code></td></tr>
+            <tr><td>Push / pull</td><td><code>{ mode: 'zoom', zoomEffect: { scale: 0.7, exitScale: 1.35, blur: 2 } }</code></td></tr>
+            <tr><td>Cinematic</td><td><code>{ mode: 'kenburns', kenBurns: { from: 1, to: 1.18, duration: 12000, panX: 24 } }</code></td></tr>
+            <tr><td>Copy reveal</td><td><code>{ mode: 'staggered', staggerEffect: { each: 90, distance: 30, from: 'center' } }</code></td></tr>
+            <tr><td>Mode switcher</td><td><code>slider.setMode('helix', { helixEffect: { radius: 160 } })</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Effect defaults and tuning notes for each are in <a href="./modes.html">The 13 modes, in
+        depth</a>; every value can be dragged live on the <a href="../settings.html">options page</a>.
+      </p>
+
+      <h2 id="api">API quick reference</h2>
+      <div class="table-wrap">
+        <table class="kv">
+          <thead>
+            <tr><th scope="col">Method</th><th scope="col">Does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>next()</code> / <code>prev()</code></td><td>Move by <code>slidesToScroll</code>, wrapping when looping.</td></tr>
+            <tr><td><code>goTo(i, instant?)</code></td><td>Shortest path to a logical index.</td></tr>
+            <tr><td><code>play()</code> / <code>pause()</code> / <code>toggleAutoplay()</code></td><td>Control autoplay (or the marquee timeline).</td></tr>
+            <tr><td><code>setMode(mode, extra?)</code></td><td>Switch layout, merge options, re-measure.</td></tr>
+            <tr><td><code>setOption(key, value)</code></td><td>Change one option and re-apply.</td></tr>
+            <tr><td><code>sync(target)</code></td><td>Link instances both ways (<code>{ bidirectional: false }</code> for one way).</td></tr>
+            <tr><td><code>refresh()</code> / <code>update()</code></td><td>Re-measure after DOM or size changes.</td></tr>
+            <tr><td><code>addSlide(html, i?)</code> / <code>removeSlide(i)</code></td><td>Mutate the slide set safely.</td></tr>
+            <tr><td><code>destroy()</code></td><td>Remove listeners, generated UI, clones, animations and inline styles.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Events bubble as <code>ajc:*</code> custom events and fire matching callbacks:
+        <code>before-change</code>, <code>change</code>, <code>after-change</code>,
+        <code>transition-end</code>, <code>drag-start/move/end</code>,
+        <code>autoplay-start/stop</code>, <code>reach-start/end</code>, <code>breakpoint</code>,
+        <code>lazy-loaded</code>. Full list in the <a href="../README.md#events">README events table</a>.
+      </p>
+    </div>
+  </main>
+
+  <footer class="doc-footer">
+    <div class="doc-footer__inner">
+      <p>anime-carousel · MIT · built on Anime.js v4</p>
+      <nav aria-label="Documentation footer">
+        <a href="../index.html">Demo</a>
+        <a href="../settings.html">Options</a>
+        <a href="./index.html">Docs</a>
+        <a href="./comparison.html">Compare</a>
+        <a href="./modes.html">Modes</a>
+        <a href="./recipes.html">Recipes</a>
+        <a href="../README.md">README</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

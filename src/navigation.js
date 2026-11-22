@@ -28,7 +28,7 @@ export class Navigation {
   }
 
   _own(element) {
-    this.owned.push(element);
+    if (!element.__ajcExternal) this.owned.push(element);
     if (!element.parentNode) this.slider.root.appendChild(element);
     return element;
   }
@@ -119,7 +119,11 @@ export class Navigation {
       dot.dataset.ajcPage = String(page);
 
       if (typeof options.customPaging === 'function') {
-        dot.innerHTML = String(options.customPaging(page, dot) ?? '');
+        const content = options.customPaging(page, dot);
+        if (content != null && content !== dot) {
+          if (content.nodeType) dot.replaceChildren(content);
+          else dot.innerHTML = String(content);
+        }
       } else {
         dot.appendChild(createElement('span', 'ajc__dot-inner'));
       }

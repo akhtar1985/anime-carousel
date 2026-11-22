@@ -47,6 +47,11 @@ $breakpoint-motion: '(prefers-reduced-motion: reduce)' !default;
     overflow: hidden;
     touch-action: pan-y;
     outline: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--#{$prefix}-accent);
+      outline-offset: 2px;
+    }
   }
 
   .#{$prefix}__track {
